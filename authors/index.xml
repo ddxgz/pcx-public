@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Authors on Cong Peng - Personal Site</title>
+    <link>/authors/</link>
+    <description>Recent content in Authors on Cong Peng - Personal Site</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    
+	<atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>C. Peng</title>
+      <link>/authors/c.-peng/</link>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
+      
+      <guid>/authors/c.-peng/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Cong Peng</title>
+      <link>/authors/cong-peng/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      
+      <guid>/authors/cong-peng/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>G. Bai</title>
+      <link>/authors/g.-bai/</link>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
+      
+      <guid>/authors/g.-bai/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Guohua Bai</title>
+      <link>/authors/guohua-bai/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      
+      <guid>/authors/guohua-bai/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Prashant Goswami</title>
+      <link>/authors/prashant-goswami/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      
+      <guid>/authors/prashant-goswami/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Y. Hu</title>
+      <link>/authors/y.-hu/</link>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
+      
+      <guid>/authors/y.-hu/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

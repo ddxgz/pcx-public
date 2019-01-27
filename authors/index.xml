@@ -1,66 +1,67 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Authors on Cong Peng - Personal Site</title>
-    <link>/authors/</link>
-    <description>Recent content in Authors on Cong Peng - Personal Site</description>
+    <title>Authors on Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/authors/</link>
+    <description>Recent content in Authors on Cong Peng</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <copyright>©2014–2019 Cong Peng</copyright>
     
-	<atom:link href="/authors/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://pcx.linkedinfo.co/authors/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>C. Peng</title>
-      <link>/authors/c.-peng/</link>
+      <link>https://pcx.linkedinfo.co/authors/c.-peng/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
       
-      <guid>/authors/c.-peng/</guid>
+      <guid>https://pcx.linkedinfo.co/authors/c.-peng/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Cong Peng</title>
-      <link>/authors/cong-peng/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      <link>https://pcx.linkedinfo.co/authors/cong-peng/</link>
+      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
       
-      <guid>/authors/cong-peng/</guid>
+      <guid>https://pcx.linkedinfo.co/authors/cong-peng/</guid>
       <description></description>
     </item>
     
     <item>
       <title>G. Bai</title>
-      <link>/authors/g.-bai/</link>
+      <link>https://pcx.linkedinfo.co/authors/g.-bai/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
       
-      <guid>/authors/g.-bai/</guid>
+      <guid>https://pcx.linkedinfo.co/authors/g.-bai/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Guohua Bai</title>
-      <link>/authors/guohua-bai/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      <link>https://pcx.linkedinfo.co/authors/guohua-bai/</link>
+      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
       
-      <guid>/authors/guohua-bai/</guid>
+      <guid>https://pcx.linkedinfo.co/authors/guohua-bai/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Prashant Goswami</title>
-      <link>/authors/prashant-goswami/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      <link>https://pcx.linkedinfo.co/authors/prashant-goswami/</link>
+      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
       
-      <guid>/authors/prashant-goswami/</guid>
+      <guid>https://pcx.linkedinfo.co/authors/prashant-goswami/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Y. Hu</title>
-      <link>/authors/y.-hu/</link>
+      <link>https://pcx.linkedinfo.co/authors/y.-hu/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
       
-      <guid>/authors/y.-hu/</guid>
+      <guid>https://pcx.linkedinfo.co/authors/y.-hu/</guid>
       <description></description>
     </item>
     

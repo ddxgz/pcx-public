@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Service Discovery on Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/tags/service-discovery/</link>
+    <description>Recent content in Service Discovery on Cong Peng</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>©2014–2019 Cong Peng</copyright>
+    <lastBuildDate>Mon, 01 Jan 2018 00:00:00 +0100</lastBuildDate>
+    
+	<atom:link href="https://pcx.linkedinfo.co/tags/service-discovery/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Using Tag based Semantic Annotation to Empower Client and REST Service Interaction</title>
+      <link>https://pcx.linkedinfo.co/publication/pcx-2018-a/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      
+      <guid>https://pcx.linkedinfo.co/publication/pcx-2018-a/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,58 +1,59 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Cong Peng on Cong Peng - Personal Site</title>
-    <link>/authors/cong-peng/</link>
-    <description>Recent content in Cong Peng on Cong Peng - Personal Site</description>
+    <title>Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/authors/cong-peng/</link>
+    <description>Recent content on Cong Peng</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Jan 2018 00:00:00 +0100</lastBuildDate>
+    <copyright>©2014–2019 Cong Peng</copyright>
+    <lastBuildDate>Mon, 01 Oct 2018 00:00:00 +0200</lastBuildDate>
     
-	<atom:link href="/authors/cong-peng/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://pcx.linkedinfo.co/authors/cong-peng/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>An Ontological Approach to Integrate Health Resources from Different Categories of Services</title>
-      <link>/publication/pcx-2018-d/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      <link>https://pcx.linkedinfo.co/publication/pcx-2018-d/</link>
+      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
       
-      <guid>/publication/pcx-2018-d/</guid>
+      <guid>https://pcx.linkedinfo.co/publication/pcx-2018-d/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Fuzzy Matching of OpenAPI Described REST Services</title>
-      <link>/publication/pcx-2018-c/</link>
+      <link>https://pcx.linkedinfo.co/publication/pcx-2018-c/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
       
-      <guid>/publication/pcx-2018-c/</guid>
+      <guid>https://pcx.linkedinfo.co/publication/pcx-2018-c/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Linking Health Web Services as Resource Graph by Semantic REST Resource Tagging</title>
-      <link>/publication/pcx-2018-b/</link>
+      <link>https://pcx.linkedinfo.co/publication/pcx-2018-b/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
       
-      <guid>/publication/pcx-2018-b/</guid>
+      <guid>https://pcx.linkedinfo.co/publication/pcx-2018-b/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Using Tag based Semantic Annotation to Empower Client and REST Service Interaction</title>
-      <link>/publication/pcx-2018-a/</link>
+      <link>https://pcx.linkedinfo.co/publication/pcx-2018-a/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
       
-      <guid>/publication/pcx-2018-a/</guid>
+      <guid>https://pcx.linkedinfo.co/publication/pcx-2018-a/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Flexible System Architecture of PHR to Support Sharing Health Data for Chronic Disease Self-Management</title>
-      <link>/publication/pcx-2016/</link>
+      <link>https://pcx.linkedinfo.co/publication/pcx-2016/</link>
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0100</pubDate>
       
-      <guid>/publication/pcx-2016/</guid>
+      <guid>https://pcx.linkedinfo.co/publication/pcx-2016/</guid>
       <description></description>
     </item>
     

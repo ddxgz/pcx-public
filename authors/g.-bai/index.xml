@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>G. Bai on Cong Peng - Personal Site</title>
-    <link>/authors/g.-bai/</link>
-    <description>Recent content in G. Bai on Cong Peng - Personal Site</description>
+    <title>G. Bai on Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/authors/g.-bai/</link>
+    <description>Recent content in G. Bai on Cong Peng</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
+    <copyright>©2014–2019 Cong Peng</copyright>
     <lastBuildDate>Thu, 01 Jan 2015 00:00:00 +0100</lastBuildDate>
     
-	<atom:link href="/authors/g.-bai/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://pcx.linkedinfo.co/authors/g.-bai/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Sharing health data through hybrid cloud for self-management</title>
-      <link>/publication/huyanpcx-2015/</link>
+      <link>https://pcx.linkedinfo.co/publication/huyanpcx-2015/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
       
-      <guid>/publication/huyanpcx-2015/</guid>
+      <guid>https://pcx.linkedinfo.co/publication/huyanpcx-2015/</guid>
       <description></description>
     </item>
     

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Semantic Web on Cong Peng</title>
-    <link>https://pcx.linkedinfo.co/tags/semantic-web/</link>
-    <description>Recent content in Semantic Web on Cong Peng</description>
+    <title>Web technologies on Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/tags/web-technologies/</link>
+    <description>Recent content in Web technologies on Cong Peng</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>©2014–2019 Cong Peng</copyright>
     <lastBuildDate>Sun, 27 Jan 2019 11:17:54 +0100</lastBuildDate>
     
-	<atom:link href="https://pcx.linkedinfo.co/tags/semantic-web/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://pcx.linkedinfo.co/tags/web-technologies/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
@@ -20,15 +20,6 @@
       <guid>https://pcx.linkedinfo.co/project/linkedinfo/</guid>
       <description>The Web should be an open web, as far as I thought. All the informations published on the Web are meant to be shared, share through links by search engines, rss, social networks, etc. This site is yet another method that tries to link all the informations (but starts with only technical articles on LinkedInfo) and share them.
 The original idea of this side project, is to utilize Semantic Web technologies to link the informations, but noble ambition shall start from basic.</description>
-    </item>
-    
-    <item>
-      <title>An Ontological Approach to Integrate Health Resources from Different Categories of Services</title>
-      <link>https://pcx.linkedinfo.co/publication/pcx-2018-d/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/publication/pcx-2018-d/</guid>
-      <description></description>
     </item>
     
   </channel>

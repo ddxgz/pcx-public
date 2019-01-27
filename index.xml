@@ -11,6 +11,18 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Linkedinfo.co</title>
+      <link>https://pcx.linkedinfo.co/project/linkedinfo/</link>
+      <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
+      
+      <guid>https://pcx.linkedinfo.co/project/linkedinfo/</guid>
+      <description>&lt;p&gt;The Web should be an open web, as far as I thought. All the informations published on the Web are meant to be shared, share through links by search engines, rss, social networks, etc. This site is yet another method that tries to link all the informations (but starts with only technical articles on LinkedInfo) and share them.&lt;/p&gt;
+
+&lt;p&gt;The original idea of this side project, is to utilize Semantic Web technologies to link the informations, but noble ambition shall start from basic. The site has to be improved little by little.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>An Ontological Approach to Integrate Health Resources from Different Categories of Services</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2018-d/</link>
       <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>

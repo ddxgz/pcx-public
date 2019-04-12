@@ -7,10 +7,19 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>©2014–2019 Cong Peng</copyright>
-    <lastBuildDate>Mon, 01 Jan 2018 00:00:00 +0100</lastBuildDate>
+    <lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0200</lastBuildDate>
     
 	<atom:link href="https://pcx.linkedinfo.co/publication_types/2/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Meaningful Integration of Data from Heterogeneous Health Services and Home Environment Based on Ontology</title>
+      <link>https://pcx.linkedinfo.co/publication/pcx-2019-a/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      
+      <guid>https://pcx.linkedinfo.co/publication/pcx-2019-a/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Fuzzy Matching of OpenAPI Described REST Services</title>

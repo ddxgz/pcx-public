@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Health data integration on Cong Peng</title>
+    <title>health data integration on Cong Peng</title>
     <link>https://pcx.linkedinfo.co/tags/health-data-integration/</link>
-    <description>Recent content in Health data integration on Cong Peng</description>
+    <description>Recent content in health data integration on Cong Peng</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>©2014–2019 Cong Peng</copyright>
-    <lastBuildDate>Mon, 01 Oct 2018 00:00:00 +0200</lastBuildDate>
+    <lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0200</lastBuildDate>
     
 	<atom:link href="https://pcx.linkedinfo.co/tags/health-data-integration/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>An Ontological Approach to Integrate Health Resources from Different Categories of Services</title>
-      <link>https://pcx.linkedinfo.co/publication/pcx-2018-d/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
+      <title>Meaningful Integration of Data from Heterogeneous Health Services and Home Environment Based on Ontology</title>
+      <link>https://pcx.linkedinfo.co/publication/pcx-2019-a/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
       
-      <guid>https://pcx.linkedinfo.co/publication/pcx-2018-d/</guid>
+      <guid>https://pcx.linkedinfo.co/publication/pcx-2019-a/</guid>
       <description></description>
     </item>
     

@@ -4,6 +4,14 @@
     
     <url>
     
+      <loc>https://pcx.linkedinfo.co/publication/pcx-2019-a/</loc>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
+    </url>
+    
+  
+    
+    <url>
+    
       <loc>https://pcx.linkedinfo.co/project/linkedinfo/</loc>
       <lastmod>2019-01-27T11:17:54+01:00</lastmod>
     </url>
@@ -101,7 +109,7 @@
     <url>
     
       <loc>https://pcx.linkedinfo.co/publication_types/2/</loc>
-      <lastmod>2018-01-01T00:00:00+01:00</lastmod>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -161,7 +169,7 @@
     <url>
     
       <loc>https://pcx.linkedinfo.co/authors/cong-peng/</loc>
-      <lastmod>2018-10-01T00:00:00+02:00</lastmod>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -170,7 +178,7 @@
     <url>
     
       <loc>https://pcx.linkedinfo.co/tags/fhir/</loc>
-      <lastmod>2018-10-01T00:00:00+02:00</lastmod>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -224,7 +232,7 @@
     <url>
     
       <loc>https://pcx.linkedinfo.co/authors/prashant-goswami/</loc>
-      <lastmod>2018-10-01T00:00:00+02:00</lastmod>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -251,7 +259,7 @@
     <url>
     
       <loc>https://pcx.linkedinfo.co/tags/rest/</loc>
-      <lastmod>2018-10-01T00:00:00+02:00</lastmod>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -269,7 +277,7 @@
     <url>
     
       <loc>https://pcx.linkedinfo.co/tags/semantic-web/</loc>
-      <lastmod>2019-01-27T11:17:54+01:00</lastmod>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -314,7 +322,7 @@
     <url>
     
       <loc>https://pcx.linkedinfo.co/tags/web-service/</loc>
-      <lastmod>2018-10-01T00:00:00+02:00</lastmod>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -324,6 +332,15 @@
     
       <loc>https://pcx.linkedinfo.co/tags/web-technologies/</loc>
       <lastmod>2019-01-27T11:17:54+01:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://pcx.linkedinfo.co/tags/wot/</loc>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -350,7 +367,16 @@
     <url>
     
       <loc>https://pcx.linkedinfo.co/tags/ehealth/</loc>
-      <lastmod>2018-10-01T00:00:00+02:00</lastmod>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://pcx.linkedinfo.co/tags/health-data-integration/</loc>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -359,7 +385,16 @@
     <url>
     
       <loc>https://pcx.linkedinfo.co/tags/ontology/</loc>
-      <lastmod>2018-10-01T00:00:00+02:00</lastmod>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://pcx.linkedinfo.co/tags/smart-homes/</loc>
+      <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
     </url>
     

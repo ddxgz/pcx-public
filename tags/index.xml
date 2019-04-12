@@ -24,7 +24,7 @@
     <item>
       <title>FHIR</title>
       <link>https://pcx.linkedinfo.co/tags/fhir/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
       
       <guid>https://pcx.linkedinfo.co/tags/fhir/</guid>
       <description></description>
@@ -60,7 +60,7 @@
     <item>
       <title>REST</title>
       <link>https://pcx.linkedinfo.co/tags/rest/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
       
       <guid>https://pcx.linkedinfo.co/tags/rest/</guid>
       <description></description>
@@ -78,7 +78,7 @@
     <item>
       <title>Semantic Web</title>
       <link>https://pcx.linkedinfo.co/tags/semantic-web/</link>
-      <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
       
       <guid>https://pcx.linkedinfo.co/tags/semantic-web/</guid>
       <description></description>
@@ -114,7 +114,7 @@
     <item>
       <title>Web service</title>
       <link>https://pcx.linkedinfo.co/tags/web-service/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
       
       <guid>https://pcx.linkedinfo.co/tags/web-service/</guid>
       <description></description>
@@ -130,6 +130,15 @@
     </item>
     
     <item>
+      <title>WoT</title>
+      <link>https://pcx.linkedinfo.co/tags/wot/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      
+      <guid>https://pcx.linkedinfo.co/tags/wot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>cloud computing</title>
       <link>https://pcx.linkedinfo.co/tags/cloud-computing/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
@@ -141,18 +150,36 @@
     <item>
       <title>eHealth</title>
       <link>https://pcx.linkedinfo.co/tags/ehealth/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
       
       <guid>https://pcx.linkedinfo.co/tags/ehealth/</guid>
       <description></description>
     </item>
     
     <item>
+      <title>health data integration</title>
+      <link>https://pcx.linkedinfo.co/tags/health-data-integration/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      
+      <guid>https://pcx.linkedinfo.co/tags/health-data-integration/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>ontology</title>
       <link>https://pcx.linkedinfo.co/tags/ontology/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
       
       <guid>https://pcx.linkedinfo.co/tags/ontology/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>smart homes</title>
+      <link>https://pcx.linkedinfo.co/tags/smart-homes/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      
+      <guid>https://pcx.linkedinfo.co/tags/smart-homes/</guid>
       <description></description>
     </item>
     

@@ -20,6 +20,14 @@
     
     <url>
     
+      <loc>https://pcx.linkedinfo.co/publication/peng-2019/</loc>
+      <lastmod>2019-01-01T00:00:00+01:00</lastmod>
+    </url>
+    
+  
+    
+    <url>
+    
       <loc>https://pcx.linkedinfo.co/publication/pcx-2018-d/</loc>
       <lastmod>2018-10-01T00:00:00+02:00</lastmod>
     </url>
@@ -46,6 +54,14 @@
     
       <loc>https://pcx.linkedinfo.co/publication/pcx-2018-a/</loc>
       <lastmod>2018-01-01T00:00:00+01:00</lastmod>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://pcx.linkedinfo.co/publication/peng-2017/</loc>
+      <lastmod>2017-01-01T00:00:00+01:00</lastmod>
     </url>
     
   
@@ -110,6 +126,15 @@
     
       <loc>https://pcx.linkedinfo.co/publication_types/2/</loc>
       <lastmod>2019-04-01T00:00:00+02:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://pcx.linkedinfo.co/publication_types/4/</loc>
+      <lastmod>2019-01-01T00:00:00+01:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -195,6 +220,15 @@
     
     <url>
     
+      <loc>https://pcx.linkedinfo.co/tags/group-work/</loc>
+      <lastmod>2019-01-01T00:00:00+01:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
       <loc>https://pcx.linkedinfo.co/authors/guohua-bai/</loc>
       <lastmod>2018-10-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
@@ -267,6 +301,15 @@
     
     <url>
     
+      <loc>https://pcx.linkedinfo.co/tags/record-keeping/</loc>
+      <lastmod>2017-01-01T00:00:00+01:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
       <loc>https://pcx.linkedinfo.co/tags/semantic-annotation/</loc>
       <lastmod>2018-01-01T00:00:00+01:00</lastmod>
       <priority>0</priority>
@@ -296,6 +339,15 @@
     
       <loc>https://pcx.linkedinfo.co/tags/service-discovery/</loc>
       <lastmod>2018-01-01T00:00:00+01:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://pcx.linkedinfo.co/tags/tbl/</loc>
+      <lastmod>2019-01-01T00:00:00+01:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -366,6 +418,15 @@
     
     <url>
     
+      <loc>https://pcx.linkedinfo.co/tags/collaborative-learning/</loc>
+      <lastmod>2019-01-01T00:00:00+01:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
       <loc>https://pcx.linkedinfo.co/tags/ehealth/</loc>
       <lastmod>2019-04-01T00:00:00+02:00</lastmod>
       <priority>0</priority>
@@ -393,8 +454,26 @@
     
     <url>
     
+      <loc>https://pcx.linkedinfo.co/tags/research-ethics/</loc>
+      <lastmod>2017-01-01T00:00:00+01:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
       <loc>https://pcx.linkedinfo.co/tags/smart-homes/</loc>
       <lastmod>2019-04-01T00:00:00+02:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    <url>
+    
+      <loc>https://pcx.linkedinfo.co/tags/teamwork/</loc>
+      <lastmod>2019-01-01T00:00:00+01:00</lastmod>
       <priority>0</priority>
     </url>
     

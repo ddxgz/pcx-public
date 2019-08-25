@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Projects on Cong Peng</title>
-    <link>https://pcx.linkedinfo.co/project/</link>
-    <description>Recent content in Projects on Cong Peng</description>
+    <title>Machine Learning on Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
+    <description>Recent content in Machine Learning on Cong Peng</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <copyright>©2014–2019 Cong Peng</copyright>
     <lastBuildDate>Sun, 27 Jan 2019 11:17:54 +0100</lastBuildDate>
     
-	<atom:link href="https://pcx.linkedinfo.co/project/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://pcx.linkedinfo.co/tags/machine-learning/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>

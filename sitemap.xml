@@ -13,12 +13,12 @@
   </url>
   
   <url>
-    <loc>https://pcx.linkedinfo.co/</loc>
+    <loc>https://pcx.linkedinfo.co/authors/cong-peng/</loc>
     <lastmod>2019-04-01T00:00:00+02:00</lastmod>
   </url>
   
   <url>
-    <loc>https://pcx.linkedinfo.co/authors/cong-peng/</loc>
+    <loc>https://pcx.linkedinfo.co/</loc>
     <lastmod>2019-04-01T00:00:00+02:00</lastmod>
   </url>
   
@@ -153,6 +153,16 @@
   </url>
   
   <url>
+    <loc>https://pcx.linkedinfo.co/tags/web/</loc>
+    <lastmod>2018-01-18T05:19:29+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/slides/web-notes/</loc>
+    <lastmod>2018-01-18T05:19:29+02:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://pcx.linkedinfo.co/publication/pcx-2018-c/</loc>
     <lastmod>2018-01-01T00:00:00+01:00</lastmod>
   </url>
@@ -208,17 +218,17 @@
   </url>
   
   <url>
-    <loc>https://pcx.linkedinfo.co/talk/</loc>
-    <lastmod>2017-01-01T00:00:00+01:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://pcx.linkedinfo.co/tags/record-keeping/</loc>
     <lastmod>2017-01-01T00:00:00+01:00</lastmod>
   </url>
   
   <url>
     <loc>https://pcx.linkedinfo.co/tags/research-ethics/</loc>
+    <lastmod>2017-01-01T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/slides/</loc>
     <lastmod>2017-01-01T00:00:00+01:00</lastmod>
   </url>
   
@@ -260,6 +270,16 @@
   <url>
     <loc>https://pcx.linkedinfo.co/authors/y.-hu/</loc>
     <lastmod>2015-01-01T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/tags/openstack-swift/</loc>
+    <lastmod>2014-07-01T00:00:00+00:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/slides/swift-brief-intro/</loc>
+    <lastmod>2014-07-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>

@@ -133,6 +133,14 @@
     </item>
     
     <item>
+      <title>Web</title>
+      <link>https://pcx.linkedinfo.co/tags/web/</link>
+      <pubDate>Wed, 10 Jan 2018 05:19:29 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/web/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>OpenAPI</title>
       <link>https://pcx.linkedinfo.co/tags/openapi/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
@@ -209,6 +217,14 @@
       <link>https://pcx.linkedinfo.co/tags/hybrid-cloud/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
       <guid>https://pcx.linkedinfo.co/tags/hybrid-cloud/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OpenStack Swift</title>
+      <link>https://pcx.linkedinfo.co/tags/openstack-swift/</link>
+      <pubDate>Tue, 01 Jul 2014 00:00:00 +0000</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/openstack-swift/</guid>
       <description></description>
     </item>
     

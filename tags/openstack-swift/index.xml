@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>OpenStack Swift | Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/tags/openstack-swift/</link>
+      <atom:link href="https://pcx.linkedinfo.co/tags/openstack-swift/index.xml" rel="self" type="application/rss+xml" />
+    <description>OpenStack Swift</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Tue, 01 Jul 2014 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
+      <title>OpenStack Swift</title>
+      <link>https://pcx.linkedinfo.co/tags/openstack-swift/</link>
+    </image>
+    
+    <item>
+      <title>Swift Brief Intro</title>
+      <link>https://pcx.linkedinfo.co/slides/swift-brief-intro/</link>
+      <pubDate>Tue, 01 Jul 2014 00:00:00 +0000</pubDate>
+      <guid>https://pcx.linkedinfo.co/slides/swift-brief-intro/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>

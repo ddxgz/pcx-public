@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>collaborative learning on Cong Peng</title>
+    <title>collaborative learning | Cong Peng</title>
     <link>https://pcx.linkedinfo.co/tags/collaborative-learning/</link>
-    <description>Recent content in collaborative learning on Cong Peng</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>©2014–2019 Cong Peng</copyright>
-    <lastBuildDate>Tue, 01 Jan 2019 00:00:00 +0100</lastBuildDate>
-    
-	<atom:link href="https://pcx.linkedinfo.co/tags/collaborative-learning/index.xml" rel="self" type="application/rss+xml" />
-    
+      <atom:link href="https://pcx.linkedinfo.co/tags/collaborative-learning/index.xml" rel="self" type="application/rss+xml" />
+    <description>collaborative learning</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Tue, 01 Jan 2019 00:00:00 +0100</lastBuildDate>
+    <image>
+      <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
+      <title>collaborative learning</title>
+      <link>https://pcx.linkedinfo.co/tags/collaborative-learning/</link>
+    </image>
     
     <item>
       <title>What Can Teachers Do to Make the Group Work Learning Effective - a Literature Review</title>
       <link>https://pcx.linkedinfo.co/publication/peng-2019/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/peng-2019/</guid>
       <description></description>
     </item>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/authors/admin/</link>
+      <atom:link href="https://pcx.linkedinfo.co/authors/admin/index.xml" rel="self" type="application/rss+xml" />
+    <description>Cong Peng</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright>
+    <image>
+      <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
+      <title>Cong Peng</title>
+      <link>https://pcx.linkedinfo.co/authors/admin/</link>
+    </image>
+    
+  </channel>
+</rss>

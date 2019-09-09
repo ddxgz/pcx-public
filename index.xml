@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Cong Peng on Cong Peng</title>
+    <title>Cong Peng</title>
     <link>https://pcx.linkedinfo.co/</link>
-    <description>Recent content in Cong Peng on Cong Peng</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>©2014–2019 Cong Peng</copyright>
-    <lastBuildDate>Sun, 15 Oct 2017 00:00:00 +0200</lastBuildDate>
-    <atom:link href="/" rel="self" type="application/rss+xml" />
+      <atom:link href="https://pcx.linkedinfo.co/index.xml" rel="self" type="application/rss+xml" />
+    <description>Cong Peng</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0200</lastBuildDate>
+    <image>
+      <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
+      <title>Cong Peng</title>
+      <link>https://pcx.linkedinfo.co/</link>
+    </image>
     
     <item>
       <title>Meaningful Integration of Data from Heterogeneous Health Services and Home Environment Based on Ontology</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2019-a/</link>
       <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2019-a/</guid>
       <description></description>
     </item>
@@ -23,7 +24,6 @@
       <title>Linkedinfo.co</title>
       <link>https://pcx.linkedinfo.co/project/linkedinfo/</link>
       <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/project/linkedinfo/</guid>
       <description>&lt;p&gt;The Web should be an open web. All the informations published on the Web are meant to be shared, share through links by search engines, rss, social networks, etc. This site is yet another method that tries to link all the informations (but starts with only technical articles on LinkedInfo) and share them.&lt;/p&gt;
 
@@ -35,7 +35,6 @@
       <title>What Can Teachers Do to Make the Group Work Learning Effective - a Literature Review</title>
       <link>https://pcx.linkedinfo.co/publication/peng-2019/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/peng-2019/</guid>
       <description></description>
     </item>
@@ -44,7 +43,6 @@
       <title>An Ontological Approach to Integrate Health Resources from Different Categories of Services</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2018-d/</link>
       <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2018-d/</guid>
       <description></description>
     </item>
@@ -53,7 +51,6 @@
       <title>Fuzzy Matching of OpenAPI Described REST Services</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2018-c/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2018-c/</guid>
       <description></description>
     </item>
@@ -62,7 +59,6 @@
       <title>Linking Health Web Services as Resource Graph by Semantic REST Resource Tagging</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2018-b/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2018-b/</guid>
       <description></description>
     </item>
@@ -71,8 +67,15 @@
       <title>Using Tag based Semantic Annotation to Empower Client and REST Service Interaction</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2018-a/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2018-a/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Posts</title>
+      <link>https://pcx.linkedinfo.co/post/</link>
+      <pubDate>Sun, 01 Jan 2017 00:00:00 +0000</pubDate>
+      <guid>https://pcx.linkedinfo.co/post/</guid>
       <description></description>
     </item>
     
@@ -80,7 +83,6 @@
       <title>Good Record Keeping for Conducting Research Ethically Correct</title>
       <link>https://pcx.linkedinfo.co/publication/peng-2017/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/peng-2017/</guid>
       <description></description>
     </item>
@@ -89,7 +91,6 @@
       <title>Flexible System Architecture of PHR to Support Sharing Health Data for Chronic Disease Self-Management</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2016/</link>
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2016/</guid>
       <description></description>
     </item>
@@ -98,7 +99,6 @@
       <title>Sharing health data through hybrid cloud for self-management</title>
       <link>https://pcx.linkedinfo.co/publication/huyanpcx-2015/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/huyanpcx-2015/</guid>
       <description></description>
     </item>

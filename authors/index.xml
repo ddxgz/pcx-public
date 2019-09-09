@@ -1,49 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Authors on Cong Peng</title>
+    <title>Authors | Cong Peng</title>
     <link>https://pcx.linkedinfo.co/authors/</link>
-    <description>Recent content in Authors on Cong Peng</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>©2014–2019 Cong Peng</copyright>
-    
-	<atom:link href="https://pcx.linkedinfo.co/authors/index.xml" rel="self" type="application/rss+xml" />
-    
-    
-    <item>
-      <title>C. Peng</title>
-      <link>https://pcx.linkedinfo.co/authors/c.-peng/</link>
-      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/authors/c.-peng/</guid>
-      <description></description>
-    </item>
+      <atom:link href="https://pcx.linkedinfo.co/authors/index.xml" rel="self" type="application/rss+xml" />
+    <description>Authors</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0200</lastBuildDate>
+    <image>
+      <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
+      <title>Authors</title>
+      <link>https://pcx.linkedinfo.co/authors/</link>
+    </image>
     
     <item>
       <title>Cong Peng</title>
       <link>https://pcx.linkedinfo.co/authors/cong-peng/</link>
       <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/authors/cong-peng/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>G. Bai</title>
-      <link>https://pcx.linkedinfo.co/authors/g.-bai/</link>
-      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/authors/g.-bai/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Guohua Bai</title>
-      <link>https://pcx.linkedinfo.co/authors/guohua-bai/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/authors/guohua-bai/</guid>
       <description></description>
     </item>
     
@@ -51,8 +24,31 @@
       <title>Prashant Goswami</title>
       <link>https://pcx.linkedinfo.co/authors/prashant-goswami/</link>
       <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/authors/prashant-goswami/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Guohua Bai</title>
+      <link>https://pcx.linkedinfo.co/authors/guohua-bai/</link>
+      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/authors/guohua-bai/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>C. Peng</title>
+      <link>https://pcx.linkedinfo.co/authors/c.-peng/</link>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/authors/c.-peng/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>G. Bai</title>
+      <link>https://pcx.linkedinfo.co/authors/g.-bai/</link>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/authors/g.-bai/</guid>
       <description></description>
     </item>
     
@@ -60,9 +56,17 @@
       <title>Y. Hu</title>
       <link>https://pcx.linkedinfo.co/authors/y.-hu/</link>
       <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/authors/y.-hu/</guid>
       <description></description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>https://pcx.linkedinfo.co/authors/admin/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>https://pcx.linkedinfo.co/authors/admin/</guid>
+      <description>&lt;p&gt;Cong Peng is a PhD student in the Department of Creative Technologies at Blekinge Institute of Technology (BTH). He has master’s degrees in Computer Science from BTH, and Software Engineering from Zhejiang University of Technology in China. His research interests are Semantic Web, Machine Learning, eHealth and Web services. He has been involved in the works of teaching assistant, bachelor thesis supervision and review.&lt;/p&gt;
+</description>
     </item>
     
   </channel>

@@ -3,20 +3,19 @@
   <channel>
     <title>Cong Peng</title>
     <link>https://pcx.linkedinfo.co/authors/cong-peng/</link>
-    <description>Recent content on Cong Peng</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>©2014–2019 Cong Peng</copyright>
-    <lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0200</lastBuildDate>
-    
-	<atom:link href="https://pcx.linkedinfo.co/authors/cong-peng/index.xml" rel="self" type="application/rss+xml" />
-    
+      <atom:link href="https://pcx.linkedinfo.co/authors/cong-peng/index.xml" rel="self" type="application/rss+xml" />
+    <description>Cong Peng</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0200</lastBuildDate>
+    <image>
+      <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
+      <title>Cong Peng</title>
+      <link>https://pcx.linkedinfo.co/authors/cong-peng/</link>
+    </image>
     
     <item>
       <title>Meaningful Integration of Data from Heterogeneous Health Services and Home Environment Based on Ontology</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2019-a/</link>
       <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2019-a/</guid>
       <description></description>
     </item>
@@ -25,7 +24,6 @@
       <title>What Can Teachers Do to Make the Group Work Learning Effective - a Literature Review</title>
       <link>https://pcx.linkedinfo.co/publication/peng-2019/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/peng-2019/</guid>
       <description></description>
     </item>
@@ -34,7 +32,6 @@
       <title>An Ontological Approach to Integrate Health Resources from Different Categories of Services</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2018-d/</link>
       <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2018-d/</guid>
       <description></description>
     </item>
@@ -43,7 +40,6 @@
       <title>Fuzzy Matching of OpenAPI Described REST Services</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2018-c/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2018-c/</guid>
       <description></description>
     </item>
@@ -52,7 +48,6 @@
       <title>Linking Health Web Services as Resource Graph by Semantic REST Resource Tagging</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2018-b/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2018-b/</guid>
       <description></description>
     </item>
@@ -61,7 +56,6 @@
       <title>Using Tag based Semantic Annotation to Empower Client and REST Service Interaction</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2018-a/</link>
       <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2018-a/</guid>
       <description></description>
     </item>
@@ -70,7 +64,6 @@
       <title>Good Record Keeping for Conducting Research Ethically Correct</title>
       <link>https://pcx.linkedinfo.co/publication/peng-2017/</link>
       <pubDate>Sun, 01 Jan 2017 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/peng-2017/</guid>
       <description></description>
     </item>
@@ -79,7 +72,6 @@
       <title>Flexible System Architecture of PHR to Support Sharing Health Data for Chronic Disease Self-Management</title>
       <link>https://pcx.linkedinfo.co/publication/pcx-2016/</link>
       <pubDate>Fri, 01 Jan 2016 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/publication/pcx-2016/</guid>
       <description></description>
     </item>

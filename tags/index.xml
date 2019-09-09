@@ -1,23 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Tags on Cong Peng</title>
+    <title>Tags | Cong Peng</title>
     <link>https://pcx.linkedinfo.co/tags/</link>
-    <description>Recent content in Tags on Cong Peng</description>
-    <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <copyright>©2014–2019 Cong Peng</copyright>
-    <lastBuildDate>Thu, 01 Jan 2015 00:00:00 +0100</lastBuildDate>
-    
-	<atom:link href="https://pcx.linkedinfo.co/tags/index.xml" rel="self" type="application/rss+xml" />
-    
+      <atom:link href="https://pcx.linkedinfo.co/tags/index.xml" rel="self" type="application/rss+xml" />
+    <description>Tags</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0200</lastBuildDate>
+    <image>
+      <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
+      <title>Tags</title>
+      <link>https://pcx.linkedinfo.co/tags/</link>
+    </image>
     
     <item>
-      <title>Chronic disease</title>
-      <link>https://pcx.linkedinfo.co/tags/chronic-disease/</link>
-      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/chronic-disease/</guid>
+      <title>eHealth</title>
+      <link>https://pcx.linkedinfo.co/tags/ehealth/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/ehealth/</guid>
       <description></description>
     </item>
     
@@ -25,187 +24,14 @@
       <title>FHIR</title>
       <link>https://pcx.linkedinfo.co/tags/fhir/</link>
       <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/tags/fhir/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Group work</title>
-      <link>https://pcx.linkedinfo.co/tags/group-work/</link>
-      <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/group-work/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Health data integration</title>
       <link>https://pcx.linkedinfo.co/tags/health-data-integration/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/health-data-integration/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Hybrid cloud</title>
-      <link>https://pcx.linkedinfo.co/tags/hybrid-cloud/</link>
-      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/hybrid-cloud/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Machine Learning</title>
-      <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
-      <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/machine-learning/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>OpenAPI</title>
-      <link>https://pcx.linkedinfo.co/tags/openapi/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/openapi/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>REST</title>
-      <link>https://pcx.linkedinfo.co/tags/rest/</link>
       <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/rest/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Record keeping</title>
-      <link>https://pcx.linkedinfo.co/tags/record-keeping/</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/record-keeping/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Semantic Annotation</title>
-      <link>https://pcx.linkedinfo.co/tags/semantic-annotation/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/semantic-annotation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Semantic Web</title>
-      <link>https://pcx.linkedinfo.co/tags/semantic-web/</link>
-      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/semantic-web/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Semantic Web Services</title>
-      <link>https://pcx.linkedinfo.co/tags/semantic-web-services/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/semantic-web-services/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Service Discovery</title>
-      <link>https://pcx.linkedinfo.co/tags/service-discovery/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/service-discovery/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>TBL</title>
-      <link>https://pcx.linkedinfo.co/tags/tbl/</link>
-      <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/tbl/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Web Service Description</title>
-      <link>https://pcx.linkedinfo.co/tags/web-service-description/</link>
-      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/web-service-description/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Web service</title>
-      <link>https://pcx.linkedinfo.co/tags/web-service/</link>
-      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/web-service/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Web technologies</title>
-      <link>https://pcx.linkedinfo.co/tags/web-technologies/</link>
-      <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/web-technologies/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>WoT</title>
-      <link>https://pcx.linkedinfo.co/tags/wot/</link>
-      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/wot/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>cloud computing</title>
-      <link>https://pcx.linkedinfo.co/tags/cloud-computing/</link>
-      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/cloud-computing/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>collaborative learning</title>
-      <link>https://pcx.linkedinfo.co/tags/collaborative-learning/</link>
-      <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/collaborative-learning/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>eHealth</title>
-      <link>https://pcx.linkedinfo.co/tags/ehealth/</link>
-      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/ehealth/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>health data integration</title>
-      <link>https://pcx.linkedinfo.co/tags/health-data-integration/</link>
-      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/tags/health-data-integration/</guid>
       <description></description>
     </item>
@@ -214,17 +40,23 @@
       <title>ontology</title>
       <link>https://pcx.linkedinfo.co/tags/ontology/</link>
       <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/tags/ontology/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>research ethics</title>
-      <link>https://pcx.linkedinfo.co/tags/research-ethics/</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 +0100</pubDate>
-      
-      <guid>https://pcx.linkedinfo.co/tags/research-ethics/</guid>
+      <title>REST</title>
+      <link>https://pcx.linkedinfo.co/tags/rest/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/rest/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Semantic Web</title>
+      <link>https://pcx.linkedinfo.co/tags/semantic-web/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/semantic-web/</guid>
       <description></description>
     </item>
     
@@ -232,8 +64,63 @@
       <title>smart homes</title>
       <link>https://pcx.linkedinfo.co/tags/smart-homes/</link>
       <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/tags/smart-homes/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Web service</title>
+      <link>https://pcx.linkedinfo.co/tags/web-service/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/web-service/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>WoT</title>
+      <link>https://pcx.linkedinfo.co/tags/wot/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/wot/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Machine Learning</title>
+      <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
+      <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Web technologies</title>
+      <link>https://pcx.linkedinfo.co/tags/web-technologies/</link>
+      <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/web-technologies/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>collaborative learning</title>
+      <link>https://pcx.linkedinfo.co/tags/collaborative-learning/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/collaborative-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Group work</title>
+      <link>https://pcx.linkedinfo.co/tags/group-work/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/group-work/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>TBL</title>
+      <link>https://pcx.linkedinfo.co/tags/tbl/</link>
+      <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/tbl/</guid>
       <description></description>
     </item>
     
@@ -241,8 +128,87 @@
       <title>teamwork</title>
       <link>https://pcx.linkedinfo.co/tags/teamwork/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
-      
       <guid>https://pcx.linkedinfo.co/tags/teamwork/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OpenAPI</title>
+      <link>https://pcx.linkedinfo.co/tags/openapi/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/openapi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Semantic Annotation</title>
+      <link>https://pcx.linkedinfo.co/tags/semantic-annotation/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/semantic-annotation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Semantic Web Services</title>
+      <link>https://pcx.linkedinfo.co/tags/semantic-web-services/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/semantic-web-services/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Service Discovery</title>
+      <link>https://pcx.linkedinfo.co/tags/service-discovery/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/service-discovery/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Web Service Description</title>
+      <link>https://pcx.linkedinfo.co/tags/web-service-description/</link>
+      <pubDate>Mon, 01 Jan 2018 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/web-service-description/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Record keeping</title>
+      <link>https://pcx.linkedinfo.co/tags/record-keeping/</link>
+      <pubDate>Sun, 01 Jan 2017 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/record-keeping/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>research ethics</title>
+      <link>https://pcx.linkedinfo.co/tags/research-ethics/</link>
+      <pubDate>Sun, 01 Jan 2017 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/research-ethics/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Chronic disease</title>
+      <link>https://pcx.linkedinfo.co/tags/chronic-disease/</link>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/chronic-disease/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>cloud computing</title>
+      <link>https://pcx.linkedinfo.co/tags/cloud-computing/</link>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/cloud-computing/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Hybrid cloud</title>
+      <link>https://pcx.linkedinfo.co/tags/hybrid-cloud/</link>
+      <pubDate>Thu, 01 Jan 2015 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/hybrid-cloud/</guid>
       <description></description>
     </item>
     

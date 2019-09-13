@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="generator" content="Source Themes Academic 4.4.0">
+  <meta name="generator" content="Source Themes Academic 4.5.0">
 
   
 
@@ -36,10 +36,6 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
 
   
 
-
-
-
-  
 
   
   
@@ -72,6 +68,8 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
     
 
     
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
 
     
 
@@ -79,13 +77,14 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
 
   
   
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700|Roboto:400,400italic,700|Roboto+Mono&display=swap">
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
   
 
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.04a87a1cb9027e3c50f566322527c56f.css">
+  <link rel="stylesheet" href="/css/academic.min.5ac49d52d669340d29cb50b00bb7867f.css">
 
   
 
@@ -137,6 +136,69 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
     
     <meta property="article:modified_time" content="2019-09-13T13:36:43&#43;02:00">
   
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://pcx.linkedinfo.co/post/texttagspred/"
+  },
+  "headline": "Multi-label classification to predict topic tags of technical articles from LinkedInfo.co",
+  
+  "datePublished": "2019-09-11T13:36:43+02:00",
+  "dateModified": "2019-09-13T13:36:43+02:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "PENG, Cong"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Cong Peng",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://pcx.linkedinfo.co/img/icon-512.png"
+    }
+  },
+  "description": "This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It\u0026rsquo;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.\nIn this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification."
+}
+</script>
+
+  
+
+  
+
 
   
 
@@ -203,7 +265,7 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
 
       
       
-      <ul class="navbar-nav mr-auto">
+      <ul class="navbar-nav ml-auto">
         
 
         
@@ -323,9 +385,6 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
         
 
       
-      </ul>
-      <ul class="navbar-nav ml-auto">
-      
 
         
 
@@ -350,7 +409,7 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
 </nav>
 
 
-  <article class="article" itemscope itemtype="http://schema.org/Article">
+  <article class="article">
 
   
 
@@ -371,7 +430,7 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
   
   
 <div class="article-container pt-3">
-  <h1 itemprop="name">Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</h1>
+  <h1>Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</h1>
 
   
 
@@ -379,9 +438,6 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
     
 
 
-
-<meta content="2019-09-11 13:36:43 &#43;0200 CEST" itemprop="datePublished">
-<meta content="2019-09-13 13:36:43 &#43;0200 CEST" itemprop="dateModified">
 
 <div class="article-metadata">
 
@@ -396,7 +452,7 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
           Last updated on
       
     
-    <time>Sep 13, 2019</time>
+    Sep 13, 2019
   </span>
   
 
@@ -418,90 +474,6 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
 
   
     
-<div class="share-box" aria-hidden="true">
-  <ul class="share">
-    
-      
-      
-      
-        
-      
-      
-      
-      <li>
-        <a href="https://twitter.com/intent/tweet?url=https://pcx.linkedinfo.co/post/texttagspred/&amp;text=Multi-label%20classification%20to%20predict%20topic%20tags%20of%20technical%20articles%20from%20LinkedInfo.co" target="_blank" rel="noopener" class="share-btn-twitter">
-          <i class="fab fa-twitter"></i>
-        </a>
-      </li>
-    
-      
-      
-      
-        
-      
-      
-      
-      <li>
-        <a href="https://www.facebook.com/sharer.php?u=https://pcx.linkedinfo.co/post/texttagspred/&amp;t=Multi-label%20classification%20to%20predict%20topic%20tags%20of%20technical%20articles%20from%20LinkedInfo.co" target="_blank" rel="noopener" class="share-btn-facebook">
-          <i class="fab fa-facebook-f"></i>
-        </a>
-      </li>
-    
-      
-      
-      
-        
-      
-      
-      
-      <li>
-        <a href="mailto:?subject=Multi-label%20classification%20to%20predict%20topic%20tags%20of%20technical%20articles%20from%20LinkedInfo.co&amp;body=https://pcx.linkedinfo.co/post/texttagspred/" target="_blank" rel="noopener" class="share-btn-email">
-          <i class="fas fa-envelope"></i>
-        </a>
-      </li>
-    
-      
-      
-      
-        
-      
-      
-      
-      <li>
-        <a href="https://www.linkedin.com/shareArticle?url=https://pcx.linkedinfo.co/post/texttagspred/&amp;title=Multi-label%20classification%20to%20predict%20topic%20tags%20of%20technical%20articles%20from%20LinkedInfo.co" target="_blank" rel="noopener" class="share-btn-linkedin">
-          <i class="fab fa-linkedin-in"></i>
-        </a>
-      </li>
-    
-      
-      
-      
-        
-      
-      
-      
-      <li>
-        <a href="https://web.whatsapp.com/send?text=Multi-label%20classification%20to%20predict%20topic%20tags%20of%20technical%20articles%20from%20LinkedInfo.co%20https://pcx.linkedinfo.co/post/texttagspred/" target="_blank" rel="noopener" class="share-btn-whatsapp">
-          <i class="fab fa-whatsapp"></i>
-        </a>
-      </li>
-    
-      
-      
-      
-        
-      
-      
-      
-      <li>
-        <a href="https://service.weibo.com/share/share.php?url=https://pcx.linkedinfo.co/post/texttagspred/&amp;title=Multi-label%20classification%20to%20predict%20topic%20tags%20of%20technical%20articles%20from%20LinkedInfo.co" target="_blank" rel="noopener" class="share-btn-weibo">
-          <i class="fab fa-weibo"></i>
-        </a>
-      </li>
-    
-  </ul>
-</div>
-
 
   
 
@@ -529,7 +501,7 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
 
   <div class="article-container">
 
-    <div class="article-style" itemprop="articleBody">
+    <div class="article-style">
       
 
 <!-- Go back to [pcx.linkedinfo.co](https://pcx.linkedinfo.co) -->
@@ -897,20 +869,21 @@ predicted as: ('java',)
 
 
 
+
   
   
   
     
   
   
-  <div class="media author-card" itemscope itemtype="http://schema.org/Person">
+  <div class="media author-card">
     
       
-      <img class="portrait mr-3" src="/authors/admin/avatar_hu4079b1a087300ec54e2e7a1b37c78e50_49934_250x250_fill_q90_lanczos_center.jpg" itemprop="image" alt="Avatar">
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu4079b1a087300ec54e2e7a1b37c78e50_49934_250x250_fill_q90_lanczos_center.jpg" alt="Avatar">
     
 
     <div class="media-body">
-      <h5 class="card-title" itemprop="name"><a href="https://pcx.linkedinfo.co/">PENG, Cong</a></h5>
+      <h5 class="card-title"><a href="https://pcx.linkedinfo.co/">PENG, Cong</a></h5>
       <h6 class="card-subtitle">Ph.D. Student</h6>
       
       <ul class="network-icon" aria-hidden="true">
@@ -925,7 +898,7 @@ predicted as: ('java',)
           
           
           <li>
-            <a itemprop="sameAs" href="mailto:cong.peng@bth.se" >
+            <a href="mailto:cong.peng@bth.se" >
               <i class="fas fa-envelope"></i>
             </a>
           </li>
@@ -940,7 +913,7 @@ predicted as: ('java',)
             
           
           <li>
-            <a itemprop="sameAs" href="https://scholar.google.com/citations?user=87g_0KgAAAAJ" target="_blank" rel="noopener">
+            <a href="https://scholar.google.com/citations?user=87g_0KgAAAAJ" target="_blank" rel="noopener">
               <i class="ai ai-google-scholar"></i>
             </a>
           </li>
@@ -957,7 +930,7 @@ predicted as: ('java',)
             
           
           <li>
-            <a itemprop="sameAs" href="https://www.researchgate.net/profile/Cong_Peng5" target="_blank" rel="noopener">
+            <a href="https://www.researchgate.net/profile/Cong_Peng5" target="_blank" rel="noopener">
               <i class="fab fa-researchgate"></i>
             </a>
           </li>
@@ -974,7 +947,7 @@ predicted as: ('java',)
             
           
           <li>
-            <a itemprop="sameAs" href="https://github.com/ddxgz" target="_blank" rel="noopener">
+            <a href="https://github.com/ddxgz" target="_blank" rel="noopener">
               <i class="fab fa-github"></i>
             </a>
           </li>
@@ -1035,6 +1008,8 @@ predicted as: ('java',)
     
 
     
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
     
 
     
@@ -1104,7 +1079,7 @@ predicted as: ('java',)
     
     
     
-    <script src="/js/academic.min.16bbb3750feb7244c9bc409a5a4fe678.js"></script>
+    <script src="/js/academic.min.130521ecfc6f534c52c158217bbff718.js"></script>
 
     
 

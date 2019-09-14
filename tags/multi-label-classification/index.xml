@@ -18,125 +18,233 @@
       <pubDate>Wed, 11 Sep 2019 13:36:43 +0200</pubDate>
       <guid>https://pcx.linkedinfo.co/post/texttagspred/</guid>
       <description>
-
-&lt;!-- Go back to [pcx.linkedinfo.co](https://pcx.linkedinfo.co) --&gt;
-
-&lt;p&gt;This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&amp;rsquo;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and  only 1 class.&lt;/p&gt;
-
-&lt;p&gt;In this snippet, we will use &lt;code&gt;OneVsRestClassifier&lt;/code&gt; (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification. The article data will be retrieved from &lt;a href=&#34;https://linkedinfo.co&#34; target=&#34;_blank&#34;&gt;LinkedInfo.co&lt;/a&gt; via Web API.&lt;/p&gt;
-
+&lt;p&gt;
+This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&amp;#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.
+&lt;/p&gt;
+&lt;p&gt;
+In this snippet, we will use &lt;code class=&#34;verbatim&#34;&gt;OneVsRestClassifier&lt;/code&gt; (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification. The article data will be retrieved from &lt;a href=&#34;https://linkedinfo.co&#34;&gt;LinkedInfo.co&lt;/a&gt; via Web API.
+&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;Preprocessing data and explore the method&lt;/li&gt;
-&lt;li&gt;Search for best model include SVM and Neural Networks (Will be updated)&lt;/li&gt;
-&lt;li&gt;Training and testing with the best parameters&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+Preprocessing data and explore the method
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+Search for best model include SVM and Neural Networks (Will be updated)
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+Training and testing with the best parameters
+&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ol&gt;
+&lt;p&gt;
+The methods in this snippet should give credits to &lt;a href=&#34;https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html&#34;&gt;Working With Text Data - scikit-learn&lt;/a&gt;.
+&lt;/p&gt;
+&lt;h2 id=&#34;preprocessing-data-and-explore-the-method&#34;&gt;
+Preprocessing data and explore the method
+&lt;/h2&gt;
+&lt;p&gt;
+&lt;code class=&#34;verbatim&#34;&gt;dataset.df_tags&lt;/code&gt; fetches the data set from &lt;a href=&#34;https://linkedinfo.co&#34;&gt;LinkedInfo.co&lt;/a&gt;. It calls Web API of LinkedInfo.co to retrieve the article list, and then download and extract the full text of each article based on an article&amp;#39;s url. The tags of each article are encoded using &lt;code class=&#34;verbatim&#34;&gt;MultiLabelBinarizer&lt;/code&gt; in scikit-learn. The implementation of the code could be found in &lt;a href=&#34;https://github.com/ddxgz/linkedinfo-ml-models/blob/master/dataset.py&#34;&gt;dataset.py&lt;/a&gt;. We&amp;#39;ve set the parameter of &lt;code class=&#34;verbatim&#34;&gt;content_length_threshold&lt;/code&gt; to 100 to screen out the articles with less than 100 for the description or full text.
+&lt;/p&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; dataset
 
-&lt;p&gt;The methods in this snippet should give credits to &lt;a href=&#34;https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html&#34; target=&#34;_blank&#34;&gt;Working With Text Data - scikit-learn&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;preprocessing-data-and-explore-the-method&#34;&gt;Preprocessing data and explore the method&lt;/h2&gt;
-
-&lt;p&gt;&lt;code&gt;dataset.df_tags&lt;/code&gt; fetches the data set from &lt;a href=&#34;https://linkedinfo.co&#34; target=&#34;_blank&#34;&gt;LinkedInfo.co&lt;/a&gt;. It calls Web API of LinkedInfo.co to retrieve the article list, and then download and extract the full text of each article based on an article&amp;rsquo;s url. The tags of each article are encoded using &lt;code&gt;MultiLabelBinarizer&lt;/code&gt; in scikit-learn. The implementation of the code could be found in &lt;a href=&#34;https://github.com/ddxgz/linkedinfo-ml-models/blob/master/dataset.py&#34; target=&#34;_blank&#34;&gt;dataset.py&lt;/a&gt;. We&amp;rsquo;ve set the parameter of &lt;code&gt;content_length_threshold&lt;/code&gt; to 100 to screen out the articles with less than 100 for the description or full text.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import dataset
-
-ds = dataset.df_tags(content_length_threshold=100)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The dataset contains 3353 articles by the time retrieved the data.
-The dataset re returned as an object with the following attribute:&lt;/p&gt;
-
+ds &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; dataset&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;df_tags(content_length_threshold&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;
+The dataset contains 3353 articles by the time retrieved the data. The
+dataset re returned as an object with the following attribute:
+&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;ul&gt;
-&lt;li&gt;ds.data: pandas.DataFrame with cols of title, description, fulltext&lt;/li&gt;
-&lt;li&gt;ds.target: encoding of tagsID&lt;/li&gt;
-&lt;li&gt;ds.target_names: tagsID&lt;/li&gt;
-&lt;li&gt;ds.target_decoded: the list of lists contains tagsID for each info&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+ds.data: pandas.DataFrame with cols of title, description, fulltext
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+ds.target: encoding of tagsID
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+ds.target_names: tagsID
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+ds.target_decoded: the list of lists contains tagsID for each info
+&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/blockquote&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; ds&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;data&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;head()&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td class=&#34;align-right&#34;&gt;&lt;/td&gt;
+&lt;td&gt;description&lt;/td&gt;
+&lt;td&gt;fulltext&lt;/td&gt;
+&lt;td&gt;title&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;align-right&#34;&gt;0&lt;/td&gt;
+&lt;td&gt;Both HTTP 1.x and HTTP/2 rely on lower level c…&lt;/td&gt;
+&lt;td&gt;[Stressgrid](&lt;em&gt;)\n\n__\n\n[](&lt;/em&gt; &amp;#34;home&amp;#34;)\n\n * […&lt;/td&gt;
+&lt;td&gt;Achieving 100k connections per second with Elixir&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;align-right&#34;&gt;1&lt;/td&gt;
+&lt;td&gt;At Phusion we run a simple multithreaded HTTP …&lt;/td&gt;
+&lt;td&gt;[![Hongli Lai](&lt;em&gt;images/avatar-b64f1ad5.png)](&lt;/em&gt;…&lt;/td&gt;
+&lt;td&gt;What causes Ruby memory bloat?&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;align-right&#34;&gt;2&lt;/td&gt;
+&lt;td&gt;Have you ever wanted to contribute to a projec…&lt;/td&gt;
+&lt;td&gt;[ ![Real Python](/static/real-python-logo.ab1a…&lt;/td&gt;
+&lt;td&gt;Managing Multiple Python Versions With pyenv&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;align-right&#34;&gt;3&lt;/td&gt;
+&lt;td&gt;安卓在版本Pie中第一次引入了ART优化配置文件，这个新特性利用发送到Play Cloud的…&lt;/td&gt;
+&lt;td&gt;安卓在版本Pie中第一次引入了[ART优化配置文件](&lt;a href=&#34;https://youtu.be/Yi...&#34;&gt;https://youtu.be/Yi...&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;ART云配置文件，提高安卓应用的性能&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td class=&#34;align-right&#34;&gt;4&lt;/td&gt;
+&lt;td&gt;I work at Red Hat on GCC, the GNU Compiler Col…&lt;/td&gt;
+&lt;td&gt;[ ![Red Hat\nLogo](&lt;a href=&#34;https://developers.redhat.c...&#34;&gt;https://developers.redhat.c...&lt;/a&gt;&lt;/td&gt;
+&lt;td&gt;Usability improvements in GCC 9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; ds&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;target[:&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;]
+array([[&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;],
+       [&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;],
+       [&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;],
+       [&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;],
+       [&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#f92672&#34;&gt;...&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;]])&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; ds&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;target_names[:&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;]
+array([&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;academia&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;access-control&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;activemq&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;aes&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;agile&amp;#39;&lt;/span&gt;],
+      dtype&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;object)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; ds&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;target_decoded[:&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;]
+[[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;concurrency&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;elixir&amp;#39;&lt;/span&gt;],
+ [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;ruby&amp;#39;&lt;/span&gt;],
+ [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;python&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;virtualenv&amp;#39;&lt;/span&gt;],
+ [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;android&amp;#39;&lt;/span&gt;],
+ [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;gcc&amp;#39;&lt;/span&gt;]]&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;
+The following snippet is the actual process of getting the above
+dataset, by reading from file.
+&lt;/p&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; json
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; pandas &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; pd
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.preprocessing &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; MultiLabelBinarizer
 
-&lt;pre&gt;&lt;code&gt;ds.data.head()
-ds.target[:5]
-ds.target_names[:5]
-ds.target_decoded[:5]
-&lt;/code&gt;&lt;/pre&gt;
+infos_file &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;data/infos/infos_0_3353_fulltext.json&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; open(infos_file, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;r&amp;#39;&lt;/span&gt;) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; f:
+    infos &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; json&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
 
-&lt;p&gt;The following snippet is the actual process of getting the above dataset, by
-reading from file.&lt;/p&gt;
+content_length_threshold &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import json
-import pandas as pd
-from sklearn.preprocessing import MultiLabelBinarizer
+data_lst &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+tags_lst &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; info &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; infos[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;content&amp;#39;&lt;/span&gt;]:
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; len(info[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;fulltext&amp;#39;&lt;/span&gt;]) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; content_length_threshold:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; len(info[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;description&amp;#39;&lt;/span&gt;]) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;lt;&lt;/span&gt; content_length_threshold:
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;continue&lt;/span&gt;
+    data_lst&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append({&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;title&amp;#39;&lt;/span&gt;: info[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;title&amp;#39;&lt;/span&gt;],
+                     &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;description&amp;#39;&lt;/span&gt;: info[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;description&amp;#39;&lt;/span&gt;],
+                     &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;fulltext&amp;#39;&lt;/span&gt;: info[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;fulltext&amp;#39;&lt;/span&gt;]})
+    tags_lst&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append([tag[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;tagID&amp;#39;&lt;/span&gt;] &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; tag &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; info[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;tags&amp;#39;&lt;/span&gt;]])
 
-infos_file = &#39;data/infos/infos_0_3353_fulltext.json&#39;
-with open(infos_file, &#39;r&#39;) as f:
-    infos = json.load(f)
+df_data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;DataFrame(data_lst)
+df_tags &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;DataFrame(tags_lst)
 
-content_length_threshold = 100
+&lt;span style=&#34;color:#75715e&#34;&gt;# fit and transform the binarizer&lt;/span&gt;
+mlb &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; MultiLabelBinarizer()
+Y &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mlb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fit_transform(tags_lst)
+Y&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;shape&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;3221&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;560&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;
+Now we&amp;#39;ve transformed the target (tags) but we cannot directly perform
+the algorithms on the text data, so we have to process and transform
+them into vectors. In order to do this, we will use &lt;code class=&#34;verbatim&#34;&gt;TfidfVectorizer&lt;/code&gt; to
+preprocess, tokenize, filter stop words and transform the text data. The
+&lt;code class=&#34;verbatim&#34;&gt;TfidfVectorizer&lt;/code&gt; implements the
+&lt;a href=&#34;https://en.wikipedia.org/wiki/Tf%E2%80%93idf&#34;&gt;&lt;em&gt;tf-idf&lt;/em&gt;&lt;/a&gt; (Term
+Frequency-Inverse Deocument Frequency) to reflect how important a word
+is to to a docuemnt in a collection of documents.
+&lt;/p&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.feature_extraction.text &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; TfidfVectorizer
 
-data_lst = []
-tags_lst = []
-for info in infos[&#39;content&#39;]:
-    if len(info[&#39;fulltext&#39;]) &amp;lt; content_length_threshold:
-        continue
-    if len(info[&#39;description&#39;]) &amp;lt; content_length_threshold:
-        continue
-    data_lst.append({&#39;title&#39;: info[&#39;title&#39;],
-                     &#39;description&#39;: info[&#39;description&#39;],
-                     &#39;fulltext&#39;: info[&#39;fulltext&#39;]})
-    tags_lst.append([tag[&#39;tagID&#39;] for tag in info[&#39;tags&#39;]])
+&lt;span style=&#34;color:#75715e&#34;&gt;# Use the default parameters for now, use_idf=True in default&lt;/span&gt;
+vectorizer &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; TfidfVectorizer()
+&lt;span style=&#34;color:#75715e&#34;&gt;# Use the short descriptions for now for faster processing&lt;/span&gt;
+X &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; vectorizer&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fit_transform(df_data&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;description)
+X&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;shape&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;(&lt;span style=&#34;color:#ae81ff&#34;&gt;3221&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;35506&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;
+As mentioned in the beginning, this is a multi-label classification
+problem, we will use &lt;code class=&#34;verbatim&#34;&gt;OneVsRestClassifier&lt;/code&gt; to tackle our problem. And
+firstly we will use the SVM (Support Vector Machines) with linear
+kernel, implemented as &lt;code class=&#34;verbatim&#34;&gt;LinearSVC&lt;/code&gt; in scikit-learn, to do the
+classification.
+&lt;/p&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.multiclass &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; OneVsRestClassifier
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.svm &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; LinearSVC
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.model_selection &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; train_test_split
 
-df_data = pd.DataFrame(data_lst)
-df_tags = pd.DataFrame(tags_lst)
+&lt;span style=&#34;color:#75715e&#34;&gt;# Use default parameters, and train and test with small set of samples.&lt;/span&gt;
+clf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; OneVsRestClassifier(LinearSVC())
 
-# fit and transform the binarizer
-mlb = MultiLabelBinarizer()
-Y = mlb.fit_transform(tags_lst)
-Y.shape
-&lt;/code&gt;&lt;/pre&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.utils &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; resample
 
-&lt;p&gt;Now we&amp;rsquo;ve transformed the target (tags) but we cannot directly perform the algorithms on the text data, so we have to process and transform them into vectors. In order to do this, we will use &lt;code&gt;TfidfVectorizer&lt;/code&gt; to preprocess, tokenize, filter stop words and transform the text data. The &lt;code&gt;TfidfVectorizer&lt;/code&gt; implements the &lt;a href=&#34;https://en.wikipedia.org/wiki/Tf%E2%80%93idf&#34; target=&#34;_blank&#34;&gt;&lt;em&gt;tf-idf&lt;/em&gt;&lt;/a&gt; (Term Frequency-Inverse Deocument Frequency) to reflect how important a word is to to a docuemnt in a collection of documents.&lt;/p&gt;
+X_sample, Y_sample &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; resample(
+    X, Y, n_samples&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;, replace&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;False, random_state&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;7&lt;/span&gt;)
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from sklearn.feature_extraction.text import TfidfVectorizer
+&lt;span style=&#34;color:#75715e&#34;&gt;# X_sample_test, Y_sample_test = resample(&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;#     X, Y, n_samples=10, replace=False, random_state=1)&lt;/span&gt;
 
-# Use the default parameters for now, use_idf=True in default
-vectorizer = TfidfVectorizer()
-# Use the short descriptions for now for faster processing
-X = vectorizer.fit_transform(df_data.description)
-X.shape
-&lt;/code&gt;&lt;/pre&gt;
+X_sample_train, X_sample_test, Y_sample_train, Y_sample_test &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; train_test_split(
+    X_sample, Y_sample, test_size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.01&lt;/span&gt;, random_state&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;)
 
-&lt;p&gt;As mentioned in the beginning, this is a multi-label classification problem, we will use &lt;code&gt;OneVsRestClassifier&lt;/code&gt; to tackle our problem. And firstly we will use the SVM (Support Vector Machines) with linear kernel, implemented as &lt;code&gt;LinearSVC&lt;/code&gt; in scikit-learn, to do the classification.&lt;/p&gt;
+clf&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fit(X_sample, Y_sample)
+Y_sample_pred &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; clf&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;predict(X_sample_test)
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from sklearn.multiclass import OneVsRestClassifier
-from sklearn.svm import LinearSVC
-from sklearn.model_selection import train_test_split
+&lt;span style=&#34;color:#75715e&#34;&gt;# Inverse transform the vectors back to tags&lt;/span&gt;
+pred_transformed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mlb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;inverse_transform(Y_sample_pred)
+test_transformed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mlb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;inverse_transform(Y_sample_test)
 
-# Use default parameters, and train and test with small set of samples.
-clf = OneVsRestClassifier(LinearSVC())
-
-from sklearn.utils import resample
-
-X_sample, Y_sample = resample(
-    X, Y, n_samples=1000, replace=False, random_state=7)
-
-# X_sample_test, Y_sample_test = resample(
-#     X, Y, n_samples=10, replace=False, random_state=1)
-
-X_sample_train, X_sample_test, Y_sample_train, Y_sample_test = train_test_split(
-    X_sample, Y_sample, test_size=0.01, random_state=42)
-
-clf.fit(X_sample, Y_sample)
-Y_sample_pred = clf.predict(X_sample_test)
-
-# Inverse transform the vectors back to tags
-pred_transformed = mlb.inverse_transform(Y_sample_pred)
-test_transformed = mlb.inverse_transform(Y_sample_test)
-
-for (t, p) in zip(test_transformed, pred_transformed):
-    print(f&#39;tags: {t} predicted as: {p}&#39;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;tags: (&#39;javascript&#39;,) predicted as: (&#39;javascript&#39;,)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (t, p) &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; zip(test_transformed, pred_transformed):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;tags: {t} predicted as: {p}&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;pre class=&#34;example&#34;&gt;
+tags: (&#39;javascript&#39;,) predicted as: (&#39;javascript&#39;,)
 tags: (&#39;erasure-code&#39;, &#39;storage&#39;) predicted as: ()
 tags: (&#39;mysql&#39;, &#39;network&#39;) predicted as: ()
 tags: (&#39;token&#39;,) predicted as: ()
@@ -146,73 +254,81 @@ tags: (&#39;emacs&#39;,) predicted as: ()
 tags: (&#39;async&#39;, &#39;javascript&#39;, &#39;promises&#39;) predicted as: (&#39;async&#39;, &#39;javascript&#39;)
 tags: (&#39;neural-networks&#39;,) predicted as: ()
 tags: (&#39;kubernetes&#39;,) predicted as: (&#39;kubernetes&#39;,)
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/pre&gt;
+&lt;p&gt;
+Though not very satisfied, this classifier predicted right a few tags.
+Next we&amp;#39;ll try to search for the best parameters for the classifier and
+train with fulltext of articles.
+&lt;/p&gt;
+&lt;h2 id=&#34;search-for-best-model-parameters-for-svm-with-linear-kernel&#34;&gt;
+Search for best model parameters for SVM with linear kernel
+&lt;/h2&gt;
+&lt;p&gt;
+For the estimators &lt;code class=&#34;verbatim&#34;&gt;TfidfVectorizer&lt;/code&gt; and &lt;code class=&#34;verbatim&#34;&gt;LinearSVC&lt;/code&gt;, they both have
+many parameters could be tuned for better performance. We&amp;#39;ll the
+&lt;code class=&#34;verbatim&#34;&gt;GridSearchCV&lt;/code&gt; to search for the best parameters with the help of
+&lt;code class=&#34;verbatim&#34;&gt;Pipeline&lt;/code&gt;.
+&lt;/p&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.pipeline &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Pipeline
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.model_selection &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; train_test_split, GridSearchCV
 
-&lt;p&gt;Though not very satisfied, this classifier predicted right a few tags. Next we&amp;rsquo;ll try to search for the best parameters for the classifier and train with fulltext of articles.&lt;/p&gt;
 
-&lt;h2 id=&#34;search-for-best-model-parameters-for-svm-with-linear-kernel&#34;&gt;Search for best model parameters for SVM with linear kernel&lt;/h2&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# Split the dataset into training and test set, and use fulltext of articles:&lt;/span&gt;
+X_train, X_test, Y_train, Y_test &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; train_test_split(
+    df_data&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fulltext, Y, test_size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.5&lt;/span&gt;, random_state&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;)
 
-&lt;p&gt;For the estimators &lt;code&gt;TfidfVectorizer&lt;/code&gt; and &lt;code&gt;LinearSVC&lt;/code&gt;, they both have many parameters could be tuned for better performance. We&amp;rsquo;ll the &lt;code&gt;GridSearchCV&lt;/code&gt; to search for the best parameters with the help of &lt;code&gt;Pipeline&lt;/code&gt;.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split, GridSearchCV
-
-
-# Split the dataset into training and test set, and use fulltext of articles:
-X_train, X_test, Y_train, Y_test = train_test_split(
-    df_data.fulltext, Y, test_size=0.5, random_state=42)
-
-# Build vectorizer classifier pipeline
-clf = Pipeline([
-    (&#39;vect&#39;, TfidfVectorizer()),
-    (&#39;clf&#39;, OneVsRestClassifier(LinearSVC())),
+&lt;span style=&#34;color:#75715e&#34;&gt;# Build vectorizer classifier pipeline&lt;/span&gt;
+clf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Pipeline([
+    (&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;vect&amp;#39;&lt;/span&gt;, TfidfVectorizer()),
+    (&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;clf&amp;#39;&lt;/span&gt;, OneVsRestClassifier(LinearSVC())),
 ])
 
-# Grid search parameters, I minimized the parameter set based on previous
-# experience to accelerate the processing speed.
-# And the combination of penalty=&#39;l1&#39; and loss=&#39;squared_hinge&#39; are not supported when dual=True
-parameters = {
-    &#39;vect__ngram_range&#39;: [(1, 2), (1, 3), (1, 4)],
-    &#39;vect__max_df&#39;: [1, 0.9, 0.8, 0.7],
-    &#39;vect__min_df&#39;: [1, 0.9, 0.8, 0.7, 0],
-    &#39;vect__use_idf&#39;: [True, False],
-    &#39;clf__estimator__penalty&#39;: [&#39;l1&#39;, &#39;l2&#39;],
-    &#39;clf__estimator__C&#39;: [1, 10, 100, 1000],
-    &#39;clf__estimator__dual&#39;: [False],
+&lt;span style=&#34;color:#75715e&#34;&gt;# Grid search parameters, I minimized the parameter set based on previous&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# experience to accelerate the processing speed.&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# And the combination of penalty=&amp;#39;l1&amp;#39; and loss=&amp;#39;squared_hinge&amp;#39; are not supported when dual=True&lt;/span&gt;
+parameters &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;vect__ngram_range&amp;#39;&lt;/span&gt;: [(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;), (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;3&lt;/span&gt;), (&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;)],
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;vect__max_df&amp;#39;&lt;/span&gt;: [&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.9&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.8&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.7&lt;/span&gt;],
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;vect__min_df&amp;#39;&lt;/span&gt;: [&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.9&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.8&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.7&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;],
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;vect__use_idf&amp;#39;&lt;/span&gt;: [True, False],
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;clf__estimator__penalty&amp;#39;&lt;/span&gt;: [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;l1&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;l2&amp;#39;&lt;/span&gt;],
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;clf__estimator__C&amp;#39;&lt;/span&gt;: [&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;1000&lt;/span&gt;],
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;clf__estimator__dual&amp;#39;&lt;/span&gt;: [False],
 }
 
-gs_clf = GridSearchCV(clf, parameters, cv=5, n_jobs=-1)
-gs_clf.fit(X_train, Y_train)
-&lt;/code&gt;&lt;/pre&gt;
+gs_clf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; GridSearchCV(clf, parameters, cv&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;, n_jobs&lt;span style=&#34;color:#f92672&#34;&gt;=-&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;)
+gs_clf&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fit(X_train, Y_train)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; datetime
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; metrics
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import datetime
-from sklearn import metrics
 
+&lt;span style=&#34;color:#75715e&#34;&gt;# Predict the outcome on the testing set in a variable named y_predicted&lt;/span&gt;
+Y_predicted &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; gs_clf&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;predict(X_test)
 
-# Predict the outcome on the testing set in a variable named y_predicted
-Y_predicted = gs_clf.predict(X_test)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(metrics&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;classification_report(Y_test, Y_predicted))
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(gs_clf&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;best_params_)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(gs_clf&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;best_score_)
 
-print(metrics.classification_report(Y_test, Y_predicted))
-print(gs_clf.best_params_)
-print(gs_clf.best_score_)
-
-# Export some of the result cols
-cols = [
-    &#39;mean_test_score&#39;,
-    &#39;mean_fit_time&#39;,
-    &#39;param_vect__ngram_range&#39;,
+&lt;span style=&#34;color:#75715e&#34;&gt;# Export some of the result cols&lt;/span&gt;
+cols &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;mean_test_score&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;mean_fit_time&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;param_vect__ngram_range&amp;#39;&lt;/span&gt;,
 ]
-df_result = pd.DataFrame(gs_clf.cv_results_)
-df_result = df_result.sort_values(by=&#39;rank_test_score&#39;)
-df_result = df_result[cols]
+df_result &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;DataFrame(gs_clf&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;cv_results_)
+df_result &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df_result&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sort_values(by&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;rank_test_score&amp;#39;&lt;/span&gt;)
+df_result &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df_result[cols]
 
-timestamp = datetime.now().strftime(&#39;%Y-%m-%d_%H-%M-%S&#39;)
-df_result.to_html(
-    f&#39;data/results/gridcv_results_{timestamp}_linearSVC.html&#39;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Here we attach the top-5 performed classifiers with selected parameters.&lt;/p&gt;
-
+timestamp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; datetime&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;now()&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;strftime(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;%Y-%m-&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;%d&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;_%H-%M-%S&amp;#39;&lt;/span&gt;)
+df_result&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;to_html(
+    f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;data/results/gridcv_results_{timestamp}_linearSVC.html&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;
+Here we attach the top-5 performed classifiers with selected parameters.
+&lt;/p&gt;
 &lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
   &lt;thead&gt;
     &lt;tr style=&#34;text-align: right;&#34;&gt;
@@ -285,67 +401,68 @@ df_result.to_html(
     &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;p&gt;
+Based on the grid search results, we found the following parameters
+combined with the default parameters have the best performance. Now
+let&amp;#39;s see how it will perform.
+&lt;/p&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;X_train, X_test, Y_train, Y_test &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; train_test_split(
+    df_data, Y, test_size&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;, random_state&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;42&lt;/span&gt;)
 
-&lt;p&gt;Based on the grid search results, we found the following parameters combined with the default parameters have the best performance. Now let&amp;rsquo;s see how it will perform.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;X_train, X_test, Y_train, Y_test = train_test_split(
-    df_data, Y, test_size=0.2, random_state=42)
-
-clf = Pipeline([
-    (&#39;vect&#39;, TfidfVectorizer(use_idf=True,
-                             max_df=0.8, ngram_range=[1, 4])),
-    (&#39;clf&#39;, OneVsRestClassifier(LinearSVC(penalty=&#39;l1&#39;, C=10, dual=False))),
+clf &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; Pipeline([
+    (&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;vect&amp;#39;&lt;/span&gt;, TfidfVectorizer(use_idf&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;True,
+                             max_df&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.8&lt;/span&gt;, ngram_range&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;])),
+    (&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;clf&amp;#39;&lt;/span&gt;, OneVsRestClassifier(LinearSVC(penalty&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;l1&amp;#39;&lt;/span&gt;, C&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;, dual&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;False))),
 ])
 
-clf.fit(X_train.fulltext, Y_train)
+clf&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fit(X_train&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fulltext, Y_train)
 
 
-Y_pred = clf.predict(X_test.fulltext)
+Y_pred &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; clf&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;predict(X_test&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;fulltext)
 
-# Inverse transform the vectors back to tags
-pred_transformed = mlb.inverse_transform(Y_pred)
-test_transformed = mlb.inverse_transform(Y_test)
+&lt;span style=&#34;color:#75715e&#34;&gt;# Inverse transform the vectors back to tags&lt;/span&gt;
+pred_transformed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mlb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;inverse_transform(Y_pred)
+test_transformed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mlb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;inverse_transform(Y_test)
 
-for (title, t, p) in zip(X_test.title, test_transformed, pred_transformed):
-    print(f&#39;info title: {title} \ntags: {t} \npredicted as: {p}&#39;)
-
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;info title: Designing resilient systems: Circuit Breakers or Retries? (Part 1) 
-tags: (&#39;circuit-breaker&#39;, &#39;system-architecture&#39;) 
-predicted as: (&#39;golang&#39;, &#39;system-architecture&#39;)
-info title: Zuul 2 : The Netflix Journey to Asynchronous, Non-Blocking Systems 
-tags: (&#39;asynchronous&#39;, &#39;system-architecture&#39;) 
+&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (title, t, p) &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; zip(X_test&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;title, test_transformed, pred_transformed):
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;info title: {title} &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;tags: {t} &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;predicted as: {p}&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;src src-markdown&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-markdown&#34; data-lang=&#34;markdown&#34;&gt;info title: Designing resilient systems: Circuit Breakers or Retries? (Part 1)
+tags: (&amp;#39;circuit-breaker&amp;#39;, &amp;#39;system-architecture&amp;#39;)
+predicted as: (&amp;#39;golang&amp;#39;, &amp;#39;system-architecture&amp;#39;)
+info title: Zuul 2 : The Netflix Journey to Asynchronous, Non-Blocking Systems
+tags: (&amp;#39;asynchronous&amp;#39;, &amp;#39;system-architecture&amp;#39;)
 predicted as: ()
-info title: 对称加密算法与非对称加密算法的优缺点  
-tags: (&#39;crytography&#39;,) 
+info title: 对称加密算法与非对称加密算法的优缺点
+tags: (&amp;#39;crytography&amp;#39;,)
 predicted as: ()
-info title: Go coding in go way 
-tags: (&#39;golang&#39;,) 
-predicted as: (&#39;golang&#39;,)
-info title: Emacs Doom for Newbies 
-tags: (&#39;doom-emacs&#39;, &#39;emacs&#39;) 
-predicted as: (&#39;emacs&#39;,)
-info title: Basic testing patterns in Go 
-tags: (&#39;golang&#39;, &#39;testing&#39;) 
-predicted as: (&#39;golang&#39;, &#39;testing&#39;)
-info title: Dead Simple Python: Virtual Environments and pip 
-tags: (&#39;python&#39;, &#39;virtualenv&#39;) 
-predicted as: (&#39;python&#39;,)
-info title:  Overcoming RESTlessness 
-tags: (&#39;api&#39;, &#39;restful&#39;, &#39;web&#39;) 
-predicted as: (&#39;api&#39;,)
-info title: Let’s Build A Simple Interpreter. Part 7. 
-tags: (&#39;compiler&#39;, &#39;interpreter&#39;, &#39;pascal&#39;, &#39;python&#39;) 
-predicted as: (&#39;compiler&#39;, &#39;interpreter&#39;, &#39;pascal&#39;, &#39;python&#39;)
-info title: Spring RestTemplate详解 
-tags: (&#39;html&#39;, &#39;java&#39;, &#39;spring&#39;) 
-predicted as: (&#39;java&#39;,)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;Here above is a fraction of the list that shows the manually input tags and the predicted tags. We can see that usually the more frequently appeared and more popular tags have better change to be correctly predicted.&lt;/p&gt;
-
-&lt;!-- However, the manual tags, as the training and prediction comparing group, suffer from problems like  --&gt;
+info title: Go coding in go way
+tags: (&amp;#39;golang&amp;#39;,)
+predicted as: (&amp;#39;golang&amp;#39;,)
+info title: Emacs Doom for Newbies
+tags: (&amp;#39;doom-emacs&amp;#39;, &amp;#39;emacs&amp;#39;)
+predicted as: (&amp;#39;emacs&amp;#39;,)
+info title: Basic testing patterns in Go
+tags: (&amp;#39;golang&amp;#39;, &amp;#39;testing&amp;#39;)
+predicted as: (&amp;#39;golang&amp;#39;, &amp;#39;testing&amp;#39;)
+info title: Dead Simple Python: Virtual Environments and pip
+tags: (&amp;#39;python&amp;#39;, &amp;#39;virtualenv&amp;#39;)
+predicted as: (&amp;#39;python&amp;#39;,)
+info title:  Overcoming RESTlessness
+tags: (&amp;#39;api&amp;#39;, &amp;#39;restful&amp;#39;, &amp;#39;web&amp;#39;)
+predicted as: (&amp;#39;api&amp;#39;,)
+info title: Let’s Build A Simple Interpreter. Part 7.
+tags: (&amp;#39;compiler&amp;#39;, &amp;#39;interpreter&amp;#39;, &amp;#39;pascal&amp;#39;, &amp;#39;python&amp;#39;)
+predicted as: (&amp;#39;compiler&amp;#39;, &amp;#39;interpreter&amp;#39;, &amp;#39;pascal&amp;#39;, &amp;#39;python&amp;#39;)
+info title: Spring RestTemplate详解
+tags: (&amp;#39;html&amp;#39;, &amp;#39;java&amp;#39;, &amp;#39;spring&amp;#39;)
+predicted as: (&amp;#39;java&amp;#39;,)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;
+Here above is a fraction of the list that shows the manually input tags and the predicted tags. We can see that usually the more frequently appeared and more popular tags have better change to be correctly predicted. Personally, I would say the prediction is satisfied to me comparing when I tag the articles manually. However, there&amp;#39;s much room for improvement.
+&lt;/p&gt;
 </description>
     </item>
     

@@ -28,8 +28,7 @@
   
     
   
-  <meta name="description" content="This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&rsquo;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.
-In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification.">
+  <meta name="description" content="This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.  In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification.">
 
   
   <link rel="alternate" hreflang="en-us" href="https://pcx.linkedinfo.co/post/texttagspred/">
@@ -84,7 +83,7 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.5ac49d52d669340d29cb50b00bb7867f.css">
+  <link rel="stylesheet" href="/css/academic.min.04a87a1cb9027e3c50f566322527c56f.css">
 
   
 
@@ -127,8 +126,7 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
   <meta property="og:site_name" content="Cong Peng">
   <meta property="og:url" content="https://pcx.linkedinfo.co/post/texttagspred/">
   <meta property="og:title" content="Multi-label classification to predict topic tags of technical articles from LinkedInfo.co | Cong Peng">
-  <meta property="og:description" content="This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&rsquo;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.
-In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification."><meta property="og:image" content="https://pcx.linkedinfo.co/img/icon-192.png">
+  <meta property="og:description" content="This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.  In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification."><meta property="og:image" content="https://pcx.linkedinfo.co/img/icon-192.png">
   <meta property="twitter:image" content="https://pcx.linkedinfo.co/img/icon-192.png"><meta property="og:locale" content="en-us">
   
     
@@ -191,7 +189,7 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
       "url": "https://pcx.linkedinfo.co/img/icon-512.png"
     }
   },
-  "description": "This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It\u0026rsquo;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.\nIn this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification."
+  "description": "This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It\u0026#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.  In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification."
 }
 </script>
 
@@ -461,7 +459,7 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    6 min read
+    7 min read
   </span>
   
 
@@ -503,125 +501,233 @@ In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit
 
     <div class="article-style">
       
-
-<!-- Go back to [pcx.linkedinfo.co](https://pcx.linkedinfo.co) -->
-
-<p>This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&rsquo;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and  only 1 class.</p>
-
-<p>In this snippet, we will use <code>OneVsRestClassifier</code> (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification. The article data will be retrieved from <a href="https://linkedinfo.co" target="_blank">LinkedInfo.co</a> via Web API.</p>
-
+<p>
+This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.
+</p>
+<p>
+In this snippet, we will use <code class="verbatim">OneVsRestClassifier</code> (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification. The article data will be retrieved from <a href="https://linkedinfo.co">LinkedInfo.co</a> via Web API.
+</p>
 <ol>
-<li>Preprocessing data and explore the method</li>
-<li>Search for best model include SVM and Neural Networks (Will be updated)</li>
-<li>Training and testing with the best parameters</li>
+<li>
+<p>
+Preprocessing data and explore the method
+</p>
+</li>
+<li>
+<p>
+Search for best model include SVM and Neural Networks (Will be updated)
+</p>
+</li>
+<li>
+<p>
+Training and testing with the best parameters
+</p>
+</li>
 </ol>
+<p>
+The methods in this snippet should give credits to <a href="https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html">Working With Text Data - scikit-learn</a>.
+</p>
+<h2 id="preprocessing-data-and-explore-the-method">
+Preprocessing data and explore the method
+</h2>
+<p>
+<code class="verbatim">dataset.df_tags</code> fetches the data set from <a href="https://linkedinfo.co">LinkedInfo.co</a>. It calls Web API of LinkedInfo.co to retrieve the article list, and then download and extract the full text of each article based on an article&#39;s url. The tags of each article are encoded using <code class="verbatim">MultiLabelBinarizer</code> in scikit-learn. The implementation of the code could be found in <a href="https://github.com/ddxgz/linkedinfo-ml-models/blob/master/dataset.py">dataset.py</a>. We&#39;ve set the parameter of <code class="verbatim">content_length_threshold</code> to 100 to screen out the articles with less than 100 for the description or full text.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> dataset
 
-<p>The methods in this snippet should give credits to <a href="https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html" target="_blank">Working With Text Data - scikit-learn</a></p>
-
-<h2 id="preprocessing-data-and-explore-the-method">Preprocessing data and explore the method</h2>
-
-<p><code>dataset.df_tags</code> fetches the data set from <a href="https://linkedinfo.co" target="_blank">LinkedInfo.co</a>. It calls Web API of LinkedInfo.co to retrieve the article list, and then download and extract the full text of each article based on an article&rsquo;s url. The tags of each article are encoded using <code>MultiLabelBinarizer</code> in scikit-learn. The implementation of the code could be found in <a href="https://github.com/ddxgz/linkedinfo-ml-models/blob/master/dataset.py" target="_blank">dataset.py</a>. We&rsquo;ve set the parameter of <code>content_length_threshold</code> to 100 to screen out the articles with less than 100 for the description or full text.</p>
-
-<pre><code class="language-python">import dataset
-
-ds = dataset.df_tags(content_length_threshold=100)
-</code></pre>
-
-<p>The dataset contains 3353 articles by the time retrieved the data.
-The dataset re returned as an object with the following attribute:</p>
-
+ds <span style="color:#f92672">=</span> dataset<span style="color:#f92672">.</span>df_tags(content_length_threshold<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)</code></pre></div>
+</div>
+<p>
+The dataset contains 3353 articles by the time retrieved the data. The
+dataset re returned as an object with the following attribute:
+</p>
 <blockquote>
 <ul>
-<li>ds.data: pandas.DataFrame with cols of title, description, fulltext</li>
-<li>ds.target: encoding of tagsID</li>
-<li>ds.target_names: tagsID</li>
-<li>ds.target_decoded: the list of lists contains tagsID for each info</li>
+<li>
+<p>
+ds.data: pandas.DataFrame with cols of title, description, fulltext
+</p>
+</li>
+<li>
+<p>
+ds.target: encoding of tagsID
+</p>
+</li>
+<li>
+<p>
+ds.target_names: tagsID
+</p>
+</li>
+<li>
+<p>
+ds.target_decoded: the list of lists contains tagsID for each info
+</p>
+</li>
 </ul>
 </blockquote>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span> ds<span style="color:#f92672">.</span>data<span style="color:#f92672">.</span>head()</code></pre></div>
+</div>
+<table>
+<tbody>
+<tr>
+<td class="align-right"></td>
+<td>description</td>
+<td>fulltext</td>
+<td>title</td>
+</tr>
+<tr>
+<td class="align-right">0</td>
+<td>Both HTTP 1.x and HTTP/2 rely on lower level c…</td>
+<td>[Stressgrid](<em>)\n\n__\n\n[](</em> &#34;home&#34;)\n\n * […</td>
+<td>Achieving 100k connections per second with Elixir</td>
+</tr>
+<tr>
+<td class="align-right">1</td>
+<td>At Phusion we run a simple multithreaded HTTP …</td>
+<td>[![Hongli Lai](<em>images/avatar-b64f1ad5.png)](</em>…</td>
+<td>What causes Ruby memory bloat?</td>
+</tr>
+<tr>
+<td class="align-right">2</td>
+<td>Have you ever wanted to contribute to a projec…</td>
+<td>[ ![Real Python](/static/real-python-logo.ab1a…</td>
+<td>Managing Multiple Python Versions With pyenv</td>
+</tr>
+<tr>
+<td class="align-right">3</td>
+<td>安卓在版本Pie中第一次引入了ART优化配置文件，这个新特性利用发送到Play Cloud的…</td>
+<td>安卓在版本Pie中第一次引入了[ART优化配置文件](<a href="https://youtu.be/Yi...">https://youtu.be/Yi...</a></td>
+<td>ART云配置文件，提高安卓应用的性能</td>
+</tr>
+<tr>
+<td class="align-right">4</td>
+<td>I work at Red Hat on GCC, the GNU Compiler Col…</td>
+<td>[ ![Red Hat\nLogo](<a href="https://developers.redhat.c...">https://developers.redhat.c...</a></td>
+<td>Usability improvements in GCC 9</td>
+</tr>
+</tbody>
+</table>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span> ds<span style="color:#f92672">.</span>target[:<span style="color:#ae81ff">5</span>]
+array([[<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],
+       [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],
+       [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],
+       [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],
+       [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>]])</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span> ds<span style="color:#f92672">.</span>target_names[:<span style="color:#ae81ff">5</span>]
+array([<span style="color:#e6db74">&#39;academia&#39;</span>, <span style="color:#e6db74">&#39;access-control&#39;</span>, <span style="color:#e6db74">&#39;activemq&#39;</span>, <span style="color:#e6db74">&#39;aes&#39;</span>, <span style="color:#e6db74">&#39;agile&#39;</span>],
+      dtype<span style="color:#f92672">=</span>object)</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span> ds<span style="color:#f92672">.</span>target_decoded[:<span style="color:#ae81ff">5</span>]
+[[<span style="color:#e6db74">&#39;concurrency&#39;</span>, <span style="color:#e6db74">&#39;elixir&#39;</span>],
+ [<span style="color:#e6db74">&#39;ruby&#39;</span>],
+ [<span style="color:#e6db74">&#39;python&#39;</span>, <span style="color:#e6db74">&#39;virtualenv&#39;</span>],
+ [<span style="color:#e6db74">&#39;android&#39;</span>],
+ [<span style="color:#e6db74">&#39;gcc&#39;</span>]]</code></pre></div>
+</div>
+<p>
+The following snippet is the actual process of getting the above
+dataset, by reading from file.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> json
+<span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">from</span> sklearn.preprocessing <span style="color:#f92672">import</span> MultiLabelBinarizer
 
-<pre><code>ds.data.head()
-ds.target[:5]
-ds.target_names[:5]
-ds.target_decoded[:5]
-</code></pre>
+infos_file <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;data/infos/infos_0_3353_fulltext.json&#39;</span>
+<span style="color:#66d9ef">with</span> open(infos_file, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    infos <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>load(f)
 
-<p>The following snippet is the actual process of getting the above dataset, by
-reading from file.</p>
+content_length_threshold <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
 
-<pre><code class="language-python">import json
-import pandas as pd
-from sklearn.preprocessing import MultiLabelBinarizer
+data_lst <span style="color:#f92672">=</span> []
+tags_lst <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> info <span style="color:#f92672">in</span> infos[<span style="color:#e6db74">&#39;content&#39;</span>]:
+    <span style="color:#66d9ef">if</span> len(info[<span style="color:#e6db74">&#39;fulltext&#39;</span>]) <span style="color:#f92672">&lt;</span> content_length_threshold:
+        <span style="color:#66d9ef">continue</span>
+    <span style="color:#66d9ef">if</span> len(info[<span style="color:#e6db74">&#39;description&#39;</span>]) <span style="color:#f92672">&lt;</span> content_length_threshold:
+        <span style="color:#66d9ef">continue</span>
+    data_lst<span style="color:#f92672">.</span>append({<span style="color:#e6db74">&#39;title&#39;</span>: info[<span style="color:#e6db74">&#39;title&#39;</span>],
+                     <span style="color:#e6db74">&#39;description&#39;</span>: info[<span style="color:#e6db74">&#39;description&#39;</span>],
+                     <span style="color:#e6db74">&#39;fulltext&#39;</span>: info[<span style="color:#e6db74">&#39;fulltext&#39;</span>]})
+    tags_lst<span style="color:#f92672">.</span>append([tag[<span style="color:#e6db74">&#39;tagID&#39;</span>] <span style="color:#66d9ef">for</span> tag <span style="color:#f92672">in</span> info[<span style="color:#e6db74">&#39;tags&#39;</span>]])
 
-infos_file = 'data/infos/infos_0_3353_fulltext.json'
-with open(infos_file, 'r') as f:
-    infos = json.load(f)
+df_data <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(data_lst)
+df_tags <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(tags_lst)
 
-content_length_threshold = 100
+<span style="color:#75715e"># fit and transform the binarizer</span>
+mlb <span style="color:#f92672">=</span> MultiLabelBinarizer()
+Y <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>fit_transform(tags_lst)
+Y<span style="color:#f92672">.</span>shape</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">(<span style="color:#ae81ff">3221</span>, <span style="color:#ae81ff">560</span>)</code></pre></div>
+</div>
+<p>
+Now we&#39;ve transformed the target (tags) but we cannot directly perform
+the algorithms on the text data, so we have to process and transform
+them into vectors. In order to do this, we will use <code class="verbatim">TfidfVectorizer</code> to
+preprocess, tokenize, filter stop words and transform the text data. The
+<code class="verbatim">TfidfVectorizer</code> implements the
+<a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf"><em>tf-idf</em></a> (Term
+Frequency-Inverse Deocument Frequency) to reflect how important a word
+is to to a docuemnt in a collection of documents.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn.feature_extraction.text <span style="color:#f92672">import</span> TfidfVectorizer
 
-data_lst = []
-tags_lst = []
-for info in infos['content']:
-    if len(info['fulltext']) &lt; content_length_threshold:
-        continue
-    if len(info['description']) &lt; content_length_threshold:
-        continue
-    data_lst.append({'title': info['title'],
-                     'description': info['description'],
-                     'fulltext': info['fulltext']})
-    tags_lst.append([tag['tagID'] for tag in info['tags']])
+<span style="color:#75715e"># Use the default parameters for now, use_idf=True in default</span>
+vectorizer <span style="color:#f92672">=</span> TfidfVectorizer()
+<span style="color:#75715e"># Use the short descriptions for now for faster processing</span>
+X <span style="color:#f92672">=</span> vectorizer<span style="color:#f92672">.</span>fit_transform(df_data<span style="color:#f92672">.</span>description)
+X<span style="color:#f92672">.</span>shape</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">(<span style="color:#ae81ff">3221</span>, <span style="color:#ae81ff">35506</span>)</code></pre></div>
+</div>
+<p>
+As mentioned in the beginning, this is a multi-label classification
+problem, we will use <code class="verbatim">OneVsRestClassifier</code> to tackle our problem. And
+firstly we will use the SVM (Support Vector Machines) with linear
+kernel, implemented as <code class="verbatim">LinearSVC</code> in scikit-learn, to do the
+classification.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn.multiclass <span style="color:#f92672">import</span> OneVsRestClassifier
+<span style="color:#f92672">from</span> sklearn.svm <span style="color:#f92672">import</span> LinearSVC
+<span style="color:#f92672">from</span> sklearn.model_selection <span style="color:#f92672">import</span> train_test_split
 
-df_data = pd.DataFrame(data_lst)
-df_tags = pd.DataFrame(tags_lst)
+<span style="color:#75715e"># Use default parameters, and train and test with small set of samples.</span>
+clf <span style="color:#f92672">=</span> OneVsRestClassifier(LinearSVC())
 
-# fit and transform the binarizer
-mlb = MultiLabelBinarizer()
-Y = mlb.fit_transform(tags_lst)
-Y.shape
-</code></pre>
+<span style="color:#f92672">from</span> sklearn.utils <span style="color:#f92672">import</span> resample
 
-<p>Now we&rsquo;ve transformed the target (tags) but we cannot directly perform the algorithms on the text data, so we have to process and transform them into vectors. In order to do this, we will use <code>TfidfVectorizer</code> to preprocess, tokenize, filter stop words and transform the text data. The <code>TfidfVectorizer</code> implements the <a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf" target="_blank"><em>tf-idf</em></a> (Term Frequency-Inverse Deocument Frequency) to reflect how important a word is to to a docuemnt in a collection of documents.</p>
+X_sample, Y_sample <span style="color:#f92672">=</span> resample(
+    X, Y, n_samples<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span>, replace<span style="color:#f92672">=</span>False, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">7</span>)
 
-<pre><code class="language-python">from sklearn.feature_extraction.text import TfidfVectorizer
+<span style="color:#75715e"># X_sample_test, Y_sample_test = resample(</span>
+<span style="color:#75715e">#     X, Y, n_samples=10, replace=False, random_state=1)</span>
 
-# Use the default parameters for now, use_idf=True in default
-vectorizer = TfidfVectorizer()
-# Use the short descriptions for now for faster processing
-X = vectorizer.fit_transform(df_data.description)
-X.shape
-</code></pre>
+X_sample_train, X_sample_test, Y_sample_train, Y_sample_test <span style="color:#f92672">=</span> train_test_split(
+    X_sample, Y_sample, test_size<span style="color:#f92672">=</span><span style="color:#ae81ff">0.01</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>)
 
-<p>As mentioned in the beginning, this is a multi-label classification problem, we will use <code>OneVsRestClassifier</code> to tackle our problem. And firstly we will use the SVM (Support Vector Machines) with linear kernel, implemented as <code>LinearSVC</code> in scikit-learn, to do the classification.</p>
+clf<span style="color:#f92672">.</span>fit(X_sample, Y_sample)
+Y_sample_pred <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>predict(X_sample_test)
 
-<pre><code class="language-python">from sklearn.multiclass import OneVsRestClassifier
-from sklearn.svm import LinearSVC
-from sklearn.model_selection import train_test_split
+<span style="color:#75715e"># Inverse transform the vectors back to tags</span>
+pred_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>inverse_transform(Y_sample_pred)
+test_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>inverse_transform(Y_sample_test)
 
-# Use default parameters, and train and test with small set of samples.
-clf = OneVsRestClassifier(LinearSVC())
-
-from sklearn.utils import resample
-
-X_sample, Y_sample = resample(
-    X, Y, n_samples=1000, replace=False, random_state=7)
-
-# X_sample_test, Y_sample_test = resample(
-#     X, Y, n_samples=10, replace=False, random_state=1)
-
-X_sample_train, X_sample_test, Y_sample_train, Y_sample_test = train_test_split(
-    X_sample, Y_sample, test_size=0.01, random_state=42)
-
-clf.fit(X_sample, Y_sample)
-Y_sample_pred = clf.predict(X_sample_test)
-
-# Inverse transform the vectors back to tags
-pred_transformed = mlb.inverse_transform(Y_sample_pred)
-test_transformed = mlb.inverse_transform(Y_sample_test)
-
-for (t, p) in zip(test_transformed, pred_transformed):
-    print(f'tags: {t} predicted as: {p}')
-</code></pre>
-
-<pre><code>tags: ('javascript',) predicted as: ('javascript',)
+<span style="color:#66d9ef">for</span> (t, p) <span style="color:#f92672">in</span> zip(test_transformed, pred_transformed):
+    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#39;tags: {t} predicted as: {p}&#39;</span>)</code></pre></div>
+</div>
+<pre class="example">
+tags: ('javascript',) predicted as: ('javascript',)
 tags: ('erasure-code', 'storage') predicted as: ()
 tags: ('mysql', 'network') predicted as: ()
 tags: ('token',) predicted as: ()
@@ -631,73 +737,81 @@ tags: ('emacs',) predicted as: ()
 tags: ('async', 'javascript', 'promises') predicted as: ('async', 'javascript')
 tags: ('neural-networks',) predicted as: ()
 tags: ('kubernetes',) predicted as: ('kubernetes',)
-</code></pre>
+</pre>
+<p>
+Though not very satisfied, this classifier predicted right a few tags.
+Next we&#39;ll try to search for the best parameters for the classifier and
+train with fulltext of articles.
+</p>
+<h2 id="search-for-best-model-parameters-for-svm-with-linear-kernel">
+Search for best model parameters for SVM with linear kernel
+</h2>
+<p>
+For the estimators <code class="verbatim">TfidfVectorizer</code> and <code class="verbatim">LinearSVC</code>, they both have
+many parameters could be tuned for better performance. We&#39;ll the
+<code class="verbatim">GridSearchCV</code> to search for the best parameters with the help of
+<code class="verbatim">Pipeline</code>.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn.pipeline <span style="color:#f92672">import</span> Pipeline
+<span style="color:#f92672">from</span> sklearn.model_selection <span style="color:#f92672">import</span> train_test_split, GridSearchCV
 
-<p>Though not very satisfied, this classifier predicted right a few tags. Next we&rsquo;ll try to search for the best parameters for the classifier and train with fulltext of articles.</p>
 
-<h2 id="search-for-best-model-parameters-for-svm-with-linear-kernel">Search for best model parameters for SVM with linear kernel</h2>
+<span style="color:#75715e"># Split the dataset into training and test set, and use fulltext of articles:</span>
+X_train, X_test, Y_train, Y_test <span style="color:#f92672">=</span> train_test_split(
+    df_data<span style="color:#f92672">.</span>fulltext, Y, test_size<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>)
 
-<p>For the estimators <code>TfidfVectorizer</code> and <code>LinearSVC</code>, they both have many parameters could be tuned for better performance. We&rsquo;ll the <code>GridSearchCV</code> to search for the best parameters with the help of <code>Pipeline</code>.</p>
-
-<pre><code class="language-python">from sklearn.pipeline import Pipeline
-from sklearn.model_selection import train_test_split, GridSearchCV
-
-
-# Split the dataset into training and test set, and use fulltext of articles:
-X_train, X_test, Y_train, Y_test = train_test_split(
-    df_data.fulltext, Y, test_size=0.5, random_state=42)
-
-# Build vectorizer classifier pipeline
-clf = Pipeline([
-    ('vect', TfidfVectorizer()),
-    ('clf', OneVsRestClassifier(LinearSVC())),
+<span style="color:#75715e"># Build vectorizer classifier pipeline</span>
+clf <span style="color:#f92672">=</span> Pipeline([
+    (<span style="color:#e6db74">&#39;vect&#39;</span>, TfidfVectorizer()),
+    (<span style="color:#e6db74">&#39;clf&#39;</span>, OneVsRestClassifier(LinearSVC())),
 ])
 
-# Grid search parameters, I minimized the parameter set based on previous
-# experience to accelerate the processing speed.
-# And the combination of penalty='l1' and loss='squared_hinge' are not supported when dual=True
-parameters = {
-    'vect__ngram_range': [(1, 2), (1, 3), (1, 4)],
-    'vect__max_df': [1, 0.9, 0.8, 0.7],
-    'vect__min_df': [1, 0.9, 0.8, 0.7, 0],
-    'vect__use_idf': [True, False],
-    'clf__estimator__penalty': ['l1', 'l2'],
-    'clf__estimator__C': [1, 10, 100, 1000],
-    'clf__estimator__dual': [False],
+<span style="color:#75715e"># Grid search parameters, I minimized the parameter set based on previous</span>
+<span style="color:#75715e"># experience to accelerate the processing speed.</span>
+<span style="color:#75715e"># And the combination of penalty=&#39;l1&#39; and loss=&#39;squared_hinge&#39; are not supported when dual=True</span>
+parameters <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74">&#39;vect__ngram_range&#39;</span>: [(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>), (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>), (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>)],
+    <span style="color:#e6db74">&#39;vect__max_df&#39;</span>: [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0.9</span>, <span style="color:#ae81ff">0.8</span>, <span style="color:#ae81ff">0.7</span>],
+    <span style="color:#e6db74">&#39;vect__min_df&#39;</span>: [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0.9</span>, <span style="color:#ae81ff">0.8</span>, <span style="color:#ae81ff">0.7</span>, <span style="color:#ae81ff">0</span>],
+    <span style="color:#e6db74">&#39;vect__use_idf&#39;</span>: [True, False],
+    <span style="color:#e6db74">&#39;clf__estimator__penalty&#39;</span>: [<span style="color:#e6db74">&#39;l1&#39;</span>, <span style="color:#e6db74">&#39;l2&#39;</span>],
+    <span style="color:#e6db74">&#39;clf__estimator__C&#39;</span>: [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">1000</span>],
+    <span style="color:#e6db74">&#39;clf__estimator__dual&#39;</span>: [False],
 }
 
-gs_clf = GridSearchCV(clf, parameters, cv=5, n_jobs=-1)
-gs_clf.fit(X_train, Y_train)
-</code></pre>
+gs_clf <span style="color:#f92672">=</span> GridSearchCV(clf, parameters, cv<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, n_jobs<span style="color:#f92672">=-</span><span style="color:#ae81ff">1</span>)
+gs_clf<span style="color:#f92672">.</span>fit(X_train, Y_train)</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> datetime
+<span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> metrics
 
-<pre><code class="language-python">import datetime
-from sklearn import metrics
 
+<span style="color:#75715e"># Predict the outcome on the testing set in a variable named y_predicted</span>
+Y_predicted <span style="color:#f92672">=</span> gs_clf<span style="color:#f92672">.</span>predict(X_test)
 
-# Predict the outcome on the testing set in a variable named y_predicted
-Y_predicted = gs_clf.predict(X_test)
+<span style="color:#66d9ef">print</span>(metrics<span style="color:#f92672">.</span>classification_report(Y_test, Y_predicted))
+<span style="color:#66d9ef">print</span>(gs_clf<span style="color:#f92672">.</span>best_params_)
+<span style="color:#66d9ef">print</span>(gs_clf<span style="color:#f92672">.</span>best_score_)
 
-print(metrics.classification_report(Y_test, Y_predicted))
-print(gs_clf.best_params_)
-print(gs_clf.best_score_)
-
-# Export some of the result cols
-cols = [
-    'mean_test_score',
-    'mean_fit_time',
-    'param_vect__ngram_range',
+<span style="color:#75715e"># Export some of the result cols</span>
+cols <span style="color:#f92672">=</span> [
+    <span style="color:#e6db74">&#39;mean_test_score&#39;</span>,
+    <span style="color:#e6db74">&#39;mean_fit_time&#39;</span>,
+    <span style="color:#e6db74">&#39;param_vect__ngram_range&#39;</span>,
 ]
-df_result = pd.DataFrame(gs_clf.cv_results_)
-df_result = df_result.sort_values(by='rank_test_score')
-df_result = df_result[cols]
+df_result <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(gs_clf<span style="color:#f92672">.</span>cv_results_)
+df_result <span style="color:#f92672">=</span> df_result<span style="color:#f92672">.</span>sort_values(by<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;rank_test_score&#39;</span>)
+df_result <span style="color:#f92672">=</span> df_result[cols]
 
-timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-df_result.to_html(
-    f'data/results/gridcv_results_{timestamp}_linearSVC.html')
-</code></pre>
-
-<p>Here we attach the top-5 performed classifiers with selected parameters.</p>
-
+timestamp <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>now()<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#39;%Y-%m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">_%H-%M-%S&#39;</span>)
+df_result<span style="color:#f92672">.</span>to_html(
+    f<span style="color:#e6db74">&#39;data/results/gridcv_results_{timestamp}_linearSVC.html&#39;</span>)</code></pre></div>
+</div>
+<p>
+Here we attach the top-5 performed classifiers with selected parameters.
+</p>
 <table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
@@ -770,67 +884,68 @@ df_result.to_html(
     </tr>
   </tbody>
 </table>
+<p>
+Based on the grid search results, we found the following parameters
+combined with the default parameters have the best performance. Now
+let&#39;s see how it will perform.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">X_train, X_test, Y_train, Y_test <span style="color:#f92672">=</span> train_test_split(
+    df_data, Y, test_size<span style="color:#f92672">=</span><span style="color:#ae81ff">0.2</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>)
 
-<p>Based on the grid search results, we found the following parameters combined with the default parameters have the best performance. Now let&rsquo;s see how it will perform.</p>
-
-<pre><code class="language-python">X_train, X_test, Y_train, Y_test = train_test_split(
-    df_data, Y, test_size=0.2, random_state=42)
-
-clf = Pipeline([
-    ('vect', TfidfVectorizer(use_idf=True,
-                             max_df=0.8, ngram_range=[1, 4])),
-    ('clf', OneVsRestClassifier(LinearSVC(penalty='l1', C=10, dual=False))),
+clf <span style="color:#f92672">=</span> Pipeline([
+    (<span style="color:#e6db74">&#39;vect&#39;</span>, TfidfVectorizer(use_idf<span style="color:#f92672">=</span>True,
+                             max_df<span style="color:#f92672">=</span><span style="color:#ae81ff">0.8</span>, ngram_range<span style="color:#f92672">=</span>[<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>])),
+    (<span style="color:#e6db74">&#39;clf&#39;</span>, OneVsRestClassifier(LinearSVC(penalty<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;l1&#39;</span>, C<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, dual<span style="color:#f92672">=</span>False))),
 ])
 
-clf.fit(X_train.fulltext, Y_train)
+clf<span style="color:#f92672">.</span>fit(X_train<span style="color:#f92672">.</span>fulltext, Y_train)
 
 
-Y_pred = clf.predict(X_test.fulltext)
+Y_pred <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>predict(X_test<span style="color:#f92672">.</span>fulltext)
 
-# Inverse transform the vectors back to tags
-pred_transformed = mlb.inverse_transform(Y_pred)
-test_transformed = mlb.inverse_transform(Y_test)
+<span style="color:#75715e"># Inverse transform the vectors back to tags</span>
+pred_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>inverse_transform(Y_pred)
+test_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>inverse_transform(Y_test)
 
-for (title, t, p) in zip(X_test.title, test_transformed, pred_transformed):
-    print(f'info title: {title} \ntags: {t} \npredicted as: {p}')
-
-</code></pre>
-
-<pre><code>info title: Designing resilient systems: Circuit Breakers or Retries? (Part 1) 
-tags: ('circuit-breaker', 'system-architecture') 
-predicted as: ('golang', 'system-architecture')
-info title: Zuul 2 : The Netflix Journey to Asynchronous, Non-Blocking Systems 
-tags: ('asynchronous', 'system-architecture') 
+<span style="color:#66d9ef">for</span> (title, t, p) <span style="color:#f92672">in</span> zip(X_test<span style="color:#f92672">.</span>title, test_transformed, pred_transformed):
+    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#39;info title: {title} </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">tags: {t} </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">predicted as: {p}&#39;</span>)</code></pre></div>
+</div>
+<div class="src src-markdown">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">info title: Designing resilient systems: Circuit Breakers or Retries? (Part 1)
+tags: (&#39;circuit-breaker&#39;, &#39;system-architecture&#39;)
+predicted as: (&#39;golang&#39;, &#39;system-architecture&#39;)
+info title: Zuul 2 : The Netflix Journey to Asynchronous, Non-Blocking Systems
+tags: (&#39;asynchronous&#39;, &#39;system-architecture&#39;)
 predicted as: ()
-info title: 对称加密算法与非对称加密算法的优缺点  
-tags: ('crytography',) 
+info title: 对称加密算法与非对称加密算法的优缺点
+tags: (&#39;crytography&#39;,)
 predicted as: ()
-info title: Go coding in go way 
-tags: ('golang',) 
-predicted as: ('golang',)
-info title: Emacs Doom for Newbies 
-tags: ('doom-emacs', 'emacs') 
-predicted as: ('emacs',)
-info title: Basic testing patterns in Go 
-tags: ('golang', 'testing') 
-predicted as: ('golang', 'testing')
-info title: Dead Simple Python: Virtual Environments and pip 
-tags: ('python', 'virtualenv') 
-predicted as: ('python',)
-info title:  Overcoming RESTlessness 
-tags: ('api', 'restful', 'web') 
-predicted as: ('api',)
-info title: Let’s Build A Simple Interpreter. Part 7. 
-tags: ('compiler', 'interpreter', 'pascal', 'python') 
-predicted as: ('compiler', 'interpreter', 'pascal', 'python')
-info title: Spring RestTemplate详解 
-tags: ('html', 'java', 'spring') 
-predicted as: ('java',)
-</code></pre>
-
-<p>Here above is a fraction of the list that shows the manually input tags and the predicted tags. We can see that usually the more frequently appeared and more popular tags have better change to be correctly predicted.</p>
-
-<!-- However, the manual tags, as the training and prediction comparing group, suffer from problems like  -->
+info title: Go coding in go way
+tags: (&#39;golang&#39;,)
+predicted as: (&#39;golang&#39;,)
+info title: Emacs Doom for Newbies
+tags: (&#39;doom-emacs&#39;, &#39;emacs&#39;)
+predicted as: (&#39;emacs&#39;,)
+info title: Basic testing patterns in Go
+tags: (&#39;golang&#39;, &#39;testing&#39;)
+predicted as: (&#39;golang&#39;, &#39;testing&#39;)
+info title: Dead Simple Python: Virtual Environments and pip
+tags: (&#39;python&#39;, &#39;virtualenv&#39;)
+predicted as: (&#39;python&#39;,)
+info title:  Overcoming RESTlessness
+tags: (&#39;api&#39;, &#39;restful&#39;, &#39;web&#39;)
+predicted as: (&#39;api&#39;,)
+info title: Let’s Build A Simple Interpreter. Part 7.
+tags: (&#39;compiler&#39;, &#39;interpreter&#39;, &#39;pascal&#39;, &#39;python&#39;)
+predicted as: (&#39;compiler&#39;, &#39;interpreter&#39;, &#39;pascal&#39;, &#39;python&#39;)
+info title: Spring RestTemplate详解
+tags: (&#39;html&#39;, &#39;java&#39;, &#39;spring&#39;)
+predicted as: (&#39;java&#39;,)</code></pre></div>
+</div>
+<p>
+Here above is a fraction of the list that shows the manually input tags and the predicted tags. We can see that usually the more frequently appeared and more popular tags have better change to be correctly predicted. Personally, I would say the prediction is satisfied to me comparing when I tag the articles manually. However, there&#39;s much room for improvement.
+</p>
 
     </div>
 

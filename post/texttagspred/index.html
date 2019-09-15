@@ -459,7 +459,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    7 min read
+    10 min read
   </span>
   
 
@@ -491,6 +491,55 @@
 
 
 
+<div class="btn-links mb-3">
+  
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  
+  
+  
+    
+  
+  <a class="btn btn-outline-primary my-1 mr-1" href="https://www.kaggle.com/pcx813/multi-label-classification-for-article-tags-svm" target="_blank" rel="noopener">
+    
+    kaggle Notebook
+  </a>
+
+
+</div>
+
 
   
 </div>
@@ -505,28 +554,22 @@
 This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.
 </p>
 <p>
-In this snippet, we will use <code class="verbatim">OneVsRestClassifier</code> (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification. The article data will be retrieved from <a href="https://linkedinfo.co">LinkedInfo.co</a> via Web API.
+In this snippet, we will use <code class="verbatim">OneVsRestClassifier</code> (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification. The article data will be retrieved from <a href="https://linkedinfo.co">LinkedInfo.co</a> via Web API. The methods in this snippet should give credits to <a href="https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html">Working With Text Data - scikit-learn</a> and <a href="https://towardsdatascience.com/journey-to-the-center-of-multi-label-classification-384c40229bff">this post</a>.
 </p>
-<ol>
-<li>
-<p>
-Preprocessing data and explore the method
-</p>
+    
+  <h2>Table of Contents</h2>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#preprocessing-data-and-explore-the-method">Preprocessing data and explore the method</a>
 </li>
-<li>
-<p>
-Search for best model include SVM and Neural Networks (Will be updated)
-</p>
+<li><a href="#search-for-best-model-parameters-for-svm-with-linear-kernel">Search for best model parameters for SVM with linear kernel</a>
 </li>
-<li>
-<p>
-Training and testing with the best parameters
-</p>
+<li><a href="#headline-3">Training and testing with the best parameters</a>
 </li>
-</ol>
-<p>
-The methods in this snippet should give credits to <a href="https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html">Working With Text Data - scikit-learn</a>.
-</p>
+<li><a href="#headline-4">A glance at the different evaluation metrics</a>
+</li>
+</ul>
+</nav>
 <h2 id="preprocessing-data-and-explore-the-method">
 Preprocessing data and explore the method
 </h2>
@@ -884,6 +927,9 @@ Here we attach the top-5 performed classifiers with selected parameters.
     </tr>
   </tbody>
 </table>
+<h2 id="headline-3">
+Training and testing with the best parameters
+</h2>
 <p>
 Based on the grid search results, we found the following parameters
 combined with the default parameters have the best performance. Now
@@ -909,42 +955,156 @@ pred_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92
 test_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>inverse_transform(Y_test)
 
 <span style="color:#66d9ef">for</span> (title, t, p) <span style="color:#f92672">in</span> zip(X_test<span style="color:#f92672">.</span>title, test_transformed, pred_transformed):
-    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#39;info title: {title} </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">tags: {t} </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">predicted as: {p}&#39;</span>)</code></pre></div>
-</div>
-<div class="src src-markdown">
-<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">info title: Designing resilient systems: Circuit Breakers or Retries? (Part 1)
-tags: (&#39;circuit-breaker&#39;, &#39;system-architecture&#39;)
-predicted as: (&#39;golang&#39;, &#39;system-architecture&#39;)
-info title: Zuul 2 : The Netflix Journey to Asynchronous, Non-Blocking Systems
-tags: (&#39;asynchronous&#39;, &#39;system-architecture&#39;)
-predicted as: ()
-info title: 对称加密算法与非对称加密算法的优缺点
-tags: (&#39;crytography&#39;,)
-predicted as: ()
-info title: Go coding in go way
-tags: (&#39;golang&#39;,)
-predicted as: (&#39;golang&#39;,)
-info title: Emacs Doom for Newbies
-tags: (&#39;doom-emacs&#39;, &#39;emacs&#39;)
-predicted as: (&#39;emacs&#39;,)
-info title: Basic testing patterns in Go
-tags: (&#39;golang&#39;, &#39;testing&#39;)
-predicted as: (&#39;golang&#39;, &#39;testing&#39;)
-info title: Dead Simple Python: Virtual Environments and pip
-tags: (&#39;python&#39;, &#39;virtualenv&#39;)
-predicted as: (&#39;python&#39;,)
-info title:  Overcoming RESTlessness
-tags: (&#39;api&#39;, &#39;restful&#39;, &#39;web&#39;)
-predicted as: (&#39;api&#39;,)
-info title: Let’s Build A Simple Interpreter. Part 7.
-tags: (&#39;compiler&#39;, &#39;interpreter&#39;, &#39;pascal&#39;, &#39;python&#39;)
-predicted as: (&#39;compiler&#39;, &#39;interpreter&#39;, &#39;pascal&#39;, &#39;python&#39;)
-info title: Spring RestTemplate详解
-tags: (&#39;html&#39;, &#39;java&#39;, &#39;spring&#39;)
-predicted as: (&#39;java&#39;,)</code></pre></div>
+    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#39;Article title: {title} </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+          f<span style="color:#e6db74">&#39;Manual tags:  {t} </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+          f<span style="color:#e6db74">&#39;predicted as: {p}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)</code></pre></div>
 </div>
 <p>
-Here above is a fraction of the list that shows the manually input tags and the predicted tags. We can see that usually the more frequently appeared and more popular tags have better change to be correctly predicted. Personally, I would say the prediction is satisfied to me comparing when I tag the articles manually. However, there&#39;s much room for improvement.
+Here below is a fraction of the list that shows the manually input tags and the predicted tags. We can see that usually the more frequently appeared and more popular tags have better change to be correctly predicted. Personally, I would say the prediction is satisfied to me comparing when I tag the articles manually. However, there&#39;s much room for improvement.
+</p>
+<div class="src src-markdown">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">Article title: Will PWAs Replace Native Mobile Apps?
+Manual tags:  (&#39;pwa&#39;,)
+predicted as: (&#39;pwa&#39;,)
+
+Article title: 基于Consul的分布式信号量实现
+Manual tags:  (&#39;consul&#39;, &#39;distributed-system&#39;)
+predicted as: (&#39;microservices&#39;, &#39;multithreading&#39;)
+
+Article title: commit 和 branch 理解深入
+Manual tags:  (&#39;git&#39;,)
+predicted as: (&#39;git&#39;,)
+
+Article title: Existential types in Scala
+Manual tags:  (&#39;scala&#39;,)
+predicted as: (&#39;scala&#39;,)
+
+Article title: Calling back into Python from llvmlite-JITed code
+Manual tags:  (&#39;jit&#39;, &#39;python&#39;)
+predicted as: (&#39;compiler&#39;, &#39;python&#39;)
+
+Article title: Writing a Simple Linux Kernel Module
+Manual tags:  (&#39;kernel&#39;, &#39;linux&#39;)
+predicted as: (&#39;linux&#39;,)
+
+Article title: Semantic segmentation with OpenCV and deep learning
+Manual tags:  (&#39;deep-learning&#39;, &#39;opencv&#39;)
+predicted as: (&#39;deep-learning&#39;, &#39;image-classification&#39;, &#39;opencv&#39;)
+
+Article title: Transducers: Efficient Data Processing Pipelines in JavaScript
+Manual tags:  (&#39;javascript&#39;,)
+predicted as: (&#39;javascript&#39;,)
+
+Article title: C++之stl::string写时拷贝导致的问题
+Manual tags:  (&#39;cpp&#39;,)
+predicted as: (&#39;functional-programming&#39;,)
+
+Article title: WebSocket 浅析
+Manual tags:  (&#39;websocket&#39;,)
+predicted as: (&#39;websocket&#39;,)
+
+Article title: You shouldn’t name your variables after their types for the same reason you wouldn’t name your pets “dog” or “cat”
+Manual tags:  (&#39;golang&#39;,)
+predicted as: (&#39;golang&#39;,)
+
+Article title: Introduction to Data Visualization using Python
+Manual tags:  (&#39;data-visualization&#39;, &#39;python&#39;)
+predicted as: (&#39;data-visualization&#39;, &#39;matplotlib&#39;, &#39;python&#39;)
+
+Article title: How JavaScript works: A comparison with WebAssembly + why in certain cases it’s better to use it over JavaScript
+Manual tags:  (&#39;javascript&#39;, &#39;webassembly&#39;)
+predicted as: (&#39;javascript&#39;, &#39;webassembly&#39;)
+
+Article title: Parsing logs 230x faster with Rust
+Manual tags:  (&#39;log&#39;, &#39;rust&#39;)
+predicted as: (&#39;rust&#39;,)
+
+Article title: Troubleshooting Memory Issues in Java Applications
+Manual tags:  (&#39;java&#39;, &#39;memory&#39;)
+predicted as: (&#39;java&#39;,)
+
+Article title: How to use Docker for Node.js development
+Manual tags:  (&#39;docker&#39;, &#39;node.js&#39;)
+predicted as: (&#39;docker&#39;,)</code></pre></div>
+</div>
+<h2 id="headline-4">
+A glance at the different evaluation metrics
+</h2>
+<p>
+Now let&#39;s have a look at the evaluation metrics on the prediction performance. Evaluating multi-label classification is very different from evaluating binary classification. There&#39;re quite many different evaluation methods for different situations in <a href="https://scikit-learn.org/stable/modules/model_evaluation.html">the model evaluation part of scikit-learn&#39;s documentation</a>. We will take a look at the ones that suit this problem.
+</p>
+<p>
+We can start with the <code class="verbatim">accuracy_score</code> function in <code class="verbatim">metrics</code> module. As mentioned in scikit-learn documentation, in multi-label classification, a subset accuracy is 1.0 when the entire set of predicted labels for a sample matches strictly with the true label set. The equation is simple like this:
+</p>
+<div class="export-block">
+$$\operatorname{accuracy}(y, \hat{y})=\frac{1}{n_{\text {samples }}} \sum_{i=0}^{n_{\text {minples }}-1} 1\left(\hat{y}_{i}=y_{i}\right)$$</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> metrics
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+
+metrics<span style="color:#f92672">.</span>accuracy_score(Y_test, Y_pred)</code></pre></div>
+</div>
+<div class="src src-md">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-md" data-lang="md">0.26356589147286824</code></pre></div>
+</div>
+<p>
+The score is somehow low. But we should be noted that for this problem, an inexact match of the labels is acceptable in many cases, e.g., an article talks about the golang&#39;s interface is predicted with an only label <code class="verbatim">golang</code> while it was manually labeled with <code class="verbatim">golang</code> and <code class="verbatim">interface</code>. So to my opinion, this <code class="verbatim">accuracy_score</code> is not a good evaluation metric for this problem.
+</p>
+<p>
+Now let&#39;s see the <code class="verbatim">classification_report</code> that presents averaged precision, recall and f1-score.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span>(metrics<span style="color:#f92672">.</span>classification_report(Y_test, Y_pred))</code></pre></div>
+</div>
+<table>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td class="align-right">precision</td>
+<td class="align-right">recall</td>
+<td class="align-right">f1-score</td>
+<td class="align-right">support</td>
+</tr>
+<tr>
+<td>micro</td>
+<td>avg</td>
+<td class="align-right">0.74</td>
+<td class="align-right">0.42</td>
+<td class="align-right">0.54</td>
+<td class="align-right">1186</td>
+</tr>
+<tr>
+<td>macro</td>
+<td>avg</td>
+<td class="align-right">0.17</td>
+<td class="align-right">0.13</td>
+<td class="align-right">0.14</td>
+<td class="align-right">1186</td>
+</tr>
+<tr>
+<td>weighted</td>
+<td>avg</td>
+<td class="align-right">0.60</td>
+<td class="align-right">0.42</td>
+<td class="align-right">0.48</td>
+<td class="align-right">1186</td>
+</tr>
+</tbody>
+</table>
+<p>
+Let&#39;s look at the <strong>micro</strong> row. Why? Let me quote scikit-learn&#39;s documentation:
+</p>
+<blockquote>
+<p>
+&#34;micro&#34; gives each sample-class pair an equal contribution to the overall metric (except as a result of sample-weight). Rather than summing the metric per class, this sums the dividends and divisors that make up the per-class metrics to calculate an overall quotient. Micro-averaging may be preferred in multilabel settings, including multiclass classification where a majority class is to be ignored.
+</p>
+</blockquote>
+<p>
+Here we&#39;re more interested in the average precision, which is 0.74. As we mentioned, for this problem and for me, it&#39;s more important to not predict a label that should be negative to an article. Some of the labels for an article, e.g., the label <code class="verbatim">interface</code> for the just mentioned article, are less important. So I&#39;m OK for having a low score of recall, which measure how good the model predicts all the labels as the manually labeled.
+</p>
+<p>
+However, there&#39;s much room for improvement. Another problem to be though about is, the training samples are not equally labeled, i.e., for the same example all the articles talking about golang&#39;s interface, some of them labeled with <code class="verbatim">golang</code> + <code class="verbatim">interface</code> while some of them labeled only <code class="verbatim">golang</code>.
 </p>
 
     </div>
@@ -1099,6 +1259,9 @@ Here above is a fraction of the list that shows the manually input tags and the 
 
     
     
+    
+    <script src="/js/mathjax-config.js"></script>
+    
 
     
     
@@ -1119,6 +1282,8 @@ Here above is a fraction of the list that shows the manually input tags and the 
       
 
       
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
       
     
 

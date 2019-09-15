@@ -22,28 +22,11 @@
 This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&amp;#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.
 &lt;/p&gt;
 &lt;p&gt;
-In this snippet, we will use &lt;code class=&#34;verbatim&#34;&gt;OneVsRestClassifier&lt;/code&gt; (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification. The article data will be retrieved from &lt;a href=&#34;https://linkedinfo.co&#34;&gt;LinkedInfo.co&lt;/a&gt; via Web API.
+In this snippet, we will use &lt;code class=&#34;verbatim&#34;&gt;OneVsRestClassifier&lt;/code&gt; (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification. The article data will be retrieved from &lt;a href=&#34;https://linkedinfo.co&#34;&gt;LinkedInfo.co&lt;/a&gt; via Web API. The methods in this snippet should give credits to &lt;a href=&#34;https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html&#34;&gt;Working With Text Data - scikit-learn&lt;/a&gt; and &lt;a href=&#34;https://towardsdatascience.com/journey-to-the-center-of-multi-label-classification-384c40229bff&#34;&gt;this post&lt;/a&gt;.
 &lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;
-Preprocessing data and explore the method
-&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;
-Search for best model include SVM and Neural Networks (Will be updated)
-&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;
-Training and testing with the best parameters
-&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;
-The methods in this snippet should give credits to &lt;a href=&#34;https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html&#34;&gt;Working With Text Data - scikit-learn&lt;/a&gt;.
-&lt;/p&gt;
+    
+  &lt;h2&gt;Table of Contents&lt;/h2&gt;
+  HAHAHUGOSHORTCODE-TOC0-HBHB
 &lt;h2 id=&#34;preprocessing-data-and-explore-the-method&#34;&gt;
 Preprocessing data and explore the method
 &lt;/h2&gt;
@@ -401,6 +384,9 @@ Here we attach the top-5 performed classifiers with selected parameters.
     &lt;/tr&gt;
   &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;h2 id=&#34;headline-3&#34;&gt;
+Training and testing with the best parameters
+&lt;/h2&gt;
 &lt;p&gt;
 Based on the grid search results, we found the following parameters
 combined with the default parameters have the best performance. Now
@@ -426,42 +412,156 @@ pred_transformed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mlb&lt
 test_transformed &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mlb&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;inverse_transform(Y_test)
 
 &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; (title, t, p) &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; zip(X_test&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;title, test_transformed, pred_transformed):
-    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;info title: {title} &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;tags: {t} &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;predicted as: {p}&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&#34;src src-markdown&#34;&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-markdown&#34; data-lang=&#34;markdown&#34;&gt;info title: Designing resilient systems: Circuit Breakers or Retries? (Part 1)
-tags: (&amp;#39;circuit-breaker&amp;#39;, &amp;#39;system-architecture&amp;#39;)
-predicted as: (&amp;#39;golang&amp;#39;, &amp;#39;system-architecture&amp;#39;)
-info title: Zuul 2 : The Netflix Journey to Asynchronous, Non-Blocking Systems
-tags: (&amp;#39;asynchronous&amp;#39;, &amp;#39;system-architecture&amp;#39;)
-predicted as: ()
-info title: 对称加密算法与非对称加密算法的优缺点
-tags: (&amp;#39;crytography&amp;#39;,)
-predicted as: ()
-info title: Go coding in go way
-tags: (&amp;#39;golang&amp;#39;,)
-predicted as: (&amp;#39;golang&amp;#39;,)
-info title: Emacs Doom for Newbies
-tags: (&amp;#39;doom-emacs&amp;#39;, &amp;#39;emacs&amp;#39;)
-predicted as: (&amp;#39;emacs&amp;#39;,)
-info title: Basic testing patterns in Go
-tags: (&amp;#39;golang&amp;#39;, &amp;#39;testing&amp;#39;)
-predicted as: (&amp;#39;golang&amp;#39;, &amp;#39;testing&amp;#39;)
-info title: Dead Simple Python: Virtual Environments and pip
-tags: (&amp;#39;python&amp;#39;, &amp;#39;virtualenv&amp;#39;)
-predicted as: (&amp;#39;python&amp;#39;,)
-info title:  Overcoming RESTlessness
-tags: (&amp;#39;api&amp;#39;, &amp;#39;restful&amp;#39;, &amp;#39;web&amp;#39;)
-predicted as: (&amp;#39;api&amp;#39;,)
-info title: Let’s Build A Simple Interpreter. Part 7.
-tags: (&amp;#39;compiler&amp;#39;, &amp;#39;interpreter&amp;#39;, &amp;#39;pascal&amp;#39;, &amp;#39;python&amp;#39;)
-predicted as: (&amp;#39;compiler&amp;#39;, &amp;#39;interpreter&amp;#39;, &amp;#39;pascal&amp;#39;, &amp;#39;python&amp;#39;)
-info title: Spring RestTemplate详解
-tags: (&amp;#39;html&amp;#39;, &amp;#39;java&amp;#39;, &amp;#39;spring&amp;#39;)
-predicted as: (&amp;#39;java&amp;#39;,)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Article title: {title} &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;
+          f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Manual tags:  {t} &lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;
+          f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;predicted as: {p}&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;\n&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;&lt;/span&gt;)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;p&gt;
-Here above is a fraction of the list that shows the manually input tags and the predicted tags. We can see that usually the more frequently appeared and more popular tags have better change to be correctly predicted. Personally, I would say the prediction is satisfied to me comparing when I tag the articles manually. However, there&amp;#39;s much room for improvement.
+Here below is a fraction of the list that shows the manually input tags and the predicted tags. We can see that usually the more frequently appeared and more popular tags have better change to be correctly predicted. Personally, I would say the prediction is satisfied to me comparing when I tag the articles manually. However, there&amp;#39;s much room for improvement.
+&lt;/p&gt;
+&lt;div class=&#34;src src-markdown&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-markdown&#34; data-lang=&#34;markdown&#34;&gt;Article title: Will PWAs Replace Native Mobile Apps?
+Manual tags:  (&amp;#39;pwa&amp;#39;,)
+predicted as: (&amp;#39;pwa&amp;#39;,)
+
+Article title: 基于Consul的分布式信号量实现
+Manual tags:  (&amp;#39;consul&amp;#39;, &amp;#39;distributed-system&amp;#39;)
+predicted as: (&amp;#39;microservices&amp;#39;, &amp;#39;multithreading&amp;#39;)
+
+Article title: commit 和 branch 理解深入
+Manual tags:  (&amp;#39;git&amp;#39;,)
+predicted as: (&amp;#39;git&amp;#39;,)
+
+Article title: Existential types in Scala
+Manual tags:  (&amp;#39;scala&amp;#39;,)
+predicted as: (&amp;#39;scala&amp;#39;,)
+
+Article title: Calling back into Python from llvmlite-JITed code
+Manual tags:  (&amp;#39;jit&amp;#39;, &amp;#39;python&amp;#39;)
+predicted as: (&amp;#39;compiler&amp;#39;, &amp;#39;python&amp;#39;)
+
+Article title: Writing a Simple Linux Kernel Module
+Manual tags:  (&amp;#39;kernel&amp;#39;, &amp;#39;linux&amp;#39;)
+predicted as: (&amp;#39;linux&amp;#39;,)
+
+Article title: Semantic segmentation with OpenCV and deep learning
+Manual tags:  (&amp;#39;deep-learning&amp;#39;, &amp;#39;opencv&amp;#39;)
+predicted as: (&amp;#39;deep-learning&amp;#39;, &amp;#39;image-classification&amp;#39;, &amp;#39;opencv&amp;#39;)
+
+Article title: Transducers: Efficient Data Processing Pipelines in JavaScript
+Manual tags:  (&amp;#39;javascript&amp;#39;,)
+predicted as: (&amp;#39;javascript&amp;#39;,)
+
+Article title: C++之stl::string写时拷贝导致的问题
+Manual tags:  (&amp;#39;cpp&amp;#39;,)
+predicted as: (&amp;#39;functional-programming&amp;#39;,)
+
+Article title: WebSocket 浅析
+Manual tags:  (&amp;#39;websocket&amp;#39;,)
+predicted as: (&amp;#39;websocket&amp;#39;,)
+
+Article title: You shouldn’t name your variables after their types for the same reason you wouldn’t name your pets “dog” or “cat”
+Manual tags:  (&amp;#39;golang&amp;#39;,)
+predicted as: (&amp;#39;golang&amp;#39;,)
+
+Article title: Introduction to Data Visualization using Python
+Manual tags:  (&amp;#39;data-visualization&amp;#39;, &amp;#39;python&amp;#39;)
+predicted as: (&amp;#39;data-visualization&amp;#39;, &amp;#39;matplotlib&amp;#39;, &amp;#39;python&amp;#39;)
+
+Article title: How JavaScript works: A comparison with WebAssembly + why in certain cases it’s better to use it over JavaScript
+Manual tags:  (&amp;#39;javascript&amp;#39;, &amp;#39;webassembly&amp;#39;)
+predicted as: (&amp;#39;javascript&amp;#39;, &amp;#39;webassembly&amp;#39;)
+
+Article title: Parsing logs 230x faster with Rust
+Manual tags:  (&amp;#39;log&amp;#39;, &amp;#39;rust&amp;#39;)
+predicted as: (&amp;#39;rust&amp;#39;,)
+
+Article title: Troubleshooting Memory Issues in Java Applications
+Manual tags:  (&amp;#39;java&amp;#39;, &amp;#39;memory&amp;#39;)
+predicted as: (&amp;#39;java&amp;#39;,)
+
+Article title: How to use Docker for Node.js development
+Manual tags:  (&amp;#39;docker&amp;#39;, &amp;#39;node.js&amp;#39;)
+predicted as: (&amp;#39;docker&amp;#39;,)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;h2 id=&#34;headline-4&#34;&gt;
+A glance at the different evaluation metrics
+&lt;/h2&gt;
+&lt;p&gt;
+Now let&amp;#39;s have a look at the evaluation metrics on the prediction performance. Evaluating multi-label classification is very different from evaluating binary classification. There&amp;#39;re quite many different evaluation methods for different situations in &lt;a href=&#34;https://scikit-learn.org/stable/modules/model_evaluation.html&#34;&gt;the model evaluation part of scikit-learn&amp;#39;s documentation&lt;/a&gt;. We will take a look at the ones that suit this problem.
+&lt;/p&gt;
+&lt;p&gt;
+We can start with the &lt;code class=&#34;verbatim&#34;&gt;accuracy_score&lt;/code&gt; function in &lt;code class=&#34;verbatim&#34;&gt;metrics&lt;/code&gt; module. As mentioned in scikit-learn documentation, in multi-label classification, a subset accuracy is 1.0 when the entire set of predicted labels for a sample matches strictly with the true label set. The equation is simple like this:
+&lt;/p&gt;
+&lt;div class=&#34;export-block&#34;&gt;
+$$\operatorname{accuracy}(y, \hat{y})=\frac{1}{n_{\text {samples }}} \sum_{i=0}^{n_{\text {minples }}-1} 1\left(\hat{y}_{i}=y_{i}\right)$$&lt;/div&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; metrics
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; matplotlib.pyplot &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; plt
+
+metrics&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;accuracy_score(Y_test, Y_pred)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;div class=&#34;src src-md&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-md&#34; data-lang=&#34;md&#34;&gt;0.26356589147286824&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;p&gt;
+The score is somehow low. But we should be noted that for this problem, an inexact match of the labels is acceptable in many cases, e.g., an article talks about the golang&amp;#39;s interface is predicted with an only label &lt;code class=&#34;verbatim&#34;&gt;golang&lt;/code&gt; while it was manually labeled with &lt;code class=&#34;verbatim&#34;&gt;golang&lt;/code&gt; and &lt;code class=&#34;verbatim&#34;&gt;interface&lt;/code&gt;. So to my opinion, this &lt;code class=&#34;verbatim&#34;&gt;accuracy_score&lt;/code&gt; is not a good evaluation metric for this problem.
+&lt;/p&gt;
+&lt;p&gt;
+Now let&amp;#39;s see the &lt;code class=&#34;verbatim&#34;&gt;classification_report&lt;/code&gt; that presents averaged precision, recall and f1-score.
+&lt;/p&gt;
+&lt;div class=&#34;src src-python&#34;&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#66d9ef&#34;&gt;print&lt;/span&gt;(metrics&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;classification_report(Y_test, Y_pred))&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;/div&gt;
+&lt;table&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;precision&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;recall&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;f1-score&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;support&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;micro&lt;/td&gt;
+&lt;td&gt;avg&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;0.74&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;0.42&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;0.54&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;1186&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;macro&lt;/td&gt;
+&lt;td&gt;avg&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;0.17&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;0.13&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;0.14&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;1186&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;weighted&lt;/td&gt;
+&lt;td&gt;avg&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;0.60&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;0.42&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;0.48&lt;/td&gt;
+&lt;td class=&#34;align-right&#34;&gt;1186&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;
+Let&amp;#39;s look at the &lt;strong&gt;micro&lt;/strong&gt; row. Why? Let me quote scikit-learn&amp;#39;s documentation:
+&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;
+&amp;#34;micro&amp;#34; gives each sample-class pair an equal contribution to the overall metric (except as a result of sample-weight). Rather than summing the metric per class, this sums the dividends and divisors that make up the per-class metrics to calculate an overall quotient. Micro-averaging may be preferred in multilabel settings, including multiclass classification where a majority class is to be ignored.
+&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;
+Here we&amp;#39;re more interested in the average precision, which is 0.74. As we mentioned, for this problem and for me, it&amp;#39;s more important to not predict a label that should be negative to an article. Some of the labels for an article, e.g., the label &lt;code class=&#34;verbatim&#34;&gt;interface&lt;/code&gt; for the just mentioned article, are less important. So I&amp;#39;m OK for having a low score of recall, which measure how good the model predicts all the labels as the manually labeled.
+&lt;/p&gt;
+&lt;p&gt;
+However, there&amp;#39;s much room for improvement. Another problem to be though about is, the training samples are not equally labeled, i.e., for the same example all the articles talking about golang&amp;#39;s interface, some of them labeled with &lt;code class=&#34;verbatim&#34;&gt;golang&lt;/code&gt; + &lt;code class=&#34;verbatim&#34;&gt;interface&lt;/code&gt; while some of them labeled only &lt;code class=&#34;verbatim&#34;&gt;golang&lt;/code&gt;.
 &lt;/p&gt;
 </description>
     </item>

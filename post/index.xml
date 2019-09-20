@@ -567,6 +567,1427 @@ However, there&amp;#39;s much room for improvement. Another problem to be though
     </item>
     
     <item>
+      <title>Explore the house prices kaggle competition</title>
+      <link>https://pcx.linkedinfo.co/post/houseprice/</link>
+      <pubDate>Tue, 11 Jun 2019 17:38:33 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/post/houseprice/</guid>
+      <description>
+
+&lt;p&gt;Thanks to &lt;a href=&#34;https://www.kaggle.com/pmarcelino
+ /comprehensive-data-exploration-with-python&#34; target=&#34;_blank&#34;&gt;pmarcelino&lt;/a&gt; and
+ &lt;a href=&#34;https://www.kaggle.com/serigne/stacked-regressions-top-4-on-leaderboard&#34; target=&#34;_blank&#34;&gt;serigne&lt;/a&gt; for their great work.&lt;/p&gt;
+
+&lt;p&gt;This is my second kaggle competition to practice on the knowledge of data
+ analysis and machine learning. Unlike the Titanic competition, this house
+ prices is a regression problem. So there will be much difference from the
+ previous binary classification. For this competition, we will have 79
+ variables that describe various aspects of a house and with a price in the
+ training data set. And then predict the prices of houses in the testing set
+ based on the 79 variables. This will be a long journey with the 79 variables.
+ So let&amp;rsquo;s start to explore the data with the data description.
+ &lt;!-- * data exploration (checking missing, outliners, distribution), --&gt;
+ &lt;!-- * preprocessing (imputation missing values, skew, encoding categorical), --&gt;
+ &lt;!-- * base model, more models, --&gt;
+ &lt;!-- * [neural_model], --&gt;
+ &lt;!-- * models stats, --&gt;&lt;/p&gt;
+
+&lt;p&gt;&lt;h2&gt;Table of Contents&lt;/h2&gt;
+  HAHAHUGOSHORTCODE-TOC0-HBHB&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import os
+# from typing import List, Union
+# from pysnooper import snoop
+
+import pandas as pd
+# import matplotlib.pyplot as plt
+# import numpy as np
+
+loc = &#39;house price&#39;
+if os.getcwd().split(&#39;/&#39;)[-1] != loc:
+    os.chdir(loc)
+
+df_train = pd.read_csv(f&#39;input/train.csv&#39;)
+df_test = pd.read_csv(f&#39;input/test.csv&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;data-exploration&#34;&gt;Data exploration&lt;/h1&gt;
+
+&lt;p&gt;Let&amp;rsquo;s firstly have a look at the data we have.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;print(df_train.shape)
+df_train.head()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(1460, 81)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Id&lt;/th&gt;
+      &lt;th&gt;MSSubClass&lt;/th&gt;
+      &lt;th&gt;MSZoning&lt;/th&gt;
+      &lt;th&gt;LotFrontage&lt;/th&gt;
+      &lt;th&gt;LotArea&lt;/th&gt;
+      &lt;th&gt;Street&lt;/th&gt;
+      &lt;th&gt;Alley&lt;/th&gt;
+      &lt;th&gt;LotShape&lt;/th&gt;
+      &lt;th&gt;LandContour&lt;/th&gt;
+      &lt;th&gt;Utilities&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;PoolArea&lt;/th&gt;
+      &lt;th&gt;PoolQC&lt;/th&gt;
+      &lt;th&gt;Fence&lt;/th&gt;
+      &lt;th&gt;MiscFeature&lt;/th&gt;
+      &lt;th&gt;MiscVal&lt;/th&gt;
+      &lt;th&gt;MoSold&lt;/th&gt;
+      &lt;th&gt;YrSold&lt;/th&gt;
+      &lt;th&gt;SaleType&lt;/th&gt;
+      &lt;th&gt;SaleCondition&lt;/th&gt;
+      &lt;th&gt;SalePrice&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;60&lt;/td&gt;
+      &lt;td&gt;RL&lt;/td&gt;
+      &lt;td&gt;65.0&lt;/td&gt;
+      &lt;td&gt;8450&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;Reg&lt;/td&gt;
+      &lt;td&gt;Lvl&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;2008&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Normal&lt;/td&gt;
+      &lt;td&gt;208500&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;20&lt;/td&gt;
+      &lt;td&gt;RL&lt;/td&gt;
+      &lt;td&gt;80.0&lt;/td&gt;
+      &lt;td&gt;9600&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;Reg&lt;/td&gt;
+      &lt;td&gt;Lvl&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;2007&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Normal&lt;/td&gt;
+      &lt;td&gt;181500&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;60&lt;/td&gt;
+      &lt;td&gt;RL&lt;/td&gt;
+      &lt;td&gt;68.0&lt;/td&gt;
+      &lt;td&gt;11250&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;IR1&lt;/td&gt;
+      &lt;td&gt;Lvl&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;9&lt;/td&gt;
+      &lt;td&gt;2008&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Normal&lt;/td&gt;
+      &lt;td&gt;223500&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;4&lt;/td&gt;
+      &lt;td&gt;70&lt;/td&gt;
+      &lt;td&gt;RL&lt;/td&gt;
+      &lt;td&gt;60.0&lt;/td&gt;
+      &lt;td&gt;9550&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;IR1&lt;/td&gt;
+      &lt;td&gt;Lvl&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+      &lt;td&gt;2006&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Abnorml&lt;/td&gt;
+      &lt;td&gt;140000&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;5&lt;/td&gt;
+      &lt;td&gt;60&lt;/td&gt;
+      &lt;td&gt;RL&lt;/td&gt;
+      &lt;td&gt;84.0&lt;/td&gt;
+      &lt;td&gt;14260&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;IR1&lt;/td&gt;
+      &lt;td&gt;Lvl&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;12&lt;/td&gt;
+      &lt;td&gt;2008&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Normal&lt;/td&gt;
+      &lt;td&gt;250000&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;5 rows × 81 columns&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;print(df_test.shape)
+df_test.head()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(1459, 80)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Id&lt;/th&gt;
+      &lt;th&gt;MSSubClass&lt;/th&gt;
+      &lt;th&gt;MSZoning&lt;/th&gt;
+      &lt;th&gt;LotFrontage&lt;/th&gt;
+      &lt;th&gt;LotArea&lt;/th&gt;
+      &lt;th&gt;Street&lt;/th&gt;
+      &lt;th&gt;Alley&lt;/th&gt;
+      &lt;th&gt;LotShape&lt;/th&gt;
+      &lt;th&gt;LandContour&lt;/th&gt;
+      &lt;th&gt;Utilities&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;ScreenPorch&lt;/th&gt;
+      &lt;th&gt;PoolArea&lt;/th&gt;
+      &lt;th&gt;PoolQC&lt;/th&gt;
+      &lt;th&gt;Fence&lt;/th&gt;
+      &lt;th&gt;MiscFeature&lt;/th&gt;
+      &lt;th&gt;MiscVal&lt;/th&gt;
+      &lt;th&gt;MoSold&lt;/th&gt;
+      &lt;th&gt;YrSold&lt;/th&gt;
+      &lt;th&gt;SaleType&lt;/th&gt;
+      &lt;th&gt;SaleCondition&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;1461&lt;/td&gt;
+      &lt;td&gt;20&lt;/td&gt;
+      &lt;td&gt;RH&lt;/td&gt;
+      &lt;td&gt;80.0&lt;/td&gt;
+      &lt;td&gt;11622&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;Reg&lt;/td&gt;
+      &lt;td&gt;Lvl&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;120&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;MnPrv&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;2010&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Normal&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;1462&lt;/td&gt;
+      &lt;td&gt;20&lt;/td&gt;
+      &lt;td&gt;RL&lt;/td&gt;
+      &lt;td&gt;81.0&lt;/td&gt;
+      &lt;td&gt;14267&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;IR1&lt;/td&gt;
+      &lt;td&gt;Lvl&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;Gar2&lt;/td&gt;
+      &lt;td&gt;12500&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;2010&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Normal&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;1463&lt;/td&gt;
+      &lt;td&gt;60&lt;/td&gt;
+      &lt;td&gt;RL&lt;/td&gt;
+      &lt;td&gt;74.0&lt;/td&gt;
+      &lt;td&gt;13830&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;IR1&lt;/td&gt;
+      &lt;td&gt;Lvl&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;MnPrv&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;3&lt;/td&gt;
+      &lt;td&gt;2010&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Normal&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;1464&lt;/td&gt;
+      &lt;td&gt;60&lt;/td&gt;
+      &lt;td&gt;RL&lt;/td&gt;
+      &lt;td&gt;78.0&lt;/td&gt;
+      &lt;td&gt;9978&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;IR1&lt;/td&gt;
+      &lt;td&gt;Lvl&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;6&lt;/td&gt;
+      &lt;td&gt;2010&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Normal&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;1465&lt;/td&gt;
+      &lt;td&gt;120&lt;/td&gt;
+      &lt;td&gt;RL&lt;/td&gt;
+      &lt;td&gt;43.0&lt;/td&gt;
+      &lt;td&gt;5005&lt;/td&gt;
+      &lt;td&gt;Pave&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;IR1&lt;/td&gt;
+      &lt;td&gt;HLS&lt;/td&gt;
+      &lt;td&gt;AllPub&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;144&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+      &lt;td&gt;2010&lt;/td&gt;
+      &lt;td&gt;WD&lt;/td&gt;
+      &lt;td&gt;Normal&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;5 rows × 80 columns&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;p&gt;So we have 1460 rows in training set and 1459 rows in testing
+ set. Besides the price col in the training set, both data sets have 79 cols of
+ variables + 1 col of &amp;lsquo;Id&amp;rsquo;.&lt;/p&gt;
+
+&lt;h2 id=&#34;check-missing-values&#34;&gt;Check missing values&lt;/h2&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s check if there is any missing value in the data.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;
+
+def cols_missing_value(df):
+    df_null_sum = df.isnull().sum()
+    df_na = (df.isnull().sum() / len(df)) * 100
+    missing_data = pd.concat({&#39;Missing Ratio %&#39;: df_na,
+                              &#39;Total&#39;: df_null_sum}, axis=&#39;columns&#39;)
+    return missing_data.drop(missing_data[missing_data[&#39;Total&#39;] == 0].index
+                             ).sort_values(by=&#39;Total&#39;, ascending=False)
+
+
+cols_missing_value(df_train)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Missing Ratio %&lt;/th&gt;
+      &lt;th&gt;Total&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;PoolQC&lt;/th&gt;
+      &lt;td&gt;99.520548&lt;/td&gt;
+      &lt;td&gt;1453&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;MiscFeature&lt;/th&gt;
+      &lt;td&gt;96.301370&lt;/td&gt;
+      &lt;td&gt;1406&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Alley&lt;/th&gt;
+      &lt;td&gt;93.767123&lt;/td&gt;
+      &lt;td&gt;1369&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Fence&lt;/th&gt;
+      &lt;td&gt;80.753425&lt;/td&gt;
+      &lt;td&gt;1179&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;FireplaceQu&lt;/th&gt;
+      &lt;td&gt;47.260274&lt;/td&gt;
+      &lt;td&gt;690&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;LotFrontage&lt;/th&gt;
+      &lt;td&gt;17.739726&lt;/td&gt;
+      &lt;td&gt;259&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageType&lt;/th&gt;
+      &lt;td&gt;5.547945&lt;/td&gt;
+      &lt;td&gt;81&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageYrBlt&lt;/th&gt;
+      &lt;td&gt;5.547945&lt;/td&gt;
+      &lt;td&gt;81&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageFinish&lt;/th&gt;
+      &lt;td&gt;5.547945&lt;/td&gt;
+      &lt;td&gt;81&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageQual&lt;/th&gt;
+      &lt;td&gt;5.547945&lt;/td&gt;
+      &lt;td&gt;81&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageCond&lt;/th&gt;
+      &lt;td&gt;5.547945&lt;/td&gt;
+      &lt;td&gt;81&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtExposure&lt;/th&gt;
+      &lt;td&gt;2.602740&lt;/td&gt;
+      &lt;td&gt;38&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtFinType2&lt;/th&gt;
+      &lt;td&gt;2.602740&lt;/td&gt;
+      &lt;td&gt;38&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtFinType1&lt;/th&gt;
+      &lt;td&gt;2.534247&lt;/td&gt;
+      &lt;td&gt;37&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtCond&lt;/th&gt;
+      &lt;td&gt;2.534247&lt;/td&gt;
+      &lt;td&gt;37&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtQual&lt;/th&gt;
+      &lt;td&gt;2.534247&lt;/td&gt;
+      &lt;td&gt;37&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;MasVnrArea&lt;/th&gt;
+      &lt;td&gt;0.547945&lt;/td&gt;
+      &lt;td&gt;8&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;MasVnrType&lt;/th&gt;
+      &lt;td&gt;0.547945&lt;/td&gt;
+      &lt;td&gt;8&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Electrical&lt;/th&gt;
+      &lt;td&gt;0.068493&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;cols_missing_value(pd.concat((df_train[df_test.columns], df_test)))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Missing Ratio %&lt;/th&gt;
+      &lt;th&gt;Total&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;PoolQC&lt;/th&gt;
+      &lt;td&gt;99.657417&lt;/td&gt;
+      &lt;td&gt;2909&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;MiscFeature&lt;/th&gt;
+      &lt;td&gt;96.402878&lt;/td&gt;
+      &lt;td&gt;2814&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Alley&lt;/th&gt;
+      &lt;td&gt;93.216855&lt;/td&gt;
+      &lt;td&gt;2721&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Fence&lt;/th&gt;
+      &lt;td&gt;80.438506&lt;/td&gt;
+      &lt;td&gt;2348&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;FireplaceQu&lt;/th&gt;
+      &lt;td&gt;48.646797&lt;/td&gt;
+      &lt;td&gt;1420&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;LotFrontage&lt;/th&gt;
+      &lt;td&gt;16.649538&lt;/td&gt;
+      &lt;td&gt;486&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageFinish&lt;/th&gt;
+      &lt;td&gt;5.447071&lt;/td&gt;
+      &lt;td&gt;159&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageQual&lt;/th&gt;
+      &lt;td&gt;5.447071&lt;/td&gt;
+      &lt;td&gt;159&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageCond&lt;/th&gt;
+      &lt;td&gt;5.447071&lt;/td&gt;
+      &lt;td&gt;159&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageYrBlt&lt;/th&gt;
+      &lt;td&gt;5.447071&lt;/td&gt;
+      &lt;td&gt;159&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageType&lt;/th&gt;
+      &lt;td&gt;5.378554&lt;/td&gt;
+      &lt;td&gt;157&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtExposure&lt;/th&gt;
+      &lt;td&gt;2.809181&lt;/td&gt;
+      &lt;td&gt;82&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtCond&lt;/th&gt;
+      &lt;td&gt;2.809181&lt;/td&gt;
+      &lt;td&gt;82&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtQual&lt;/th&gt;
+      &lt;td&gt;2.774923&lt;/td&gt;
+      &lt;td&gt;81&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtFinType2&lt;/th&gt;
+      &lt;td&gt;2.740665&lt;/td&gt;
+      &lt;td&gt;80&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtFinType1&lt;/th&gt;
+      &lt;td&gt;2.706406&lt;/td&gt;
+      &lt;td&gt;79&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;MasVnrType&lt;/th&gt;
+      &lt;td&gt;0.822199&lt;/td&gt;
+      &lt;td&gt;24&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;MasVnrArea&lt;/th&gt;
+      &lt;td&gt;0.787941&lt;/td&gt;
+      &lt;td&gt;23&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;MSZoning&lt;/th&gt;
+      &lt;td&gt;0.137033&lt;/td&gt;
+      &lt;td&gt;4&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtFullBath&lt;/th&gt;
+      &lt;td&gt;0.068517&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtHalfBath&lt;/th&gt;
+      &lt;td&gt;0.068517&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Functional&lt;/th&gt;
+      &lt;td&gt;0.068517&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Utilities&lt;/th&gt;
+      &lt;td&gt;0.068517&lt;/td&gt;
+      &lt;td&gt;2&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageArea&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;GarageCars&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Electrical&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;KitchenQual&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;TotalBsmtSF&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtUnfSF&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtFinSF2&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;BsmtFinSF1&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Exterior2nd&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Exterior1st&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;SaleType&lt;/th&gt;
+      &lt;td&gt;0.034258&lt;/td&gt;
+      &lt;td&gt;1&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;There are quite a lot of missing values, some cols are missing almost all of the data. We need to handle the missing values by imputation or other methods later.&lt;/p&gt;
+
+&lt;h2 id=&#34;a-look-at-distributions&#34;&gt;A look at distributions&lt;/h2&gt;
+
+&lt;p&gt;As we&amp;rsquo;re predicting the &amp;lsquo;SalePrice&amp;rsquo;, so we should have a look at the stats of
+ this col.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_train[&#39;SalePrice&#39;].describe()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;count      1460.000000
+mean     180921.195890
+std       79442.502883
+min       34900.000000
+25%      129975.000000
+50%      163000.000000
+75%      214000.000000
+max      755000.000000
+Name: SalePrice, dtype: float64
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_train[&#39;SalePrice&#39;].hist(bins=30)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;matplotlib.axes._subplots.AxesSubplot at 0x11414e4a8&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;output_12_1.svg&#34; alt=&#34;svg&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The values of &amp;lsquo;SalePrice&amp;rsquo; does fall in a normal distribution. In general, learning algorithms benefit from standardization of the data set. So we&amp;rsquo;ll transform the target values by &lt;code&gt;QuantileTransformer&lt;/code&gt; and &lt;code&gt;TransformedTargetRegressor&lt;/code&gt; later when training and testing.&lt;/p&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s have a look at other columns&amp;rsquo; skewnesses.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from scipy.stats import skew
+
+# Concat training and testing sets together to see the full picture
+df_all = pd.concat((df_train, df_test)).reset_index(
+    drop=True).drop([&#39;SalePrice&#39;], axis=&#39;columns&#39;)
+
+numeric_cols = df_all.select_dtypes(
+    exclude=[&#39;object&#39;, &#39;category&#39;]).columns
+
+# Check the skewness of the numerical cols
+skewed_cols = df_all[numeric_cols].apply(
+    lambda col: skew(col)).sort_values(ascending=False)
+
+skewness = pd.DataFrame({&#39;Skewness&#39;: skewed_cols})
+skewness.head(10)
+
+skewness = skewness[abs(skewness[&#39;Skewness&#39;]) &amp;gt; 0.75]
+print(f&#39;{skewness.shape[0]} skewed numerical columns.&#39;)
+
+df_all[skewness.index].hist(figsize=(14, 12))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;/Users/pcx/.pyenv/versions/ml/lib/python3.7/site-packages/ipykernel_launcher.py:5: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass &#39;sort=False&#39;.
+
+To retain the current behavior and silence the warning, pass &#39;sort=True&#39;.
+
+  &amp;quot;&amp;quot;&amp;quot;
+15 skewed numerical columns.
+
+
+array([[&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x1209d3550&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x1041d86d8&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x104200c50&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x104233208&amp;gt;],
+       [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120b97780&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120bc1cf8&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120bef2b0&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120c17860&amp;gt;],
+       [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120c17898&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120c71358&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120f2a8d0&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120f53e48&amp;gt;],
+       [&amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120f84400&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120fac978&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x120fd3ef0&amp;gt;,
+        &amp;lt;matplotlib.axes._subplots.AxesSubplot object at 0x1210054a8&amp;gt;]],
+      dtype=object)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;output_14_2.svg&#34; alt=&#34;svg&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;We also need to handle the skewed variables later.&lt;/p&gt;
+
+&lt;h1 id=&#34;preprocessing-data&#34;&gt;Preprocessing data&lt;/h1&gt;
+
+&lt;h2 id=&#34;impute-missing-values&#34;&gt;Impute missing values&lt;/h2&gt;
+
+&lt;p&gt;There are quite a lot of missing values, some cols are missing almost all of
+ the data. Now look into the data description to see what the variables really
+ are and how should we deal with them.
+ We&amp;rsquo;re now concating the training set and testing set since we need to handle
+ the missing values in both data sets. We will split them when we need.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# keep Id col for later unpack training and testing df
+ids_train = df_train[&#39;Id&#39;]
+ids_test = df_test[&#39;Id&#39;]
+Y_train = df_train[&#39;SalePrice&#39;].values
+df_all = pd.concat((df_train, df_test)).reset_index(
+    drop=True).drop([&#39;SalePrice&#39;], axis=&#39;columns&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;/Users/pcx/.pyenv/versions/ml/lib/python3.7/site-packages/ipykernel_launcher.py:6: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass &#39;sort=False&#39;.
+
+To retain the current behavior and silence the warning, pass &#39;sort=True&#39;.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&amp;lsquo;PoolQC&amp;rsquo; (Pool quality) is the one with most missing values, and NA stands for &amp;ldquo;No Pool&amp;rdquo; (described in data_description.txt), so the missing values should be replaced by str &amp;ldquo;No Pool&amp;rdquo;. And this col should be an ordered categorical variable.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_all[&#39;PoolQC&#39;] = df_all[&#39;PoolQC&#39;].fillna(&amp;quot;No Pool&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The same applies to &amp;lsquo;MiscFeature&amp;rsquo;, &amp;lsquo;Alley&amp;rsquo;, &amp;lsquo;Fence&amp;rsquo;, &amp;lsquo;FireplaceQu&amp;rsquo;,
+ &amp;lsquo;GarageType&amp;rsquo;, &amp;lsquo;GarageFinish&amp;rsquo;, &amp;lsquo;GarageQual&amp;rsquo;, &amp;lsquo;GarageCond&amp;rsquo;, &amp;lsquo;BsmtQual&amp;rsquo;,
+ &amp;lsquo;BsmtCond&amp;rsquo;, &amp;lsquo;BsmtExposure&amp;rsquo;, &amp;lsquo;BsmtFinType1&amp;rsquo;, &amp;lsquo;BsmtFinType2&amp;rsquo;, &amp;lsquo;MasVnrType&amp;rsquo;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_all[&#39;MiscFeature&#39;] = df_all[&#39;MiscFeature&#39;].fillna(&amp;quot;None&amp;quot;)
+df_all[&#39;Alley&#39;] = df_all[&#39;Alley&#39;].fillna(&amp;quot;No Alley access&amp;quot;)
+df_all[&#39;Fence&#39;] = df_all[&#39;Fence&#39;].fillna(&amp;quot;No Fence&amp;quot;)
+df_all[&#39;FireplaceQu&#39;] = df_all[&#39;FireplaceQu&#39;].fillna(&amp;quot;No Fireplace&amp;quot;)
+df_all[&#39;GarageType&#39;] = df_all[&#39;GarageType&#39;].fillna(&amp;quot;No Garage&amp;quot;)
+df_all[&#39;GarageFinish&#39;] = df_all[&#39;GarageFinish&#39;].fillna(&amp;quot;No Garage&amp;quot;)
+df_all[&#39;GarageQual&#39;] = df_all[&#39;GarageQual&#39;].fillna(&amp;quot;No Garage&amp;quot;)
+df_all[&#39;GarageCond&#39;] = df_all[&#39;GarageCond&#39;].fillna(&amp;quot;No Garage&amp;quot;)
+df_all[&#39;BsmtCond&#39;] = df_all[&#39;BsmtCond&#39;].fillna(&amp;quot;No Basement&amp;quot;)
+df_all[&#39;BsmtQual&#39;] = df_all[&#39;BsmtQual&#39;].fillna(&amp;quot;No Basement&amp;quot;)
+df_all[&#39;BsmtExposure&#39;] = df_all[&#39;BsmtExposure&#39;].fillna(&amp;quot;No Basement&amp;quot;)
+df_all[&#39;BsmtFinType1&#39;] = df_all[&#39;BsmtFinType1&#39;].fillna(&amp;quot;No Basement&amp;quot;)
+df_all[&#39;BsmtFinType2&#39;] = df_all[&#39;BsmtFinType2&#39;].fillna(&amp;quot;No Basement&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s check &amp;lsquo;GarageYrBlt&amp;rsquo;, &amp;lsquo;GarageArea&amp;rsquo;, &amp;lsquo;GarageCars&amp;rsquo;.
+ Since only 1 record of &amp;lsquo;GarageCars&amp;rsquo; is missing, and it&amp;rsquo;s &amp;lsquo;GarageType&amp;rsquo; is
+ &amp;lsquo;Detchd&amp;rsquo;, so let&amp;rsquo;s make it as size of the mode/median of &amp;lsquo;GarageCars&amp;rsquo; when
+ type is &amp;lsquo;Detchd&amp;rsquo;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_all[df_all[&#39;GarageCars&#39;].isnull()]
+df_all[df_all[&#39;GarageCars&#39;].isnull()][&#39;GarageType&#39;]
+df_all[&#39;GarageCars&#39;] = df_all[&#39;GarageCars&#39;].fillna(
+    int(df_all[df_all[&#39;GarageType&#39;] == &#39;Detchd&#39;][&#39;GarageCars&#39;].mode()))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It&amp;rsquo;s the same record for the missing &amp;lsquo;GarageArea&amp;rsquo; value, as we filled its
+ &amp;lsquo;GarageCars&amp;rsquo; to the mode value, we will fill the area as the mean value of
+ &amp;lsquo;GarageArea&amp;rsquo; where the &amp;lsquo;GarageCars&amp;rsquo; == mode value of &amp;lsquo;Detchd&amp;rsquo;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_all[df_all[&#39;GarageArea&#39;].isnull()]
+df_all[&#39;GarageArea&#39;] = df_all[&#39;GarageArea&#39;].fillna(
+    df_all[df_all[&#39;GarageType&#39;] == &#39;Detchd&#39;][&#39;GarageArea&#39;].mean())
+
+# df_all[df_all[&#39;GarageYrBlt&#39;].isnull()][&#39;GarageType&#39;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For the records that have no garage, we set the null value of &amp;lsquo;GarageYrBlt&amp;rsquo;
+ to 0, but for the records with type &amp;lsquo;Detchd&amp;rsquo;, we set the null value to the median
+ value of the built year with type &amp;lsquo;Detchd&amp;rsquo;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;year_median = df_all[df_all[&#39;GarageType&#39;] == &#39;Detchd&#39;][&#39;GarageYrBlt&#39;].median()
+df_all[&#39;GarageYrBlt&#39;] = df_all[&#39;GarageYrBlt&#39;][
+    df_all[&#39;GarageType&#39;] == &#39;Detchd&#39;].fillna(year_median)
+
+df_all[&#39;GarageYrBlt&#39;] = df_all[&#39;GarageYrBlt&#39;].fillna(0)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Since there are quite many missing value for &amp;lsquo;LotFrontage&amp;rsquo; (16.65%), we would drop this col.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_all = df_all.drop(&#39;LotFrontage&#39;, axis=&#39;columns&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Filling with 0 for those likely to be 0.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;bsmt_zero_missing = [&#39;BsmtFinSF1&#39;, &#39;BsmtFinSF2&#39;,
+                     &#39;BsmtUnfSF&#39;, &#39;TotalBsmtSF&#39;, &#39;BsmtFullBath&#39;, &#39;BsmtHalfBath&#39;]
+
+for col in bsmt_zero_missing:
+    df_all[col] = df_all[col].fillna(0)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&amp;lsquo;MasVnrArea&amp;rsquo; and &amp;lsquo;MasVnrType&amp;rsquo;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_all[df_all[&#39;MasVnrType&#39;].isnull()][&#39;MasVnrArea&#39;]
+df_all[&#39;MasVnrType&#39;].astype(&#39;category&#39;).value_counts()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;None       1742
+BrkFace     879
+Stone       249
+BrkCmn       25
+Name: MasVnrType, dtype: int64
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For all the records with missing values of &amp;lsquo;MasVnrType&amp;rsquo;, 1 record with
+ &amp;lsquo;MasVnrArea&amp;rsquo; is not NaN, so we filling its type as &amp;lsquo;BrkFace&amp;rsquo;, which is the
+ most occurred none-None type. Other missing values of &amp;lsquo;MasVnrType&amp;rsquo; we will
+ fill in with the most common &lt;code&gt;None&lt;/code&gt;, so its &amp;lsquo;MasVnrArea&amp;rsquo; will be 0.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_all[&#39;MasVnrType&#39;] = df_all[&#39;MasVnrType&#39;][
+    df_all[&#39;MasVnrArea&#39;].notna()].fillna(&#39;BrkFace&#39;)
+df_all[&#39;MasVnrType&#39;] = df_all[&#39;MasVnrType&#39;].fillna(&#39;None&#39;)
+df_all[&#39;MasVnrArea&#39;] = df_all[&#39;MasVnrArea&#39;].fillna(0)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Set the NaN to the mostly occurred value &amp;lsquo;RL&amp;rsquo;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_all[&#39;MSZoning&#39;].astype(&#39;category&#39;).value_counts()
+df_all[&#39;MSZoning&#39;] = df_all[&#39;MSZoning&#39;].fillna(&#39;RL&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Set the NaN to the mostly occurred value &#39;AllPub&#39;.
+df_all[&#39;Utilities&#39;].astype(&#39;category&#39;).value_counts()
+df_all[&#39;Utilities&#39;] = df_all[&#39;Utilities&#39;].fillna(&#39;AllPub&#39;)
+
+# keep or not?
+df_all = df_all.drop([&#39;Utilities&#39;], axis=&#39;columns&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Set NaN to mostly occurred value for the rest cols.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;cols_nan_mode = [&#39;Functional&#39;, &#39;Electrical&#39;, &#39;KitchenQual&#39;,
+                 &#39;Exterior1st&#39;, &#39;Exterior2nd&#39;, &#39;SaleType&#39;, &#39;MSSubClass&#39;]
+
+for col in cols_nan_mode:
+    df_all[col] = df_all[col].fillna(df_all[col].mode()[0])
+
+cols_missing_value(df_all)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Missing Ratio %&lt;/th&gt;
+      &lt;th&gt;Total&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now there&amp;rsquo;s no missing values. Let&amp;rsquo;s move to the next part.&lt;/p&gt;
+
+&lt;h2 id=&#34;transform-categorical-variables&#34;&gt;Transform categorical variables&lt;/h2&gt;
+
+&lt;p&gt;We&amp;rsquo;ll firstly transform some of the variables from numerical to categorical as
+ they should be. And add one variable.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;cols_num_cat = [&#39;MSSubClass&#39;, &#39;YrSold&#39;, &#39;MoSold&#39;]
+for col in cols_num_cat:
+    df_all[col] = df_all[col].astype(&#39;category&#39;)
+
+# Adding total sqfootage feature
+df_all[&#39;TotalSF&#39;] = df_all[&#39;TotalBsmtSF&#39;] + \
+    df_all[&#39;1stFlrSF&#39;] + df_all[&#39;2ndFlrSF&#39;]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;check-and-handle-outliers&#34;&gt;Check and handle outliers&lt;/h2&gt;
+
+&lt;p&gt;After handling the missing values, now we have a look at if there are outliers
+ in the training set with the target variable by scatter plots.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import matplotlib.pyplot as plt
+
+df_train = df_all[:len(ids_train)]
+df_test = df_all[len(ids_train):]
+
+cols = df_train.select_dtypes([&#39;int64&#39;, &#39;float64&#39;])
+# cols = df_train.select_dtypes([&#39;int64&#39;, &#39;float64&#39;])
+df_train = pd.concat([df_train, pd.DataFrame(
+    Y_train, columns=[&#39;SalePrice&#39;])], axis=&#39;columns&#39;)
+
+fig, axes = plt.subplots(6, 6, figsize=(30, 30))
+for i, col in enumerate(cols):
+    df_train.plot.scatter(x=col, y=&#39;SalePrice&#39;, ax=axes[i // 6, i % 6])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;output_44_0.svg&#34; alt=&#34;svg&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The continuous variable &amp;lsquo;GrLivArea&amp;rsquo; seems having 2 values have very
+ different &amp;ldquo;hehavior&amp;rdquo;. The 2 bottom right dots may be very inferential that
+ have quite big areas but low prices. Let&amp;rsquo;s remove them to see if it&amp;rsquo;s better
+ for the results. After removing these 2 rows, we would see that outliers in
+ other cols such &amp;lsquo;TotalBsmtSF&amp;rsquo; and &amp;lsquo;TotalSF&amp;rsquo; are disappeared as well.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_train = df_train.drop(df_train[(df_train[&#39;GrLivArea&#39;] &amp;gt; 4000) &amp;amp;
+                                  (df_train[&#39;SalePrice&#39;] &amp;lt; 250000)].index)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Packing back data sets after removing outliers in training set.
+ids_train = df_train[&#39;Id&#39;]
+ids_test = df_test[&#39;Id&#39;]
+Y_train = df_train[&#39;SalePrice&#39;].values
+df_all = pd.concat((df_train, df_test)).reset_index(
+    drop=True).drop([&#39;SalePrice&#39;], axis=&#39;columns&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;transform-skewed-variables&#34;&gt;Transform skewed variables&lt;/h2&gt;
+
+&lt;p&gt;We will transform the skewed variables into normal distributions by
+ &lt;code&gt;quantile_transform&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;numeric_cols = df_all.select_dtypes(
+    exclude=[&#39;object&#39;, &#39;category&#39;]).columns
+
+# Check the skewnesses of the numerical cols
+skewed_cols = df_all[numeric_cols].apply(
+    lambda col: skew(col)).sort_values(ascending=False)
+
+skewness = pd.DataFrame({&#39;Skewness&#39;: skewed_cols})
+
+skewness = skewness[abs(skewness[&#39;Skewness&#39;]) &amp;gt; 0.75]
+print(f&#39;{skewness.shape[0]} skewed numerical columns.&#39;)
+
+from sklearn.preprocessing import quantile_transform
+import numpy as np
+
+skewed_features = skewness.index
+df_all[skewed_features] = quantile_transform(
+    df_all[skewed_features], output_distribution=&#39;normal&#39;, copy=True)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;20 skewed numerical columns.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Check again for the skewnesses of the numerical cols
+skewed_cols = df_all[numeric_cols].apply(
+    lambda col: skew(col)).sort_values(ascending=False)
+
+skewness = pd.DataFrame({&#39;Skewness&#39;: skewed_cols})
+
+skewness = skewness[abs(skewness[&#39;Skewness&#39;]) &amp;gt; 0.75]
+print(f&#39;{skewness.shape[0]} skewed numerical columns.&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;11 skewed numerical columns.
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;encode-categorical-valuee&#34;&gt;Encode categorical valuee&lt;/h2&gt;
+
+&lt;p&gt;Transform categorical cols by using &lt;code&gt;pd.get_dummies()&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;print(df_all.shape)
+# Column names in the DataFrame to be encoded. If columns is None then all the
+# columns with object or category dtype will be converted.
+df_all = pd.get_dummies(df_all)
+print(df_all.shape)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;(2917, 79)
+(2917, 330)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;training-and-testing&#34;&gt;Training and testing&lt;/h1&gt;
+
+&lt;h2 id=&#34;base-model&#34;&gt;Base model&lt;/h2&gt;
+
+&lt;p&gt;Now we will start to train and test with a base model with default parameters
+ to see how it would perform as a base line.
+ Root-Mean-Squared-Error (RMSE) as the evaluation metric for the competition, the equation is:&lt;/p&gt;
+
+&lt;p&gt;$$\operatorname{RMSE}(y, \hat{y})=\sqrt{\frac{1}{n_{\text {samples }}} \sum_{i=0}^{n_{\text {symples }}-1}\left(y_{i}-\hat{y}_{i}\right)^{2}}$$.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Unpack training and testing data sets
+df_train = df_all[:len(ids_train)].drop([&#39;Id&#39;], axis=&#39;columns&#39;)
+df_test = df_all[len(ids_train):].drop([&#39;Id&#39;], axis=&#39;columns&#39;)
+
+X_train = df_train.values
+X_test = df_test
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.linear_model import Lasso, ElasticNet, Ridge
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import mean_squared_error, make_scorer
+from sklearn.compose import TransformedTargetRegressor
+from sklearn.preprocessing import QuantileTransformer
+
+Y_train_norm = np.log1p(Y_train)
+
+# there&#39;s no implementation of RMSE in the scikit-learn library, so we have to
+# define a scorer of RMSE
+def rmse_cal(y_true, y_pred):
+    return np.sqrt(mean_squared_error(y_true, y_pred))
+    # return np.sqrt(np.sum(np.square(y_pred - y_true)) / len(y_pred))
+
+
+# if the custom score function is a loss (greater_is_better=False), the output
+# of the python function is negated by the scorer object, conforming to the
+# cross validation convention that scorers return higher values for better
+# models.
+rmse = make_scorer(rmse_cal, greater_is_better=False)
+
+# ridgepip = Pipeline([
+    # (&#39;tran&#39;, TransformedTargetRegressor(
+    #     regressor=Lasso(), func=np.log1p, inverse_func=np.expm1)),
+    # (&#39;tran&#39;, TransformedTargetRegressor(
+    #     regressor=Ridge(), func=np.log1p, inverse_func=np.expm1)),
+# ])
+
+models = [
+    Lasso(),
+    # ridgepip,
+    # # ElasticNet(),
+    Ridge(),
+]
+
+CV = 5
+for m in models:
+    scores = -cross_val_score(m, X_train, Y_train_norm,
+                              scoring=rmse, cv=5, n_jobs=-1)
+    print(f&#39;{type(m).__name__}\n&#39;
+          f&#39;Scores: {scores}\n&#39;
+          # +/-std*2 for 95% confidence interval
+          f&#39;Accuracy: {scores.mean(): 0.4f} (+/-{scores.std() * 2: 0.4f})\n&#39;
+          f&#39;{&amp;quot;-&amp;quot;*20}&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;Lasso
+Scores: [0.22425222 0.23934427 0.23998284 0.24165163 0.23227816]
+Accuracy:  0.2355 (+/- 0.0129)
+--------------------
+Ridge
+Scores: [0.11456344 0.12197379 0.13560006 0.1083432  0.1172416 ]
+Accuracy:  0.1195 (+/- 0.0183)
+--------------------
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;gridsearch-for-best-model-with-best-parameters&#34;&gt;GridSearch for best model with best parameters&lt;/h2&gt;
+
+&lt;p&gt;The base models give somehow good results. The CV RMSE score of the /Ridge/
+ model is around the top-1000 in the competition&amp;rsquo;s leaderboard. Now let&amp;rsquo;s try
+ to find the best parameters for these and other models with &lt;code&gt;GridSearchCV&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from sklearn.svm import SVR
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import RobustScaler
+from sklearn.kernel_ridge import KernelRidge
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn import metrics
+
+
+Y_train_norm = np.log1p(Y_train)
+
+X_train_cv, X_test_cv, Y_train_cv, Y_test_cv = train_test_split(
+    X_train, Y_train_norm, test_size=0.3)
+
+
+param_space = {
+    &#39;rob_lasso&#39;: {
+        &#39;model&#39;: Pipeline([(&#39;sca&#39;, RobustScaler()), (&#39;model&#39;, Lasso())]),
+        &#39;params&#39;: {
+            &#39;model__alpha&#39;: [0.00005, 0.0004, 0.0005, 0.0007, 0.005, 0.05, 0.5, 0.8, 1],
+        }
+    },
+    &#39;ridge&#39;: {
+        &#39;model&#39;: Ridge(),
+        &#39;params&#39;: {
+            &#39;alpha&#39;: [1e-3, 1e-2, 1e-1, 1, 10],
+        }
+    },
+    &#39;kernel_ridge&#39;: {
+        &#39;model&#39;: KernelRidge(),
+        &#39;params&#39;: {
+            &#39;alpha&#39;: [1e-3, 1e-2, 1e-1, 1, 10],
+        }
+    },
+    &#39;elastic_net&#39;: {
+        &#39;model&#39;: Pipeline([(&#39;sca&#39;, RobustScaler()), (&#39;model&#39;, ElasticNet())]),
+        &#39;params&#39;: {
+            &#39;model__alpha&#39;: [0.00005, 0.0004, 0.0005, 0.0007, 0.005, 0.05, 0.5, 0.8, 1],
+            # Note that a good choice of list of values for l1_ratio is often to
+            # put more values close to 1 (i.e. Lasso) and less close to 0 (i.e.
+            # Ridge)
+            &#39;model__l1_ratio&#39;: [.1, .5, .7, .75, .8, .85, .9, .95, .97, .99, .995, 1],
+        }
+    },
+    # &#39;gboost&#39;: {
+    #     &#39;model&#39;: GradientBoostingRegressor(),
+    #     &#39;params&#39;: {
+    #         &#39;loss&#39;: [&#39;ls&#39;, &#39;lad&#39;, &#39;huber&#39;, &#39;quantile&#39;],
+    #         &#39;learning_rate&#39;: [0.01, 0.1],
+    #         &#39;n_estimators&#39;: [100, 500, 1000, 3000],
+    #         &#39;max_depth&#39;: [2, 3, 4],
+    #         &#39;min_samples_split&#39;: [2, 5, 10],
+    #     }
+    # },
+    # &#39;svr&#39;: {
+    #     &#39;model&#39;: SVR(),
+    #     &#39;params&#39;: {
+    #         &#39;kernel&#39;: [&#39;linear&#39;, &#39;rbf&#39;],
+    #         &#39;C&#39;: [1, 10],
+    #     }
+    # },
+}
+
+gs_rec = []
+
+# grid search parameters
+for name, pair in param_space.items():
+    print(f&#39;{name}---------------&#39;)
+    gs_rg = GridSearchCV(pair[&#39;model&#39;], pair[&#39;params&#39;],
+                         scoring=rmse, cv=CV, error_score=0, n_jobs=-1)
+    gs_rg.fit(X_train, Y_train_norm)
+    print(gs_rg.best_params_)
+    print(gs_rg.best_score_)
+
+    gs_rg_cv = GridSearchCV(pair[&#39;model&#39;], pair[&#39;params&#39;],
+                            scoring=rmse, cv=CV, error_score=0, n_jobs=-1)
+    gs_rg_cv.fit(X_train_cv, Y_train_cv)
+    pred_test = gs_rg_cv.predict(X_test_cv)
+    y_score = rmse_cal(Y_test_cv, pred_test)
+
+    print(gs_rg_cv.best_params_)
+    print(gs_rg_cv.best_score_)
+    print(y_score)
+
+    gs_rec.append({
+        &#39;name&#39;: name,
+        &#39;params&#39;: gs_rg.best_params_,
+        &#39;score&#39;: -gs_rg.best_score_,
+        &#39;cv_test_params&#39;: gs_rg_cv.best_params_,
+        &#39;cv_test_score&#39;: y_score
+    })
+
+df_gs = pd.DataFrame(gs_rec, columns=[&#39;name&#39;, &#39;score&#39;, &#39;params&#39;,
+                                      &#39;cv_test_score&#39;, &#39;cv_test_params&#39;]
+                     ).sort_values(by=[&#39;score&#39;, &#39;cv_test_score&#39;])
+df_gs
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;rob_lasso---------------
+{&#39;model__alpha&#39;: 0.0005}
+-0.1108321642082426
+{&#39;model__alpha&#39;: 0.0005}
+-0.11385591248537665
+0.1092651116732159
+ridge---------------
+{&#39;alpha&#39;: 10}
+-0.11417733254437629
+{&#39;alpha&#39;: 10}
+-0.11723423641202352
+0.11022009984391984
+kernel_ridge---------------
+{&#39;alpha&#39;: 10}
+-0.11675117173959225
+{&#39;alpha&#39;: 10}
+-0.1209044169077714
+0.11171230919473786
+elastic_net---------------
+{&#39;model__alpha&#39;: 0.0005, &#39;model__l1_ratio&#39;: 0.9}
+-0.11081242246612653
+{&#39;model__alpha&#39;: 0.0007, &#39;model__l1_ratio&#39;: 0.8}
+-0.1138195082928615
+0.10934894252124043
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;name&lt;/th&gt;
+      &lt;th&gt;score&lt;/th&gt;
+      &lt;th&gt;params&lt;/th&gt;
+      &lt;th&gt;cv_test_score&lt;/th&gt;
+      &lt;th&gt;cv_test_params&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;elastic_net&lt;/td&gt;
+      &lt;td&gt;0.110812&lt;/td&gt;
+      &lt;td&gt;{&#39;model__alpha&#39;: 0.0005, &#39;model__l1_ratio&#39;: 0.9}&lt;/td&gt;
+      &lt;td&gt;0.109349&lt;/td&gt;
+      &lt;td&gt;{&#39;model__alpha&#39;: 0.0007, &#39;model__l1_ratio&#39;: 0.8}&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;rob_lasso&lt;/td&gt;
+      &lt;td&gt;0.110832&lt;/td&gt;
+      &lt;td&gt;{&#39;model__alpha&#39;: 0.0005}&lt;/td&gt;
+      &lt;td&gt;0.109265&lt;/td&gt;
+      &lt;td&gt;{&#39;model__alpha&#39;: 0.0005}&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;ridge&lt;/td&gt;
+      &lt;td&gt;0.114177&lt;/td&gt;
+      &lt;td&gt;{&#39;alpha&#39;: 10}&lt;/td&gt;
+      &lt;td&gt;0.110220&lt;/td&gt;
+      &lt;td&gt;{&#39;alpha&#39;: 10}&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;kernel_ridge&lt;/td&gt;
+      &lt;td&gt;0.116751&lt;/td&gt;
+      &lt;td&gt;{&#39;alpha&#39;: 10}&lt;/td&gt;
+      &lt;td&gt;0.111712&lt;/td&gt;
+      &lt;td&gt;{&#39;alpha&#39;: 10}&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s Train with the best model so far and predict on the test data. As
+ aforementioned, the values of &amp;lsquo;SalePrice&amp;rsquo; does fall in a normal distribution.
+ So we&amp;rsquo;ll transform the target values by &lt;code&gt;QuantileTransformer&lt;/code&gt; and
+ &lt;code&gt;TransformedTargetRegressor&lt;/code&gt;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;from datetime import datetime
+
+
+# model = Pipeline(
+#     [(&#39;sca&#39;, RobustScaler()), (&#39;model&#39;, TransformedTargetRegressor(
+#         regressor=ElasticNet(alpha=0.0005, l1_ratio=0.85), func=np.log1p, inverse_func=np.expm1))])
+model = Pipeline(
+    [(&#39;sca&#39;, RobustScaler()), (&#39;model&#39;, TransformedTargetRegressor(
+        regressor=ElasticNet(alpha=0.0005, l1_ratio=0.85),
+        # regressor=Lasso(alpha=0.0005),
+        transformer=QuantileTransformer(output_distribution=&#39;normal&#39;)))])
+
+model.fit(X_train, Y_train)
+
+pred = model.predict(X_test)
+
+
+def submit(ids, pred, suffix):
+    sub = pd.DataFrame()
+    sub[&#39;Id&#39;] = ids_test
+    sub[&#39;SalePrice&#39;] = pred
+    timestamp = datetime.now().strftime(&#39;%Y-%m-%d_%H-%M-%S&#39;)
+    # sub.to_csv(
+    # f&#39;result/kaggle1_sub_{suffix}_{score:.5f}.csv&#39;, index=False)
+    sub.to_csv(
+        f&#39;submissions/{suffix}_{timestamp}.csv.gz&#39;, index=False,
+        compression=&#39;gzip&#39;)
+
+
+submit(ids_test, pred, &#39;elastic_net&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Web Notes</title>
       <link>https://pcx.linkedinfo.co/post/web-notes/</link>
       <pubDate>Wed, 10 Jan 2018 05:19:29 +0200</pubDate>

@@ -1,0 +1,2252 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.5.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="PENG, Cong">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Thanks to pmarcelino and serigne for their great work.
+This is my second kaggle competition to practice on the knowledge of data analysis and machine learning. Unlike the Titanic competition, this house prices is a regression problem. So there will be much difference from the previous binary classification. For this competition, we will have 79 variables that describe various aspects of a house and with a price in the training data set.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://pcx.linkedinfo.co/post/houseprice/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.04a87a1cb9027e3c50f566322527c56f.css">
+
+  
+
+  
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-87823019-3', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="https://www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://pcx.linkedinfo.co/post/houseprice/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Cong Peng">
+  <meta property="og:url" content="https://pcx.linkedinfo.co/post/houseprice/">
+  <meta property="og:title" content="Explore the house prices kaggle competition | Cong Peng">
+  <meta property="og:description" content="Thanks to pmarcelino and serigne for their great work.
+This is my second kaggle competition to practice on the knowledge of data analysis and machine learning. Unlike the Titanic competition, this house prices is a regression problem. So there will be much difference from the previous binary classification. For this competition, we will have 79 variables that describe various aspects of a house and with a price in the training data set."><meta property="og:image" content="https://pcx.linkedinfo.co/img/icon-192.png">
+  <meta property="twitter:image" content="https://pcx.linkedinfo.co/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-06-11T17:38:33&#43;02:00">
+    
+    <meta property="article:modified_time" content="2019-09-13T22:06:13&#43;02:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://pcx.linkedinfo.co/post/houseprice/"
+  },
+  "headline": "Explore the house prices kaggle competition",
+  
+  "datePublished": "2019-06-11T17:38:33+02:00",
+  "dateModified": "2019-09-13T22:06:13+02:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "PENG, Cong"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Cong Peng",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://pcx.linkedinfo.co/img/icon-512.png"
+    }
+  },
+  "description": "Thanks to pmarcelino and serigne for their great work.\nThis is my second kaggle competition to practice on the knowledge of data analysis and machine learning. Unlike the Titanic competition, this house prices is a regression problem. So there will be much difference from the previous binary classification. For this competition, we will have 79 variables that describe various aspects of a house and with a price in the training data set."
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Explore the house prices kaggle competition | Cong Peng</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Cong Peng</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#projects"><span>Projects</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#publications"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Explore the house prices kaggle competition</h1>
+
+  
+
+  
+    
+
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
+    Sep 13, 2019
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    14 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+
+  
+    
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      
+
+<p>Thanks to <a href="https://www.kaggle.com/pmarcelino
+ /comprehensive-data-exploration-with-python" target="_blank">pmarcelino</a> and
+ <a href="https://www.kaggle.com/serigne/stacked-regressions-top-4-on-leaderboard" target="_blank">serigne</a> for their great work.</p>
+
+<p>This is my second kaggle competition to practice on the knowledge of data
+ analysis and machine learning. Unlike the Titanic competition, this house
+ prices is a regression problem. So there will be much difference from the
+ previous binary classification. For this competition, we will have 79
+ variables that describe various aspects of a house and with a price in the
+ training data set. And then predict the prices of houses in the testing set
+ based on the 79 variables. This will be a long journey with the 79 variables.
+ So let&rsquo;s start to explore the data with the data description.
+ <!-- * data exploration (checking missing, outliners, distribution), -->
+ <!-- * preprocessing (imputation missing values, skew, encoding categorical), -->
+ <!-- * base model, more models, -->
+ <!-- * [neural_model], -->
+ <!-- * models stats, --></p>
+
+<p><h2>Table of Contents</h2>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#data-exploration">Data exploration</a>
+<ul>
+<li><a href="#check-missing-values">Check missing values</a></li>
+<li><a href="#a-look-at-distributions">A look at distributions</a></li>
+</ul></li>
+<li><a href="#preprocessing-data">Preprocessing data</a>
+<ul>
+<li><a href="#impute-missing-values">Impute missing values</a></li>
+<li><a href="#transform-categorical-variables">Transform categorical variables</a></li>
+<li><a href="#check-and-handle-outliers">Check and handle outliers</a></li>
+<li><a href="#transform-skewed-variables">Transform skewed variables</a></li>
+<li><a href="#encode-categorical-valuee">Encode categorical valuee</a></li>
+</ul></li>
+<li><a href="#training-and-testing">Training and testing</a>
+<ul>
+<li><a href="#base-model">Base model</a></li>
+<li><a href="#gridsearch-for-best-model-with-best-parameters">GridSearch for best model with best parameters</a></li>
+</ul></li>
+</ul>
+</nav></p>
+
+<pre><code class="language-python">import os
+# from typing import List, Union
+# from pysnooper import snoop
+
+import pandas as pd
+# import matplotlib.pyplot as plt
+# import numpy as np
+
+loc = 'house price'
+if os.getcwd().split('/')[-1] != loc:
+    os.chdir(loc)
+
+df_train = pd.read_csv(f'input/train.csv')
+df_test = pd.read_csv(f'input/test.csv')
+</code></pre>
+
+<h1 id="data-exploration">Data exploration</h1>
+
+<p>Let&rsquo;s firstly have a look at the data we have.</p>
+
+<pre><code class="language-python">print(df_train.shape)
+df_train.head()
+</code></pre>
+
+<pre><code>(1460, 81)
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Id</th>
+      <th>MSSubClass</th>
+      <th>MSZoning</th>
+      <th>LotFrontage</th>
+      <th>LotArea</th>
+      <th>Street</th>
+      <th>Alley</th>
+      <th>LotShape</th>
+      <th>LandContour</th>
+      <th>Utilities</th>
+      <th>...</th>
+      <th>PoolArea</th>
+      <th>PoolQC</th>
+      <th>Fence</th>
+      <th>MiscFeature</th>
+      <th>MiscVal</th>
+      <th>MoSold</th>
+      <th>YrSold</th>
+      <th>SaleType</th>
+      <th>SaleCondition</th>
+      <th>SalePrice</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1</td>
+      <td>60</td>
+      <td>RL</td>
+      <td>65.0</td>
+      <td>8450</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>Reg</td>
+      <td>Lvl</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>2</td>
+      <td>2008</td>
+      <td>WD</td>
+      <td>Normal</td>
+      <td>208500</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+      <td>20</td>
+      <td>RL</td>
+      <td>80.0</td>
+      <td>9600</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>Reg</td>
+      <td>Lvl</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>5</td>
+      <td>2007</td>
+      <td>WD</td>
+      <td>Normal</td>
+      <td>181500</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>3</td>
+      <td>60</td>
+      <td>RL</td>
+      <td>68.0</td>
+      <td>11250</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>IR1</td>
+      <td>Lvl</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>9</td>
+      <td>2008</td>
+      <td>WD</td>
+      <td>Normal</td>
+      <td>223500</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>4</td>
+      <td>70</td>
+      <td>RL</td>
+      <td>60.0</td>
+      <td>9550</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>IR1</td>
+      <td>Lvl</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>2</td>
+      <td>2006</td>
+      <td>WD</td>
+      <td>Abnorml</td>
+      <td>140000</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>5</td>
+      <td>60</td>
+      <td>RL</td>
+      <td>84.0</td>
+      <td>14260</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>IR1</td>
+      <td>Lvl</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>12</td>
+      <td>2008</td>
+      <td>WD</td>
+      <td>Normal</td>
+      <td>250000</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 81 columns</p>
+</div>
+
+<pre><code class="language-python">print(df_test.shape)
+df_test.head()
+</code></pre>
+
+<pre><code>(1459, 80)
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Id</th>
+      <th>MSSubClass</th>
+      <th>MSZoning</th>
+      <th>LotFrontage</th>
+      <th>LotArea</th>
+      <th>Street</th>
+      <th>Alley</th>
+      <th>LotShape</th>
+      <th>LandContour</th>
+      <th>Utilities</th>
+      <th>...</th>
+      <th>ScreenPorch</th>
+      <th>PoolArea</th>
+      <th>PoolQC</th>
+      <th>Fence</th>
+      <th>MiscFeature</th>
+      <th>MiscVal</th>
+      <th>MoSold</th>
+      <th>YrSold</th>
+      <th>SaleType</th>
+      <th>SaleCondition</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1461</td>
+      <td>20</td>
+      <td>RH</td>
+      <td>80.0</td>
+      <td>11622</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>Reg</td>
+      <td>Lvl</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>120</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>MnPrv</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>6</td>
+      <td>2010</td>
+      <td>WD</td>
+      <td>Normal</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1462</td>
+      <td>20</td>
+      <td>RL</td>
+      <td>81.0</td>
+      <td>14267</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>IR1</td>
+      <td>Lvl</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Gar2</td>
+      <td>12500</td>
+      <td>6</td>
+      <td>2010</td>
+      <td>WD</td>
+      <td>Normal</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1463</td>
+      <td>60</td>
+      <td>RL</td>
+      <td>74.0</td>
+      <td>13830</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>IR1</td>
+      <td>Lvl</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>MnPrv</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>3</td>
+      <td>2010</td>
+      <td>WD</td>
+      <td>Normal</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1464</td>
+      <td>60</td>
+      <td>RL</td>
+      <td>78.0</td>
+      <td>9978</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>IR1</td>
+      <td>Lvl</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>0</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>6</td>
+      <td>2010</td>
+      <td>WD</td>
+      <td>Normal</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1465</td>
+      <td>120</td>
+      <td>RL</td>
+      <td>43.0</td>
+      <td>5005</td>
+      <td>Pave</td>
+      <td>NaN</td>
+      <td>IR1</td>
+      <td>HLS</td>
+      <td>AllPub</td>
+      <td>...</td>
+      <td>144</td>
+      <td>0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>1</td>
+      <td>2010</td>
+      <td>WD</td>
+      <td>Normal</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 80 columns</p>
+</div>
+
+<p>So we have 1460 rows in training set and 1459 rows in testing
+ set. Besides the price col in the training set, both data sets have 79 cols of
+ variables + 1 col of &lsquo;Id&rsquo;.</p>
+
+<h2 id="check-missing-values">Check missing values</h2>
+
+<p>Now let&rsquo;s check if there is any missing value in the data.</p>
+
+<pre><code class="language-python">
+
+def cols_missing_value(df):
+    df_null_sum = df.isnull().sum()
+    df_na = (df.isnull().sum() / len(df)) * 100
+    missing_data = pd.concat({'Missing Ratio %': df_na,
+                              'Total': df_null_sum}, axis='columns')
+    return missing_data.drop(missing_data[missing_data['Total'] == 0].index
+                             ).sort_values(by='Total', ascending=False)
+
+
+cols_missing_value(df_train)
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Missing Ratio %</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>PoolQC</th>
+      <td>99.520548</td>
+      <td>1453</td>
+    </tr>
+    <tr>
+      <th>MiscFeature</th>
+      <td>96.301370</td>
+      <td>1406</td>
+    </tr>
+    <tr>
+      <th>Alley</th>
+      <td>93.767123</td>
+      <td>1369</td>
+    </tr>
+    <tr>
+      <th>Fence</th>
+      <td>80.753425</td>
+      <td>1179</td>
+    </tr>
+    <tr>
+      <th>FireplaceQu</th>
+      <td>47.260274</td>
+      <td>690</td>
+    </tr>
+    <tr>
+      <th>LotFrontage</th>
+      <td>17.739726</td>
+      <td>259</td>
+    </tr>
+    <tr>
+      <th>GarageType</th>
+      <td>5.547945</td>
+      <td>81</td>
+    </tr>
+    <tr>
+      <th>GarageYrBlt</th>
+      <td>5.547945</td>
+      <td>81</td>
+    </tr>
+    <tr>
+      <th>GarageFinish</th>
+      <td>5.547945</td>
+      <td>81</td>
+    </tr>
+    <tr>
+      <th>GarageQual</th>
+      <td>5.547945</td>
+      <td>81</td>
+    </tr>
+    <tr>
+      <th>GarageCond</th>
+      <td>5.547945</td>
+      <td>81</td>
+    </tr>
+    <tr>
+      <th>BsmtExposure</th>
+      <td>2.602740</td>
+      <td>38</td>
+    </tr>
+    <tr>
+      <th>BsmtFinType2</th>
+      <td>2.602740</td>
+      <td>38</td>
+    </tr>
+    <tr>
+      <th>BsmtFinType1</th>
+      <td>2.534247</td>
+      <td>37</td>
+    </tr>
+    <tr>
+      <th>BsmtCond</th>
+      <td>2.534247</td>
+      <td>37</td>
+    </tr>
+    <tr>
+      <th>BsmtQual</th>
+      <td>2.534247</td>
+      <td>37</td>
+    </tr>
+    <tr>
+      <th>MasVnrArea</th>
+      <td>0.547945</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>MasVnrType</th>
+      <td>0.547945</td>
+      <td>8</td>
+    </tr>
+    <tr>
+      <th>Electrical</th>
+      <td>0.068493</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<pre><code class="language-python">cols_missing_value(pd.concat((df_train[df_test.columns], df_test)))
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Missing Ratio %</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>PoolQC</th>
+      <td>99.657417</td>
+      <td>2909</td>
+    </tr>
+    <tr>
+      <th>MiscFeature</th>
+      <td>96.402878</td>
+      <td>2814</td>
+    </tr>
+    <tr>
+      <th>Alley</th>
+      <td>93.216855</td>
+      <td>2721</td>
+    </tr>
+    <tr>
+      <th>Fence</th>
+      <td>80.438506</td>
+      <td>2348</td>
+    </tr>
+    <tr>
+      <th>FireplaceQu</th>
+      <td>48.646797</td>
+      <td>1420</td>
+    </tr>
+    <tr>
+      <th>LotFrontage</th>
+      <td>16.649538</td>
+      <td>486</td>
+    </tr>
+    <tr>
+      <th>GarageFinish</th>
+      <td>5.447071</td>
+      <td>159</td>
+    </tr>
+    <tr>
+      <th>GarageQual</th>
+      <td>5.447071</td>
+      <td>159</td>
+    </tr>
+    <tr>
+      <th>GarageCond</th>
+      <td>5.447071</td>
+      <td>159</td>
+    </tr>
+    <tr>
+      <th>GarageYrBlt</th>
+      <td>5.447071</td>
+      <td>159</td>
+    </tr>
+    <tr>
+      <th>GarageType</th>
+      <td>5.378554</td>
+      <td>157</td>
+    </tr>
+    <tr>
+      <th>BsmtExposure</th>
+      <td>2.809181</td>
+      <td>82</td>
+    </tr>
+    <tr>
+      <th>BsmtCond</th>
+      <td>2.809181</td>
+      <td>82</td>
+    </tr>
+    <tr>
+      <th>BsmtQual</th>
+      <td>2.774923</td>
+      <td>81</td>
+    </tr>
+    <tr>
+      <th>BsmtFinType2</th>
+      <td>2.740665</td>
+      <td>80</td>
+    </tr>
+    <tr>
+      <th>BsmtFinType1</th>
+      <td>2.706406</td>
+      <td>79</td>
+    </tr>
+    <tr>
+      <th>MasVnrType</th>
+      <td>0.822199</td>
+      <td>24</td>
+    </tr>
+    <tr>
+      <th>MasVnrArea</th>
+      <td>0.787941</td>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>MSZoning</th>
+      <td>0.137033</td>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>BsmtFullBath</th>
+      <td>0.068517</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>BsmtHalfBath</th>
+      <td>0.068517</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Functional</th>
+      <td>0.068517</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Utilities</th>
+      <td>0.068517</td>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>GarageArea</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>GarageCars</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Electrical</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>KitchenQual</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>TotalBsmtSF</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>BsmtUnfSF</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>BsmtFinSF2</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>BsmtFinSF1</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Exterior2nd</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Exterior1st</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>SaleType</th>
+      <td>0.034258</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>There are quite a lot of missing values, some cols are missing almost all of the data. We need to handle the missing values by imputation or other methods later.</p>
+
+<h2 id="a-look-at-distributions">A look at distributions</h2>
+
+<p>As we&rsquo;re predicting the &lsquo;SalePrice&rsquo;, so we should have a look at the stats of
+ this col.</p>
+
+<pre><code class="language-python">df_train['SalePrice'].describe()
+</code></pre>
+
+<pre><code>count      1460.000000
+mean     180921.195890
+std       79442.502883
+min       34900.000000
+25%      129975.000000
+50%      163000.000000
+75%      214000.000000
+max      755000.000000
+Name: SalePrice, dtype: float64
+</code></pre>
+
+<pre><code class="language-python">df_train['SalePrice'].hist(bins=30)
+</code></pre>
+
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x11414e4a8&gt;
+</code></pre>
+
+<p><img src="output_12_1.svg" alt="svg" /></p>
+
+<p>The values of &lsquo;SalePrice&rsquo; does fall in a normal distribution. In general, learning algorithms benefit from standardization of the data set. So we&rsquo;ll transform the target values by <code>QuantileTransformer</code> and <code>TransformedTargetRegressor</code> later when training and testing.</p>
+
+<p>Now let&rsquo;s have a look at other columns&rsquo; skewnesses.</p>
+
+<pre><code class="language-python">from scipy.stats import skew
+
+# Concat training and testing sets together to see the full picture
+df_all = pd.concat((df_train, df_test)).reset_index(
+    drop=True).drop(['SalePrice'], axis='columns')
+
+numeric_cols = df_all.select_dtypes(
+    exclude=['object', 'category']).columns
+
+# Check the skewness of the numerical cols
+skewed_cols = df_all[numeric_cols].apply(
+    lambda col: skew(col)).sort_values(ascending=False)
+
+skewness = pd.DataFrame({'Skewness': skewed_cols})
+skewness.head(10)
+
+skewness = skewness[abs(skewness['Skewness']) &gt; 0.75]
+print(f'{skewness.shape[0]} skewed numerical columns.')
+
+df_all[skewness.index].hist(figsize=(14, 12))
+</code></pre>
+
+<pre><code>/Users/pcx/.pyenv/versions/ml/lib/python3.7/site-packages/ipykernel_launcher.py:5: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+
+  &quot;&quot;&quot;
+15 skewed numerical columns.
+
+
+array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x1209d3550&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x1041d86d8&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x104200c50&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x104233208&gt;],
+       [&lt;matplotlib.axes._subplots.AxesSubplot object at 0x120b97780&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x120bc1cf8&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x120bef2b0&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x120c17860&gt;],
+       [&lt;matplotlib.axes._subplots.AxesSubplot object at 0x120c17898&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x120c71358&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x120f2a8d0&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x120f53e48&gt;],
+       [&lt;matplotlib.axes._subplots.AxesSubplot object at 0x120f84400&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x120fac978&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x120fd3ef0&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x1210054a8&gt;]],
+      dtype=object)
+</code></pre>
+
+<p><img src="output_14_2.svg" alt="svg" /></p>
+
+<p>We also need to handle the skewed variables later.</p>
+
+<h1 id="preprocessing-data">Preprocessing data</h1>
+
+<h2 id="impute-missing-values">Impute missing values</h2>
+
+<p>There are quite a lot of missing values, some cols are missing almost all of
+ the data. Now look into the data description to see what the variables really
+ are and how should we deal with them.
+ We&rsquo;re now concating the training set and testing set since we need to handle
+ the missing values in both data sets. We will split them when we need.</p>
+
+<pre><code class="language-python"># keep Id col for later unpack training and testing df
+ids_train = df_train['Id']
+ids_test = df_test['Id']
+Y_train = df_train['SalePrice'].values
+df_all = pd.concat((df_train, df_test)).reset_index(
+    drop=True).drop(['SalePrice'], axis='columns')
+</code></pre>
+
+<pre><code>/Users/pcx/.pyenv/versions/ml/lib/python3.7/site-packages/ipykernel_launcher.py:6: FutureWarning: Sorting because non-concatenation axis is not aligned. A future version
+of pandas will change to not sort by default.
+
+To accept the future behavior, pass 'sort=False'.
+
+To retain the current behavior and silence the warning, pass 'sort=True'.
+</code></pre>
+
+<p>&lsquo;PoolQC&rsquo; (Pool quality) is the one with most missing values, and NA stands for &ldquo;No Pool&rdquo; (described in data_description.txt), so the missing values should be replaced by str &ldquo;No Pool&rdquo;. And this col should be an ordered categorical variable.</p>
+
+<pre><code class="language-python">df_all['PoolQC'] = df_all['PoolQC'].fillna(&quot;No Pool&quot;)
+</code></pre>
+
+<p>The same applies to &lsquo;MiscFeature&rsquo;, &lsquo;Alley&rsquo;, &lsquo;Fence&rsquo;, &lsquo;FireplaceQu&rsquo;,
+ &lsquo;GarageType&rsquo;, &lsquo;GarageFinish&rsquo;, &lsquo;GarageQual&rsquo;, &lsquo;GarageCond&rsquo;, &lsquo;BsmtQual&rsquo;,
+ &lsquo;BsmtCond&rsquo;, &lsquo;BsmtExposure&rsquo;, &lsquo;BsmtFinType1&rsquo;, &lsquo;BsmtFinType2&rsquo;, &lsquo;MasVnrType&rsquo;</p>
+
+<pre><code class="language-python">df_all['MiscFeature'] = df_all['MiscFeature'].fillna(&quot;None&quot;)
+df_all['Alley'] = df_all['Alley'].fillna(&quot;No Alley access&quot;)
+df_all['Fence'] = df_all['Fence'].fillna(&quot;No Fence&quot;)
+df_all['FireplaceQu'] = df_all['FireplaceQu'].fillna(&quot;No Fireplace&quot;)
+df_all['GarageType'] = df_all['GarageType'].fillna(&quot;No Garage&quot;)
+df_all['GarageFinish'] = df_all['GarageFinish'].fillna(&quot;No Garage&quot;)
+df_all['GarageQual'] = df_all['GarageQual'].fillna(&quot;No Garage&quot;)
+df_all['GarageCond'] = df_all['GarageCond'].fillna(&quot;No Garage&quot;)
+df_all['BsmtCond'] = df_all['BsmtCond'].fillna(&quot;No Basement&quot;)
+df_all['BsmtQual'] = df_all['BsmtQual'].fillna(&quot;No Basement&quot;)
+df_all['BsmtExposure'] = df_all['BsmtExposure'].fillna(&quot;No Basement&quot;)
+df_all['BsmtFinType1'] = df_all['BsmtFinType1'].fillna(&quot;No Basement&quot;)
+df_all['BsmtFinType2'] = df_all['BsmtFinType2'].fillna(&quot;No Basement&quot;)
+</code></pre>
+
+<p>Now let&rsquo;s check &lsquo;GarageYrBlt&rsquo;, &lsquo;GarageArea&rsquo;, &lsquo;GarageCars&rsquo;.
+ Since only 1 record of &lsquo;GarageCars&rsquo; is missing, and it&rsquo;s &lsquo;GarageType&rsquo; is
+ &lsquo;Detchd&rsquo;, so let&rsquo;s make it as size of the mode/median of &lsquo;GarageCars&rsquo; when
+ type is &lsquo;Detchd&rsquo;.</p>
+
+<pre><code class="language-python">df_all[df_all['GarageCars'].isnull()]
+df_all[df_all['GarageCars'].isnull()]['GarageType']
+df_all['GarageCars'] = df_all['GarageCars'].fillna(
+    int(df_all[df_all['GarageType'] == 'Detchd']['GarageCars'].mode()))
+</code></pre>
+
+<p>It&rsquo;s the same record for the missing &lsquo;GarageArea&rsquo; value, as we filled its
+ &lsquo;GarageCars&rsquo; to the mode value, we will fill the area as the mean value of
+ &lsquo;GarageArea&rsquo; where the &lsquo;GarageCars&rsquo; == mode value of &lsquo;Detchd&rsquo;.</p>
+
+<pre><code class="language-python">df_all[df_all['GarageArea'].isnull()]
+df_all['GarageArea'] = df_all['GarageArea'].fillna(
+    df_all[df_all['GarageType'] == 'Detchd']['GarageArea'].mean())
+
+# df_all[df_all['GarageYrBlt'].isnull()]['GarageType']
+</code></pre>
+
+<p>For the records that have no garage, we set the null value of &lsquo;GarageYrBlt&rsquo;
+ to 0, but for the records with type &lsquo;Detchd&rsquo;, we set the null value to the median
+ value of the built year with type &lsquo;Detchd&rsquo;.</p>
+
+<pre><code class="language-python">year_median = df_all[df_all['GarageType'] == 'Detchd']['GarageYrBlt'].median()
+df_all['GarageYrBlt'] = df_all['GarageYrBlt'][
+    df_all['GarageType'] == 'Detchd'].fillna(year_median)
+
+df_all['GarageYrBlt'] = df_all['GarageYrBlt'].fillna(0)
+</code></pre>
+
+<p>Since there are quite many missing value for &lsquo;LotFrontage&rsquo; (16.65%), we would drop this col.</p>
+
+<pre><code class="language-python">df_all = df_all.drop('LotFrontage', axis='columns')
+</code></pre>
+
+<p>Filling with 0 for those likely to be 0.</p>
+
+<pre><code class="language-python">bsmt_zero_missing = ['BsmtFinSF1', 'BsmtFinSF2',
+                     'BsmtUnfSF', 'TotalBsmtSF', 'BsmtFullBath', 'BsmtHalfBath']
+
+for col in bsmt_zero_missing:
+    df_all[col] = df_all[col].fillna(0)
+</code></pre>
+
+<p>&lsquo;MasVnrArea&rsquo; and &lsquo;MasVnrType&rsquo;</p>
+
+<pre><code class="language-python">df_all[df_all['MasVnrType'].isnull()]['MasVnrArea']
+df_all['MasVnrType'].astype('category').value_counts()
+</code></pre>
+
+<pre><code>None       1742
+BrkFace     879
+Stone       249
+BrkCmn       25
+Name: MasVnrType, dtype: int64
+</code></pre>
+
+<p>For all the records with missing values of &lsquo;MasVnrType&rsquo;, 1 record with
+ &lsquo;MasVnrArea&rsquo; is not NaN, so we filling its type as &lsquo;BrkFace&rsquo;, which is the
+ most occurred none-None type. Other missing values of &lsquo;MasVnrType&rsquo; we will
+ fill in with the most common <code>None</code>, so its &lsquo;MasVnrArea&rsquo; will be 0.</p>
+
+<pre><code class="language-python">df_all['MasVnrType'] = df_all['MasVnrType'][
+    df_all['MasVnrArea'].notna()].fillna('BrkFace')
+df_all['MasVnrType'] = df_all['MasVnrType'].fillna('None')
+df_all['MasVnrArea'] = df_all['MasVnrArea'].fillna(0)
+</code></pre>
+
+<p>Set the NaN to the mostly occurred value &lsquo;RL&rsquo;.</p>
+
+<pre><code class="language-python">df_all['MSZoning'].astype('category').value_counts()
+df_all['MSZoning'] = df_all['MSZoning'].fillna('RL')
+</code></pre>
+
+<pre><code class="language-python"># Set the NaN to the mostly occurred value 'AllPub'.
+df_all['Utilities'].astype('category').value_counts()
+df_all['Utilities'] = df_all['Utilities'].fillna('AllPub')
+
+# keep or not?
+df_all = df_all.drop(['Utilities'], axis='columns')
+</code></pre>
+
+<p>Set NaN to mostly occurred value for the rest cols.</p>
+
+<pre><code class="language-python">cols_nan_mode = ['Functional', 'Electrical', 'KitchenQual',
+                 'Exterior1st', 'Exterior2nd', 'SaleType', 'MSSubClass']
+
+for col in cols_nan_mode:
+    df_all[col] = df_all[col].fillna(df_all[col].mode()[0])
+
+cols_missing_value(df_all)
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Missing Ratio %</th>
+      <th>Total</th>
+    </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+</div>
+
+<p>Now there&rsquo;s no missing values. Let&rsquo;s move to the next part.</p>
+
+<h2 id="transform-categorical-variables">Transform categorical variables</h2>
+
+<p>We&rsquo;ll firstly transform some of the variables from numerical to categorical as
+ they should be. And add one variable.</p>
+
+<pre><code class="language-python">cols_num_cat = ['MSSubClass', 'YrSold', 'MoSold']
+for col in cols_num_cat:
+    df_all[col] = df_all[col].astype('category')
+
+# Adding total sqfootage feature
+df_all['TotalSF'] = df_all['TotalBsmtSF'] + \
+    df_all['1stFlrSF'] + df_all['2ndFlrSF']
+</code></pre>
+
+<h2 id="check-and-handle-outliers">Check and handle outliers</h2>
+
+<p>After handling the missing values, now we have a look at if there are outliers
+ in the training set with the target variable by scatter plots.</p>
+
+<pre><code class="language-python">import matplotlib.pyplot as plt
+
+df_train = df_all[:len(ids_train)]
+df_test = df_all[len(ids_train):]
+
+cols = df_train.select_dtypes(['int64', 'float64'])
+# cols = df_train.select_dtypes(['int64', 'float64'])
+df_train = pd.concat([df_train, pd.DataFrame(
+    Y_train, columns=['SalePrice'])], axis='columns')
+
+fig, axes = plt.subplots(6, 6, figsize=(30, 30))
+for i, col in enumerate(cols):
+    df_train.plot.scatter(x=col, y='SalePrice', ax=axes[i // 6, i % 6])
+</code></pre>
+
+<p><img src="output_44_0.svg" alt="svg" /></p>
+
+<p>The continuous variable &lsquo;GrLivArea&rsquo; seems having 2 values have very
+ different &ldquo;hehavior&rdquo;. The 2 bottom right dots may be very inferential that
+ have quite big areas but low prices. Let&rsquo;s remove them to see if it&rsquo;s better
+ for the results. After removing these 2 rows, we would see that outliers in
+ other cols such &lsquo;TotalBsmtSF&rsquo; and &lsquo;TotalSF&rsquo; are disappeared as well.</p>
+
+<pre><code class="language-python">df_train = df_train.drop(df_train[(df_train['GrLivArea'] &gt; 4000) &amp;
+                                  (df_train['SalePrice'] &lt; 250000)].index)
+</code></pre>
+
+<pre><code class="language-python"># Packing back data sets after removing outliers in training set.
+ids_train = df_train['Id']
+ids_test = df_test['Id']
+Y_train = df_train['SalePrice'].values
+df_all = pd.concat((df_train, df_test)).reset_index(
+    drop=True).drop(['SalePrice'], axis='columns')
+</code></pre>
+
+<h2 id="transform-skewed-variables">Transform skewed variables</h2>
+
+<p>We will transform the skewed variables into normal distributions by
+ <code>quantile_transform</code>.</p>
+
+<pre><code class="language-python">numeric_cols = df_all.select_dtypes(
+    exclude=['object', 'category']).columns
+
+# Check the skewnesses of the numerical cols
+skewed_cols = df_all[numeric_cols].apply(
+    lambda col: skew(col)).sort_values(ascending=False)
+
+skewness = pd.DataFrame({'Skewness': skewed_cols})
+
+skewness = skewness[abs(skewness['Skewness']) &gt; 0.75]
+print(f'{skewness.shape[0]} skewed numerical columns.')
+
+from sklearn.preprocessing import quantile_transform
+import numpy as np
+
+skewed_features = skewness.index
+df_all[skewed_features] = quantile_transform(
+    df_all[skewed_features], output_distribution='normal', copy=True)
+</code></pre>
+
+<pre><code>20 skewed numerical columns.
+</code></pre>
+
+<pre><code class="language-python"># Check again for the skewnesses of the numerical cols
+skewed_cols = df_all[numeric_cols].apply(
+    lambda col: skew(col)).sort_values(ascending=False)
+
+skewness = pd.DataFrame({'Skewness': skewed_cols})
+
+skewness = skewness[abs(skewness['Skewness']) &gt; 0.75]
+print(f'{skewness.shape[0]} skewed numerical columns.')
+</code></pre>
+
+<pre><code>11 skewed numerical columns.
+</code></pre>
+
+<h2 id="encode-categorical-valuee">Encode categorical valuee</h2>
+
+<p>Transform categorical cols by using <code>pd.get_dummies()</code>.</p>
+
+<pre><code class="language-python">print(df_all.shape)
+# Column names in the DataFrame to be encoded. If columns is None then all the
+# columns with object or category dtype will be converted.
+df_all = pd.get_dummies(df_all)
+print(df_all.shape)
+</code></pre>
+
+<pre><code>(2917, 79)
+(2917, 330)
+</code></pre>
+
+<h1 id="training-and-testing">Training and testing</h1>
+
+<h2 id="base-model">Base model</h2>
+
+<p>Now we will start to train and test with a base model with default parameters
+ to see how it would perform as a base line.
+ Root-Mean-Squared-Error (RMSE) as the evaluation metric for the competition, the equation is:</p>
+
+<p>$$\operatorname{RMSE}(y, \hat{y})=\sqrt{\frac{1}{n_{\text {samples }}} \sum_{i=0}^{n_{\text {symples }}-1}\left(y_{i}-\hat{y}_{i}\right)^{2}}$$.</p>
+
+<pre><code class="language-python"># Unpack training and testing data sets
+df_train = df_all[:len(ids_train)].drop(['Id'], axis='columns')
+df_test = df_all[len(ids_train):].drop(['Id'], axis='columns')
+
+X_train = df_train.values
+X_test = df_test
+</code></pre>
+
+<pre><code class="language-python">import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.linear_model import Lasso, ElasticNet, Ridge
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import mean_squared_error, make_scorer
+from sklearn.compose import TransformedTargetRegressor
+from sklearn.preprocessing import QuantileTransformer
+
+Y_train_norm = np.log1p(Y_train)
+
+# there's no implementation of RMSE in the scikit-learn library, so we have to
+# define a scorer of RMSE
+def rmse_cal(y_true, y_pred):
+    return np.sqrt(mean_squared_error(y_true, y_pred))
+    # return np.sqrt(np.sum(np.square(y_pred - y_true)) / len(y_pred))
+
+
+# if the custom score function is a loss (greater_is_better=False), the output
+# of the python function is negated by the scorer object, conforming to the
+# cross validation convention that scorers return higher values for better
+# models.
+rmse = make_scorer(rmse_cal, greater_is_better=False)
+
+# ridgepip = Pipeline([
+    # ('tran', TransformedTargetRegressor(
+    #     regressor=Lasso(), func=np.log1p, inverse_func=np.expm1)),
+    # ('tran', TransformedTargetRegressor(
+    #     regressor=Ridge(), func=np.log1p, inverse_func=np.expm1)),
+# ])
+
+models = [
+    Lasso(),
+    # ridgepip,
+    # # ElasticNet(),
+    Ridge(),
+]
+
+CV = 5
+for m in models:
+    scores = -cross_val_score(m, X_train, Y_train_norm,
+                              scoring=rmse, cv=5, n_jobs=-1)
+    print(f'{type(m).__name__}\n'
+          f'Scores: {scores}\n'
+          # +/-std*2 for 95% confidence interval
+          f'Accuracy: {scores.mean(): 0.4f} (+/-{scores.std() * 2: 0.4f})\n'
+          f'{&quot;-&quot;*20}')
+</code></pre>
+
+<pre><code>Lasso
+Scores: [0.22425222 0.23934427 0.23998284 0.24165163 0.23227816]
+Accuracy:  0.2355 (+/- 0.0129)
+--------------------
+Ridge
+Scores: [0.11456344 0.12197379 0.13560006 0.1083432  0.1172416 ]
+Accuracy:  0.1195 (+/- 0.0183)
+--------------------
+</code></pre>
+
+<h2 id="gridsearch-for-best-model-with-best-parameters">GridSearch for best model with best parameters</h2>
+
+<p>The base models give somehow good results. The CV RMSE score of the /Ridge/
+ model is around the top-1000 in the competition&rsquo;s leaderboard. Now let&rsquo;s try
+ to find the best parameters for these and other models with <code>GridSearchCV</code>.</p>
+
+<pre><code class="language-python">from sklearn.svm import SVR
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import RobustScaler
+from sklearn.kernel_ridge import KernelRidge
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn import metrics
+
+
+Y_train_norm = np.log1p(Y_train)
+
+X_train_cv, X_test_cv, Y_train_cv, Y_test_cv = train_test_split(
+    X_train, Y_train_norm, test_size=0.3)
+
+
+param_space = {
+    'rob_lasso': {
+        'model': Pipeline([('sca', RobustScaler()), ('model', Lasso())]),
+        'params': {
+            'model__alpha': [0.00005, 0.0004, 0.0005, 0.0007, 0.005, 0.05, 0.5, 0.8, 1],
+        }
+    },
+    'ridge': {
+        'model': Ridge(),
+        'params': {
+            'alpha': [1e-3, 1e-2, 1e-1, 1, 10],
+        }
+    },
+    'kernel_ridge': {
+        'model': KernelRidge(),
+        'params': {
+            'alpha': [1e-3, 1e-2, 1e-1, 1, 10],
+        }
+    },
+    'elastic_net': {
+        'model': Pipeline([('sca', RobustScaler()), ('model', ElasticNet())]),
+        'params': {
+            'model__alpha': [0.00005, 0.0004, 0.0005, 0.0007, 0.005, 0.05, 0.5, 0.8, 1],
+            # Note that a good choice of list of values for l1_ratio is often to
+            # put more values close to 1 (i.e. Lasso) and less close to 0 (i.e.
+            # Ridge)
+            'model__l1_ratio': [.1, .5, .7, .75, .8, .85, .9, .95, .97, .99, .995, 1],
+        }
+    },
+    # 'gboost': {
+    #     'model': GradientBoostingRegressor(),
+    #     'params': {
+    #         'loss': ['ls', 'lad', 'huber', 'quantile'],
+    #         'learning_rate': [0.01, 0.1],
+    #         'n_estimators': [100, 500, 1000, 3000],
+    #         'max_depth': [2, 3, 4],
+    #         'min_samples_split': [2, 5, 10],
+    #     }
+    # },
+    # 'svr': {
+    #     'model': SVR(),
+    #     'params': {
+    #         'kernel': ['linear', 'rbf'],
+    #         'C': [1, 10],
+    #     }
+    # },
+}
+
+gs_rec = []
+
+# grid search parameters
+for name, pair in param_space.items():
+    print(f'{name}---------------')
+    gs_rg = GridSearchCV(pair['model'], pair['params'],
+                         scoring=rmse, cv=CV, error_score=0, n_jobs=-1)
+    gs_rg.fit(X_train, Y_train_norm)
+    print(gs_rg.best_params_)
+    print(gs_rg.best_score_)
+
+    gs_rg_cv = GridSearchCV(pair['model'], pair['params'],
+                            scoring=rmse, cv=CV, error_score=0, n_jobs=-1)
+    gs_rg_cv.fit(X_train_cv, Y_train_cv)
+    pred_test = gs_rg_cv.predict(X_test_cv)
+    y_score = rmse_cal(Y_test_cv, pred_test)
+
+    print(gs_rg_cv.best_params_)
+    print(gs_rg_cv.best_score_)
+    print(y_score)
+
+    gs_rec.append({
+        'name': name,
+        'params': gs_rg.best_params_,
+        'score': -gs_rg.best_score_,
+        'cv_test_params': gs_rg_cv.best_params_,
+        'cv_test_score': y_score
+    })
+
+df_gs = pd.DataFrame(gs_rec, columns=['name', 'score', 'params',
+                                      'cv_test_score', 'cv_test_params']
+                     ).sort_values(by=['score', 'cv_test_score'])
+df_gs
+</code></pre>
+
+<pre><code>rob_lasso---------------
+{'model__alpha': 0.0005}
+-0.1108321642082426
+{'model__alpha': 0.0005}
+-0.11385591248537665
+0.1092651116732159
+ridge---------------
+{'alpha': 10}
+-0.11417733254437629
+{'alpha': 10}
+-0.11723423641202352
+0.11022009984391984
+kernel_ridge---------------
+{'alpha': 10}
+-0.11675117173959225
+{'alpha': 10}
+-0.1209044169077714
+0.11171230919473786
+elastic_net---------------
+{'model__alpha': 0.0005, 'model__l1_ratio': 0.9}
+-0.11081242246612653
+{'model__alpha': 0.0007, 'model__l1_ratio': 0.8}
+-0.1138195082928615
+0.10934894252124043
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>name</th>
+      <th>score</th>
+      <th>params</th>
+      <th>cv_test_score</th>
+      <th>cv_test_params</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>3</th>
+      <td>elastic_net</td>
+      <td>0.110812</td>
+      <td>{'model__alpha': 0.0005, 'model__l1_ratio': 0.9}</td>
+      <td>0.109349</td>
+      <td>{'model__alpha': 0.0007, 'model__l1_ratio': 0.8}</td>
+    </tr>
+    <tr>
+      <th>0</th>
+      <td>rob_lasso</td>
+      <td>0.110832</td>
+      <td>{'model__alpha': 0.0005}</td>
+      <td>0.109265</td>
+      <td>{'model__alpha': 0.0005}</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>ridge</td>
+      <td>0.114177</td>
+      <td>{'alpha': 10}</td>
+      <td>0.110220</td>
+      <td>{'alpha': 10}</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>kernel_ridge</td>
+      <td>0.116751</td>
+      <td>{'alpha': 10}</td>
+      <td>0.111712</td>
+      <td>{'alpha': 10}</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Now let&rsquo;s Train with the best model so far and predict on the test data. As
+ aforementioned, the values of &lsquo;SalePrice&rsquo; does fall in a normal distribution.
+ So we&rsquo;ll transform the target values by <code>QuantileTransformer</code> and
+ <code>TransformedTargetRegressor</code>.</p>
+
+<pre><code class="language-python">from datetime import datetime
+
+
+# model = Pipeline(
+#     [('sca', RobustScaler()), ('model', TransformedTargetRegressor(
+#         regressor=ElasticNet(alpha=0.0005, l1_ratio=0.85), func=np.log1p, inverse_func=np.expm1))])
+model = Pipeline(
+    [('sca', RobustScaler()), ('model', TransformedTargetRegressor(
+        regressor=ElasticNet(alpha=0.0005, l1_ratio=0.85),
+        # regressor=Lasso(alpha=0.0005),
+        transformer=QuantileTransformer(output_distribution='normal')))])
+
+model.fit(X_train, Y_train)
+
+pred = model.predict(X_test)
+
+
+def submit(ids, pred, suffix):
+    sub = pd.DataFrame()
+    sub['Id'] = ids_test
+    sub['SalePrice'] = pred
+    timestamp = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    # sub.to_csv(
+    # f'result/kaggle1_sub_{suffix}_{score:.5f}.csv', index=False)
+    sub.to_csv(
+        f'submissions/{suffix}_{timestamp}.csv.gz', index=False,
+        compression='gzip')
+
+
+submit(ids_test, pred, 'elastic_net')
+</code></pre>
+
+    </div>
+
+    
+
+
+    
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/machine-learning/">Machine Learning</a>
+  
+  <a class="badge badge-light" href="/tags/regression/">Regression</a>
+  
+</div>
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  <div class="media author-card">
+    
+      
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu4079b1a087300ec54e2e7a1b37c78e50_49934_250x250_fill_q90_lanczos_center.jpg" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="https://pcx.linkedinfo.co/">PENG, Cong</a></h5>
+      <h6 class="card-subtitle">Ph.D. Student</h6>
+      
+      <ul class="network-icon" aria-hidden="true">
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+          <li>
+            <a href="mailto:cong.peng@bth.se" >
+              <i class="fas fa-envelope"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://scholar.google.com/citations?user=87g_0KgAAAAJ" target="_blank" rel="noopener">
+              <i class="ai ai-google-scholar"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://www.researchgate.net/profile/Cong_Peng5" target="_blank" rel="noopener">
+              <i class="fab fa-researchgate"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://github.com/ddxgz" target="_blank" rel="noopener">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+
+      
+      
+      <div class="article-widget">
+        <div class="hr-light"></div>
+        <h3>Related</h3>
+        <ul>
+          
+          <li><a href="/project/linkedinfo/">LinkedInfo.co</a></li>
+          
+        </ul>
+      </div>
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.130521ecfc6f534c52c158217bbff718.js"></script>
+
+    
+
+
+
+
+
+
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    ©2014–2019 Cong Peng &middot; 
+
+    Powered by
+    <a href="https://orgmode.org/" target="_blank" rel="noopener">Org-mode</a> and the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

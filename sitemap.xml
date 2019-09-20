@@ -4,7 +4,7 @@
   
   <url>
     <loc>https://pcx.linkedinfo.co/</loc>
-    <lastmod>2019-09-13T13:36:43+02:00</lastmod>
+    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
   </url>
   
   <url>
@@ -14,7 +14,7 @@
   
   <url>
     <loc>https://pcx.linkedinfo.co/tags/machine-learning/</loc>
-    <lastmod>2019-09-13T13:36:43+02:00</lastmod>
+    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
   </url>
   
   <url>
@@ -29,17 +29,27 @@
   
   <url>
     <loc>https://pcx.linkedinfo.co/post/</loc>
-    <lastmod>2019-09-13T13:36:43+02:00</lastmod>
+    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
   </url>
   
   <url>
     <loc>https://pcx.linkedinfo.co/tags/</loc>
-    <lastmod>2019-09-13T13:36:43+02:00</lastmod>
+    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
   </url>
   
   <url>
     <loc>https://pcx.linkedinfo.co/tags/text-classification/</loc>
     <lastmod>2019-09-13T13:36:43+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/post/houseprice/</loc>
+    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/tags/regression/</loc>
+    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
   </url>
   
   <url>

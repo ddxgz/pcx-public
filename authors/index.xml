@@ -5,7 +5,7 @@
     <link>https://pcx.linkedinfo.co/authors/</link>
       <atom:link href="https://pcx.linkedinfo.co/authors/index.xml" rel="self" type="application/rss+xml" />
     <description>Authors</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0200</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Sun, 01 Dec 2019 00:00:00 +0100</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>Authors</title>
@@ -15,24 +15,24 @@
     <item>
       <title>Cong Peng</title>
       <link>https://pcx.linkedinfo.co/authors/cong-peng/</link>
-      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      <pubDate>Sun, 01 Dec 2019 00:00:00 +0100</pubDate>
       <guid>https://pcx.linkedinfo.co/authors/cong-peng/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Prashant Goswami</title>
-      <link>https://pcx.linkedinfo.co/authors/prashant-goswami/</link>
-      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
-      <guid>https://pcx.linkedinfo.co/authors/prashant-goswami/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Guohua Bai</title>
       <link>https://pcx.linkedinfo.co/authors/guohua-bai/</link>
-      <pubDate>Mon, 01 Oct 2018 00:00:00 +0200</pubDate>
+      <pubDate>Sun, 01 Dec 2019 00:00:00 +0100</pubDate>
       <guid>https://pcx.linkedinfo.co/authors/guohua-bai/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Prashant Goswami</title>
+      <link>https://pcx.linkedinfo.co/authors/prashant-goswami/</link>
+      <pubDate>Sun, 01 Dec 2019 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/authors/prashant-goswami/</guid>
       <description></description>
     </item>
     

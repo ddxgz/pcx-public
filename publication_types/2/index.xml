@@ -5,12 +5,20 @@
     <link>https://pcx.linkedinfo.co/publication_types/2/</link>
       <atom:link href="https://pcx.linkedinfo.co/publication_types/2/index.xml" rel="self" type="application/rss+xml" />
     <description>2</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 01 Apr 2019 00:00:00 +0200</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Sun, 01 Dec 2019 00:00:00 +0100</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>2</title>
       <link>https://pcx.linkedinfo.co/publication_types/2/</link>
     </image>
+    
+    <item>
+      <title>A literature review of current technologies on health data integration for patient-centered health management</title>
+      <link>https://pcx.linkedinfo.co/publication/pcx-2019-b/</link>
+      <pubDate>Sun, 01 Dec 2019 00:00:00 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/publication/pcx-2019-b/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Meaningful Integration of Data from Heterogeneous Health Services and Home Environment Based on Ontology</title>

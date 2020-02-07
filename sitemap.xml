@@ -3,8 +3,43 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://pcx.linkedinfo.co/publication_types/2/</loc>
+    <lastmod>2019-12-01T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/publication/pcx-2019-b/</loc>
+    <lastmod>2019-12-01T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/authors/</loc>
+    <lastmod>2019-12-01T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://pcx.linkedinfo.co/</loc>
-    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
+    <lastmod>2019-12-01T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/authors/cong-peng/</loc>
+    <lastmod>2019-12-01T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/authors/guohua-bai/</loc>
+    <lastmod>2019-12-01T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/authors/prashant-goswami/</loc>
+    <lastmod>2019-12-01T00:00:00+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/publication_types/</loc>
+    <lastmod>2019-12-01T00:00:00+01:00</lastmod>
   </url>
   
   <url>
@@ -53,21 +88,6 @@
   </url>
   
   <url>
-    <loc>https://pcx.linkedinfo.co/publication_types/2/</loc>
-    <lastmod>2019-04-01T00:00:00+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/authors/</loc>
-    <lastmod>2019-04-01T00:00:00+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/authors/cong-peng/</loc>
-    <lastmod>2019-04-01T00:00:00+02:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://pcx.linkedinfo.co/tags/ehealth/</loc>
     <lastmod>2019-04-01T00:00:00+02:00</lastmod>
   </url>
@@ -89,16 +109,6 @@
   
   <url>
     <loc>https://pcx.linkedinfo.co/tags/ontology/</loc>
-    <lastmod>2019-04-01T00:00:00+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/authors/prashant-goswami/</loc>
-    <lastmod>2019-04-01T00:00:00+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/publication_types/</loc>
     <lastmod>2019-04-01T00:00:00+02:00</lastmod>
   </url>
   
@@ -179,11 +189,6 @@
   
   <url>
     <loc>https://pcx.linkedinfo.co/publication/pcx-2018-d/</loc>
-    <lastmod>2018-10-01T00:00:00+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/authors/guohua-bai/</loc>
     <lastmod>2018-10-01T00:00:00+02:00</lastmod>
   </url>
   

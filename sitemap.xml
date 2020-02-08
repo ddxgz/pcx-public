@@ -3,6 +3,51 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://pcx.linkedinfo.co/</loc>
+    <lastmod>2020-02-07T19:51:26+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/tags/deep-learning/</loc>
+    <lastmod>2020-02-07T19:51:26+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/tags/image-classification/</loc>
+    <lastmod>2020-02-07T19:51:26+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/tags/machine-learning/</loc>
+    <lastmod>2020-02-07T19:51:26+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/project/</loc>
+    <lastmod>2020-02-07T19:51:26+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</loc>
+    <lastmod>2020-02-07T19:51:26+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/tags/</loc>
+    <lastmod>2020-02-07T19:51:26+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/post/</loc>
+    <lastmod>2020-01-06T19:56:49+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/post/skin-lesion-cls/</loc>
+    <lastmod>2020-01-06T19:56:49+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://pcx.linkedinfo.co/publication_types/2/</loc>
     <lastmod>2019-12-01T00:00:00+01:00</lastmod>
   </url>
@@ -14,11 +59,6 @@
   
   <url>
     <loc>https://pcx.linkedinfo.co/authors/</loc>
-    <lastmod>2019-12-01T00:00:00+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/</loc>
     <lastmod>2019-12-01T00:00:00+01:00</lastmod>
   </url>
   
@@ -48,11 +88,6 @@
   </url>
   
   <url>
-    <loc>https://pcx.linkedinfo.co/tags/machine-learning/</loc>
-    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
-  </url>
-  
-  <url>
     <loc>https://pcx.linkedinfo.co/tags/multi-label-classification/</loc>
     <lastmod>2019-09-13T13:36:43+02:00</lastmod>
   </url>
@@ -60,16 +95,6 @@
   <url>
     <loc>https://pcx.linkedinfo.co/post/texttagspred/</loc>
     <lastmod>2019-09-13T13:36:43+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/post/</loc>
-    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/tags/</loc>
-    <lastmod>2019-09-13T22:06:13+02:00</lastmod>
   </url>
   
   <url>
@@ -139,11 +164,6 @@
   
   <url>
     <loc>https://pcx.linkedinfo.co/project/linkedinfo/</loc>
-    <lastmod>2019-01-27T11:17:54+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/project/</loc>
     <lastmod>2019-01-27T11:17:54+01:00</lastmod>
   </url>
   

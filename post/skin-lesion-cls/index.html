@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.5.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="PENG, Cong">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="Introduction In this post we will show how to do skin lesion image classification with deep neural networks. It is an image classifier trained on the HAM10000 dataset, the same problem in the International Skin Imaging Collaboration (ISIC) 2018 challenge task3.
+The solution in this post is mainly based on some web posts and methods from the ISIC2018 leadboard.
+The classification neural network model is tested with pretrained ResNet and DenseNet and implemented with PyTOrch.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://pcx.linkedinfo.co/post/skin-lesion-cls/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.5ac49d52d669340d29cb50b00bb7867f.css">
+
+  
+
+  
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-87823019-3', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="https://www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://pcx.linkedinfo.co/post/skin-lesion-cls/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Cong Peng">
+  <meta property="og:url" content="https://pcx.linkedinfo.co/post/skin-lesion-cls/">
+  <meta property="og:title" content="Skin Lesion Image Classification with Deep Convolutional Neural Networks | Cong Peng">
+  <meta property="og:description" content="Introduction In this post we will show how to do skin lesion image classification with deep neural networks. It is an image classifier trained on the HAM10000 dataset, the same problem in the International Skin Imaging Collaboration (ISIC) 2018 challenge task3.
+The solution in this post is mainly based on some web posts and methods from the ISIC2018 leadboard.
+The classification neural network model is tested with pretrained ResNet and DenseNet and implemented with PyTOrch."><meta property="og:image" content="https://pcx.linkedinfo.co/img/icon-192.png">
+  <meta property="twitter:image" content="https://pcx.linkedinfo.co/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-12-02T21:26:33&#43;01:00">
+    
+    <meta property="article:modified_time" content="2020-01-06T19:56:49&#43;01:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://pcx.linkedinfo.co/post/skin-lesion-cls/"
+  },
+  "headline": "Skin Lesion Image Classification with Deep Convolutional Neural Networks",
+  
+  "datePublished": "2019-12-02T21:26:33+01:00",
+  "dateModified": "2020-01-06T19:56:49+01:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "PENG, Cong"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Cong Peng",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://pcx.linkedinfo.co/img/icon-512.png"
+    }
+  },
+  "description": "Introduction In this post we will show how to do skin lesion image classification with deep neural networks. It is an image classifier trained on the HAM10000 dataset, the same problem in the International Skin Imaging Collaboration (ISIC) 2018 challenge task3.\nThe solution in this post is mainly based on some web posts and methods from the ISIC2018 leadboard.\nThe classification neural network model is tested with pretrained ResNet and DenseNet and implemented with PyTOrch."
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Skin Lesion Image Classification with Deep Convolutional Neural Networks | Cong Peng</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Cong Peng</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#projects"><span>Projects</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#publications"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Skin Lesion Image Classification with Deep Convolutional Neural Networks</h1>
+
+  
+
+  
+    
+
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
+    Jan 6, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    13 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+
+  
+    
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      
+
+<h1 id="introduction">Introduction</h1>
+
+<p>In this post we will show how to do skin lesion image classification with deep neural networks. It is an image classifier trained on the HAM10000 dataset, the same problem in the International Skin Imaging Collaboration (ISIC) 2018 challenge task3.</p>
+
+<p>The solution in this post is mainly based on some web posts and methods from the <a href="https://challenge2018.isic-archive.com/leaderboards/" target="_blank">ISIC2018 leadboard</a>.</p>
+
+<p>The classification neural network model is tested with pretrained ResNet and DenseNet and implemented with PyTOrch. The model with the highest mean of recalls (0.9369 on 20% test set) is a ensemble of ImageNet pretrained and fine-tuned DenseNet161 + ResNet152.</p>
+
+<pre><code class="language-python"># Confusion matrix of the mdoel with the best recall
+from IPython.display import Image
+
+Image('test_results/ensemble_dense161_6_res152_4_lesion/confusion_matrix.png', width=900)
+</code></pre>
+
+<p><img src="output_1_0.png" alt="png" /></p>
+
+<p>Here below we go through the process how I worked on this problem.</p>
+
+<h1 id="a-look-at-the-data">A look at the data</h1>
+
+<p>Before diving into the models and metrics, we need to firstly have a look at the dataset.</p>
+
+<pre><code class="language-python">import pandas as pd
+
+df = pd.read_csv('data/HAM10000_metadata.csv', index_col='image_id')
+df.head()
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>lesion_id</th>
+      <th>dx</th>
+      <th>dx_type</th>
+      <th>age</th>
+      <th>sex</th>
+      <th>localization</th>
+    </tr>
+    <tr>
+      <th>image_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ISIC_0027419</th>
+      <td>HAM_0000118</td>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>80.0</td>
+      <td>male</td>
+      <td>scalp</td>
+    </tr>
+    <tr>
+      <th>ISIC_0025030</th>
+      <td>HAM_0000118</td>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>80.0</td>
+      <td>male</td>
+      <td>scalp</td>
+    </tr>
+    <tr>
+      <th>ISIC_0026769</th>
+      <td>HAM_0002730</td>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>80.0</td>
+      <td>male</td>
+      <td>scalp</td>
+    </tr>
+    <tr>
+      <th>ISIC_0025661</th>
+      <td>HAM_0002730</td>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>80.0</td>
+      <td>male</td>
+      <td>scalp</td>
+    </tr>
+    <tr>
+      <th>ISIC_0031633</th>
+      <td>HAM_0001466</td>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>75.0</td>
+      <td>male</td>
+      <td>ear</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<pre><code class="language-python">import seaborn as sns
+
+sns.countplot(df['dx'])
+</code></pre>
+
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x126f39eb8&gt;
+</code></pre>
+
+<p><img src="output_4_1.png" alt="png" /></p>
+
+<pre><code class="language-python">pd.DataFrame({'counts':df['dx'].value_counts(), 'percent': df['dx'].value_counts() / len(df)})
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>counts</th>
+      <th>percent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>nv</th>
+      <td>6705</td>
+      <td>0.669496</td>
+    </tr>
+    <tr>
+      <th>mel</th>
+      <td>1113</td>
+      <td>0.111133</td>
+    </tr>
+    <tr>
+      <th>bkl</th>
+      <td>1099</td>
+      <td>0.109735</td>
+    </tr>
+    <tr>
+      <th>bcc</th>
+      <td>514</td>
+      <td>0.051323</td>
+    </tr>
+    <tr>
+      <th>akiec</th>
+      <td>327</td>
+      <td>0.032651</td>
+    </tr>
+    <tr>
+      <th>vasc</th>
+      <td>142</td>
+      <td>0.014179</td>
+    </tr>
+    <tr>
+      <th>df</th>
+      <td>115</td>
+      <td>0.011483</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>We can see that the samples for each class are very imbalanced.
+The class <em>melanocytic nevi (nv)</em> has about 67% of the dataset. The most minority class has only about 1% of the dataset.</p>
+
+<p>When we organize the rows by lesion_id, we can see that many lesions have more than 1 images. The description of ham10000 says the dataset includes lesions with multiple images, which can be tracked by the lesion_id column.</p>
+
+<pre><code class="language-python">dfr=df.reset_index(col_level='lesion_id').set_index(['lesion_id','image_id'])
+dfr.head(10)
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>dx</th>
+      <th>dx_type</th>
+      <th>age</th>
+      <th>sex</th>
+      <th>localization</th>
+    </tr>
+    <tr>
+      <th>lesion_id</th>
+      <th>image_id</th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="2" valign="top">HAM_0000118</th>
+      <th>ISIC_0027419</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>80.0</td>
+      <td>male</td>
+      <td>scalp</td>
+    </tr>
+    <tr>
+      <th>ISIC_0025030</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>80.0</td>
+      <td>male</td>
+      <td>scalp</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">HAM_0002730</th>
+      <th>ISIC_0026769</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>80.0</td>
+      <td>male</td>
+      <td>scalp</td>
+    </tr>
+    <tr>
+      <th>ISIC_0025661</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>80.0</td>
+      <td>male</td>
+      <td>scalp</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">HAM_0001466</th>
+      <th>ISIC_0031633</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>75.0</td>
+      <td>male</td>
+      <td>ear</td>
+    </tr>
+    <tr>
+      <th>ISIC_0027850</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>75.0</td>
+      <td>male</td>
+      <td>ear</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">HAM_0002761</th>
+      <th>ISIC_0029176</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>60.0</td>
+      <td>male</td>
+      <td>face</td>
+    </tr>
+    <tr>
+      <th>ISIC_0029068</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>60.0</td>
+      <td>male</td>
+      <td>face</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">HAM_0005132</th>
+      <th>ISIC_0025837</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>70.0</td>
+      <td>female</td>
+      <td>back</td>
+    </tr>
+    <tr>
+      <th>ISIC_0025209</th>
+      <td>bkl</td>
+      <td>histo</td>
+      <td>70.0</td>
+      <td>female</td>
+      <td>back</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<pre><code class="language-python">import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+from matplotlib import rcParams
+
+%matplotlib inline
+
+# figure size in inches optional
+rcParams['figure.figsize'] = 10 ,5
+
+def plot_by_lesion():
+    grouped = df.groupby(['lesion_id'])
+    lesions = []
+    for i, lesion in enumerate(grouped):
+        cnt = len(lesion[1].index)
+        if cnt &gt; 1:
+            fig, axes = plt.subplots(1, cnt)
+            for ax, name in zip(axes, lesion[1].index):
+                img = mpimg.imread(f'data/{name}.jpg')
+                ax.imshow(img)
+        if i &gt; 4:
+            break
+
+plot_by_lesion()
+</code></pre>
+
+<p><img src="output_8_0.png" alt="png" /></p>
+
+<p><img src="output_8_1.png" alt="png" /></p>
+
+<p><img src="output_8_2.png" alt="png" /></p>
+
+<p>We can seee that the multiple images capture the same lesion with differences in color, scaling, orientation.</p>
+
+<p>Now let&rsquo;s count the images by lesion_id.</p>
+
+<pre><code class="language-python">df['lesion_id'].nunique()
+</code></pre>
+
+<pre><code>7470
+</code></pre>
+
+<pre><code class="language-python">cnt = df.groupby('dx')['lesion_id'].nunique()
+per = df.groupby('dx')['lesion_id'].nunique().div(df['lesion_id'].nunique())
+pd.DataFrame({'counts':cnt, 'percent': per})
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>counts</th>
+      <th>percent</th>
+    </tr>
+    <tr>
+      <th>dx</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>akiec</th>
+      <td>228</td>
+      <td>0.030522</td>
+    </tr>
+    <tr>
+      <th>bcc</th>
+      <td>327</td>
+      <td>0.043775</td>
+    </tr>
+    <tr>
+      <th>bkl</th>
+      <td>727</td>
+      <td>0.097323</td>
+    </tr>
+    <tr>
+      <th>df</th>
+      <td>73</td>
+      <td>0.009772</td>
+    </tr>
+    <tr>
+      <th>mel</th>
+      <td>614</td>
+      <td>0.082195</td>
+    </tr>
+    <tr>
+      <th>nv</th>
+      <td>5403</td>
+      <td>0.723293</td>
+    </tr>
+    <tr>
+      <th>vasc</th>
+      <td>98</td>
+      <td>0.013119</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>Now we see there&rsquo;re 7470 unique lesions there, and the class imbalance got evern worse when we group them by lesion_id. We need to keep this in mind for the later actions like sampling and choosing evaluation metrics.</p>
+
+<h1 id="metrics">Metrics</h1>
+
+<p>For classfication problem, the commonly used metrics are <em>Precision/Recall/F-measures</em>, <em>ROC_AUC</em>, <em>Accuracy Score (ACC)</em> and so on. But for this imbalanced dataset, we need to think more on the choice of metrics.</p>
+
+<p>In the <a href="https://arxiv.org/abs/1902.03368" target="_blank">ISIC 2018 challenge report</a>, it mentioned that
+&gt; Use of <em>balanced accuracy</em> is critical to select the best unbiased classifier, rather than one that overfits to arbitrary dataset prevalence, as is the case with accuracy.</p>
+
+<p>Based on the description, it&rsquo;s the class-wise mean of recall. The <code>recall_score(average='macro')</code> in scikit-learn just calculates this score:</p>
+
+<p>$$ \frac{1}{|L|} \sum_{l \in L} R \left( y_{l}, \hat{y}_{l} \right) $$</p>
+
+<p>The more details of the Balanced Multiclass Accuracy can refer to</p>
+
+<ul>
+<li>description from the tooltip on the <a href="https://challenge2018.isic-archive.com/leaderboards/" target="_blank">ISIC 2018 leaderboard webpage</a>.</li>
+<li><a href="https://forum.isic-archive.com/t/metric-for-the-task-3-lesion-diagnosis/356/9" target="_blank">an explanation on the ISIC discussion forum</a>.</li>
+<li>description on <a href="https://challenge2019.isic-archive.com/evaluation.html" target="_blank">ISIC 2019 introduction</a>.
+<br /></li>
+</ul>
+
+<p>So we&rsquo;ll use the <em>balanced accuracy (BACC)</em> or <em>mean of recalls of the 7 classes</em> as the main metric for this assignment.</p>
+
+<p>The mean reason is that this is a very imbalanced dataset, it is a big problem we need to handel carefully. For this multiclass classification with very imbalanced dataset:</p>
+
+<ul>
+<li>It&rsquo;s important for the model to have good performance on all the classes, other than a few majority classes. The different classes have equal importance.</li>
+<li>Mean recall is good because it counts the model&rsquo;s classification performance on all the classes equally, no matter how many samples belong to a class.</li>
+<li>So global accuracy score, micro average of recalls or so are not good metrics to measure the performance in this case.</li>
+</ul>
+
+<p>And this is a medical diagnosis, it&rsquo;s important to have a high true positive rate (to minimize the false negatives), so it&rsquo;s better to focus more on recall over precision.</p>
+
+<p>But we&rsquo;ll also use other metrics togher to have more insights. A confusion matrix plot is also a good way to present how does the model performed for each class. One of the metrics that is also good for a imbalanced classification is Matthews correlation coefficient (MCC), it ranges between <em>−1 to 1</em></p>
+
+<ul>
+<li>1 score shows a perfect prediction</li>
+<li>0 equals to the random prediction</li>
+<li>−1 indicates total disagreement between predicted scores and true labels’ values
+<br /></li>
+</ul>
+
+<p>$$m c c=\frac{t p \cdot t n-f p \cdot f n}{\sqrt{(t p+f p) \cdot(t p+f n) \cdot(t n+f p) \cdot(t n+f n)}}
+$$</p>
+
+<h1 id="preprocess-dataset">Preprocess dataset</h1>
+
+<h2 id="sampling">Sampling</h2>
+
+<p>Since the dataset is very imbalanced, so even though we could use the mean recall and loss function with class weights, it would be still troublesome to train the model for the under-represented minority classes. And the under-represented classes are likely to be missing or very few samples in a subsample or split, especially when the fraction is small. So we need to do something for the train-validation-test set sampling and split.</p>
+
+<p>2 methods were applied to deal with the problem, with the assumption that new data follow a close imbalanced distribution as the labelled dataset.</p>
+
+<ul>
+<li>Subsampling based on the classes distribution of all the samples. So a small fraction train, validation or set will still have the same distribution of different classes.</li>
+<li>Oversampling training set for the under-represented classess (with random transformations) to equalize the distribution. Since the dataset is considered small so we will use oversampling on the minority classes other than undersampling on the majority classes.</li>
+</ul>
+
+<p>For simplicity, I&rsquo;ll just use the first image of each lesion_id. The code snippet below processes the dataset with oversampling. The parameter <code>over_rate</code> controls how much to over sample the minority classes.</p>
+
+<pre><code class="language-python">import functools
+
+exclude_set = [] 
+weighted = True
+imbalance_eq = True
+remove_dup_img = True
+over_rate = 4
+train_fraction = 0.8
+val_fraction = 0.2
+
+meta_data = pd.read_csv('data/HAM10000_metadata.csv', index_col='image_id')
+
+# for reproducibility, just keep 1st image of each lesion_id
+if remove_dup_img:
+    lesion_ids = []
+    for index, row in meta_data.iterrows():
+        if row['lesion_id'] not in lesion_ids:
+            lesion_ids.append(row['lesion_id'])
+        else:
+            meta_data = meta_data.drop(index=index)
+
+if len(exclude_set) &gt; 0:
+    meta_data = meta_data.drop(index=exclude_set)
+
+image_ids = meta_data.index.tolist()
+num_images = len(image_ids)
+num_train_ids = int(num_images * train_fraction)
+num_val_ids = int(num_images * val_fraction)
+
+# sampling based on the distribution of classees
+if weighted:
+    size_total = num_train_ids + num_val_ids
+    df_c = meta_data['dx'].astype('category').value_counts()
+    weights = df_c / len(meta_data)
+
+    def sampling(df, replace=False, total=size_total):
+        return df.sample(n=int(weights[df.name] * total), replace=replace)
+
+    train_val = meta_data.groupby('dx', as_index=False).apply(
+        sampling).reset_index(0, drop=True)
+
+    train_sampling = functools.partial(sampling, total=num_train_ids)
+
+    train = train_val.groupby('dx', as_index=False).apply(
+        train_sampling).reset_index(0, drop=True)
+    val = train_val.drop(index=train.index)
+
+    if imbalance_eq:
+        bal_rate = 1 / weights / over_rate 
+        for k, v in bal_rate.to_dict().items():
+            if v &gt; 2:
+                train = train.append(
+                    [train.loc[train['dx'] == k, :]] * int(v),
+                    ignore_index=False)
+
+
+sns.countplot(train['dx'])
+</code></pre>
+
+<pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x12738aa58&gt;
+</code></pre>
+
+<p><img src="output_15_1.png" alt="png" /></p>
+
+<p>Fractions of the entire set is splitted as below:</p>
+
+<ul>
+<li>training 0.64 (0.8*0.8)</li>
+<li>validation 0.16 (0.8*0.2)</li>
+<li>testing 0.2 (the same set for all the experiments)</li>
+</ul>
+
+<h2 id="loss-function">Loss function</h2>
+
+<p>Cross Entropy Loss function will be used. As for this multiclass classification problem, I don&rsquo;t have a good reason to use other loss functions over cross entropy.</p>
+
+<p>On whether or not the loss criterion should also be weighted according to the imbalanced classes, I think it needs to be based on how we sample the training and validation set.</p>
+
+<ul>
+<li>If we sample the subsets as the sample distribution as the entire dataset, then we could use the weighted loss criterion so that it gives penalty to the majority classes.</li>
+<li>If we are to perform some sampling method like oversampling, it already gives some penalty to the majority classes, then I think we should use a loss criterion without weighted.
+<br />
+<br /></li>
+</ul>
+
+<h2 id="data-transformation">Data transformation</h2>
+
+<p>Some data transformations were performed to all the input images. It is performed according to the description in <a href="https://pytorch.org/docs/stable/torchvision/models.html" target="_blank">torchvision documentation for pre-trained models</a> (as we will use these pre-trained models). It says Height and Width are expected to be at least 224, so we will resize all the input images into 224x224 to save some computation. We also normalize the iamges by the same mean and std as mentioned in the documentation.</p>
+
+<pre><code class="language-python"># Transformation for validation and testing sets
+transforms.Compose([
+     transforms.Resize(224),
+     transforms.CenterCrop(224),
+     transforms.ToTensor(),
+     transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+                          std=[0.229, 0.224, 0.225])
+])
+</code></pre>
+
+<p>As we oversampled minority classes in the training set, we should perform some random transformations, such as random horizontal-vertical flip, rotation and color jitter (saturation not used since I thought it might affect the preciseness of lesion area).</p>
+
+<pre><code class="language-python"># Transformation for training set
+transforms_train = transforms.Compose([
+     transforms.Resize(300),
+     transforms.RandomHorizontalFlip(0.5),
+     transforms.RandomVerticalFlip(0.5),
+     transforms.RandomRotation(20),
+     transforms.RandomResizedCrop(224),
+     transforms.ColorJitter(brightness=0.1, contrast=0.1, hue=0.1),
+     transforms.ToTensor(),
+     transforms.Normalize(mean=[0.485, 0.456, 0.406], 
+                          std=[0.229, 0.224, 0.225])
+])
+</code></pre>
+
+<h1 id="models">Models</h1>
+
+<p>When choosing a neural netowrk model for a certain task, we need to consider about several factors, e.g., the performance (accuracy) of a model, the appropriation of a model architecture for the task (in terms of pretrained model, the pretrained dataset should be more similar to the new task&rsquo;s dataset), and computation efficiency.</p>
+
+<p>For this assignment, we need to make a tradeoff between the performance and computation efficiency since I don&rsquo;t have much of the computation resources.</p>
+
+<h2 id="pre-trained-models">Pre-trained models</h2>
+
+<p>By glancing through the methods in the <a href="https://challenge2018.isic-archive.com/leaderboards/" target="_blank">ISIC2018 leadboard</a>, most of the top methods used ensemble models of pre-trained models such as ResNet, Densenet, Inception and so on. There&rsquo;re also methods used a single pre-trained model achieved a high rank.</p>
+
+<p>And also as quoted from <a href="https://cs231n.github.io/transfer-learning/" target="_blank">cs231n notes</a> states that it&rsquo;s now rarely people will train a network from scratch due to insufficient data size and expensiveness of training. It&rsquo;s common to start from a model pre-trained on a very large dataset and use it as an initialization or a fixed feature extractor for a new task.</p>
+
+<p>Therefore, we&rsquo;ll start from a pre-trained model. As suggested in <a href="https://towardsdatascience.com/deep-learning-for-diagnosis-of-skin-images-with-fastai-792160ab5495" target="_blank">this post</a>, ResNet-34 would be a good choice to start. So the initial plan was use the pre-trained ResNet model as a fixed feature extractor to see how it performs, and then try to &ldquo;fine-tune&rdquo; the weights of some layers.</p>
+
+<p>However, after a few preliminary short-run experiments, I found it&rsquo;s slow to train and the metrics didn&rsquo;t show a potential improvement.</p>
+
+<p>In <a href="https://keras.io/applications/" target="_blank">Keres documentation</a> there&rsquo;s a table lists some stats like accuracy and number of parameters for some widely used models. As a tradeoff between accuracy and trainability (number of parameters), I started to focus more on the <em>DenseNet161</em> and <em>ResNet152</em>.</p>
+
+<p>After some preliminary experiments on using the networks as a feature extractor, which didn&rsquo;t give a encouraging result, I decided to fine-tune the whole network.</p>
+
+<h1 id="experiments">Experiments</h1>
+
+<p>The experiments were early stopped when I think it might stop improving. Though it will possibly improve as the training continues, the time is precious.</p>
+
+<h2 id="training-and-validation">Training and validation</h2>
+
+<h3 id="densenet161">DenseNet161</h3>
+
+<p>For the DenseNet161, the best validation mean of recalls is about 0.6845.</p>
+
+<pre><code class="language-python">import torch
+
+best_dense161_lesion = torch.load(
+    'experiments/dense161_eq3_exclutest_lesion_v1/model_best.pth.tar', 
+    map_location=torch.device('cpu'))
+recall_val_dense161_lesion = best_dense161_lesion['metrics']['recall']
+</code></pre>
+
+<pre><code class="language-python">recall_val_dense161_lesion 
+</code></pre>
+
+<pre><code>0.684509306993473
+</code></pre>
+
+<pre><code class="language-python">Image('experiments/dense161_eq3_exclutest_lesion_v1/confusion_matrix.png', width=900)
+</code></pre>
+
+<p><img src="output_24_0.png" alt="png" /></p>
+
+<h3 id="resnet152">ResNet152</h3>
+
+<p>For the ResNet152, the best validation mean of recalls is about 0.7202.</p>
+
+<pre><code class="language-python">best_res152_lesion = torch.load(
+    'experiments/res152_eq3_exclutest_lesion_v1/model_best.pth.tar', 
+    map_location=torch.device('cpu'))
+recall_val_res152_lesion = best_res152_lesion['metrics']['recall']
+</code></pre>
+
+<pre><code class="language-python">recall_val_res152_lesion 
+</code></pre>
+
+<pre><code>0.7202260074093291
+</code></pre>
+
+<pre><code class="language-python">Image('experiments/res152_eq3_exclutest_lesion_v1/recall.png', width=700)
+</code></pre>
+
+<p><img src="output_28_0.png" alt="png" /></p>
+
+<pre><code class="language-python">import numpy as np 
+import matplotlib.pyplot as plt
+
+def plot_metric(train_loss, test_loss, name, plot_type='loss'):
+    epochs = range(len(train_losses))
+
+    f = plt.figure()
+    plt.title(f&quot;{name} {plot_type} plot&quot;)
+    plt.xlabel(&quot;epoch&quot;)
+    plt.ylabel(f&quot;{plot_type}&quot;)
+    plt.grid(True)
+    plt.plot(epochs, train_loss, 'b', marker='o', label=f'train {plot_type}')
+    plt.plot(epochs, test_loss, 'r', marker='o', label=f'val {plot_type}')
+    plt.legend()
+
+train_losses, test_losses = np.load(
+    'experiments/res152_eq3_exclutest_lesion_v1/final_results.npy')
+plot_metric(train_losses, test_losses, 'ResNet152_lesion', 'loss')
+</code></pre>
+
+<p><img src="output_29_0.png" alt="png" /></p>
+
+<pre><code class="language-python"># ResNet152 val
+Image('experiments/res152_eq3_exclutest_lesion_v1/confusion_matrix.png', width=900)
+</code></pre>
+
+<p><img src="output_30_0.png" alt="png" /></p>
+
+<p>As we can see from the results, it&rsquo;s not a satisfactory performance for both the DenseNet161 and ResNet152 as they have only around 0.7 mean of recalls. No matter what, let&rsquo;s have a look at how they perform on the test set.</p>
+
+<h2 id="metrics-on-the-test-set">Metrics on the test set</h2>
+
+<pre><code class="language-python">import os
+import json
+
+import numpy as np
+import pandas as pd
+from sklearn import metrics
+
+test_results_path = 'test_results'
+# model_ids =['dense161','res101','res152']
+result_paths = [d for d in os.listdir(
+    test_results_path) if not d.startswith('.')]
+result_paths = [d for d in result_paths if 'lesion' in d]
+# print(result_paths)
+
+model_metrics = {}
+for i in result_paths:
+    fp = os.path.join(test_results_path, i, 'metrics_results.json')
+    y_true = np.load(os.path.join(test_results_path, i, 'val_true.npy'))
+    y_pred = np.load(os.path.join(test_results_path, i, 'val_pred.npy'))
+    with open(fp) as f:
+        rec = json.load(f)
+        rec['f1'] = metrics.f1_score(y_true, y_pred, average='macro')
+        rec['mcc'] = metrics.matthews_corrcoef(y_true, y_pred)
+    model_metrics[i] = rec
+
+df_results_lesion = pd.read_json(json.dumps(model_metrics), orient='index').drop(
+    columns=['bacc']).sort_values(by='recall', ascending=False)
+df_results_lesion['acc'] = df_results_lesion['acc'] / 100
+df_results_lesion = df_results_lesion[['recall', 'prec', 'f1', 'mcc', 'acc']]
+df_results_lesion.columns = ['Recall', 'Precision', 'F1', 'MCC', 'ACC']
+</code></pre>
+
+<pre><code class="language-python">df_results_lesion.loc[['dense161_lesion','res152_lesion']].round(4)
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Recall</th>
+      <th>Precision</th>
+      <th>F1</th>
+      <th>MCC</th>
+      <th>ACC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>dense161_lesion</th>
+      <td>0.9105</td>
+      <td>0.8085</td>
+      <td>0.8504</td>
+      <td>0.8210</td>
+      <td>0.9111</td>
+    </tr>
+    <tr>
+      <th>res152_lesion</th>
+      <td>0.8594</td>
+      <td>0.7542</td>
+      <td>0.7971</td>
+      <td>0.7072</td>
+      <td>0.8465</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>The surperising result shows a much higher mean of recalls for both of the models on the test dataset, from around 0.7 to 0.9105 and 0.8594.</p>
+
+<p>I also tested ensembles of the the trained models with different weights on each (though without grid search).</p>
+
+<p>Besides pick the model when with the highest mean of recalls, I also used the DenseNet161 model with the highest MCC score during validation.</p>
+
+<p>The results are also surprisingly good.</p>
+
+<pre><code class="language-python">df_results_lesion.round(4)
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Recall</th>
+      <th>Precision</th>
+      <th>F1</th>
+      <th>MCC</th>
+      <th>ACC</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>ensemble_dense161_6_res152_4_lesion</th>
+      <td>0.9369</td>
+      <td>0.7939</td>
+      <td>0.8558</td>
+      <td>0.8067</td>
+      <td>0.9018</td>
+    </tr>
+    <tr>
+      <th>ensemble_dense161_4_res152_6_lesion</th>
+      <td>0.9206</td>
+      <td>0.8132</td>
+      <td>0.8610</td>
+      <td>0.7808</td>
+      <td>0.8884</td>
+    </tr>
+    <tr>
+      <th>dense161_lesion</th>
+      <td>0.9105</td>
+      <td>0.8085</td>
+      <td>0.8504</td>
+      <td>0.8210</td>
+      <td>0.9111</td>
+    </tr>
+    <tr>
+      <th>dense161_lesion_mcc</th>
+      <td>0.9095</td>
+      <td>0.8540</td>
+      <td>0.8789</td>
+      <td>0.8236</td>
+      <td>0.9144</td>
+    </tr>
+    <tr>
+      <th>ensemble_dense161_res152_lesion</th>
+      <td>0.9055</td>
+      <td>0.8052</td>
+      <td>0.8491</td>
+      <td>0.7931</td>
+      <td>0.8960</td>
+    </tr>
+    <tr>
+      <th>res152_lesion</th>
+      <td>0.8594</td>
+      <td>0.7542</td>
+      <td>0.7971</td>
+      <td>0.7072</td>
+      <td>0.8465</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<pre><code class="language-python">Image('test_results/dense161_lesion/confusion_matrix.png', width=900)
+</code></pre>
+
+<p><img src="output_37_0.png" alt="png" /></p>
+
+<pre><code class="language-python">Image('test_results/dense161_lesion_mcc/confusion_matrix.png', width=900)
+</code></pre>
+
+<p><img src="output_38_0.png" alt="png" /></p>
+
+<pre><code class="language-python">Image('test_results/ensemble_dense161_6_res152_4_lesion/confusion_matrix.png', width=900)
+</code></pre>
+
+<p><img src="output_39_0.png" alt="png" /></p>
+
+<pre><code class="language-python">Image('test_results/res152_lesion/confusion_matrix.png', width=900)
+</code></pre>
+
+<p><img src="output_40_0.png" alt="png" /></p>
+
+<p>However, I still doubt why the test metrics are much higher than when in validation (even higher than those deeply hacked top ranks in the ISIC 2018 challenge).</p>
+
+<p>I&rsquo;ve thought about and also discussed with others on the possible flaws in my solution. However, I couldn&rsquo;t find a likely problem caused the very high mean of recalls on the tes tset. There&rsquo;s no leakage of information from training set to test set, as I groupped and splitted the datasets according to the lesion_id.</p>
+
+<p>You&rsquo;re very welcomed to contact me if you have any idea.</p>
+
+<h1 id="discussion-of-limitations-and-possible-improvements">Discussion of limitations and possible improvements</h1>
+
+<ul>
+<li>Should use all the images for each lesion_id</li>
+<li>Could&rsquo;ve train longer</li>
+<li>Sacrifice majority classes for the performance on the minority classes, <code>nv</code> could be better as the given data</li>
+<li>The experiments were not well controled, no comparison on the performance when a single variable changed, such as
+
+<ul>
+<li>the use of oversampling, fine-tune to get a balance</li>
+<li>different ways of training set transformations</li>
+<li>&hellip;</li>
+</ul></li>
+<li>Fine-tune hyper parameters</li>
+<li>Look into other variables in meta_data, if could be combined to improve the classification performance</li>
+<li>Input images of only lesion region, as semantic segmentation (the task 1 of ISIC 2018)</li>
+<li>Color constancy (mentioned in <a href="https://www.mdpi.com/1424-8220/18/2/556" target="_blank">leadboard high-rank manuscript</a>)</li>
+<li>Focal loss function (1 report mentioned smaller variance on accuracy)</li>
+<li>Get extra data</li>
+<li>Exploration of other models</li>
+</ul>
+
+<h1 id="references-not-mentioned-yet">References not mentioned yet</h1>
+
+<ul>
+<li><a href="https://towardsdatascience.com/deep-learning-for-diagnosis-of-skin-images-with-fastai-792160ab5495" target="_blank">Deep Learning for Diagnosis of Skin Images with fastai</a></li>
+<li><a href="https://medium.com/@rzuazua/skin-cancer-detection-with-deep-learning-4a7e3fce7ef9" target="_blank">Improving Skin Cancer Detection with Deep Learning</a></li>
+</ul>
+
+    </div>
+
+    
+
+
+    
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/image-classification/">Image Classification</a>
+  
+  <a class="badge badge-light" href="/tags/deep-learning/">Deep Learning</a>
+  
+  <a class="badge badge-light" href="/tags/machine-learning/">Machine Learning</a>
+  
+</div>
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  <div class="media author-card">
+    
+      
+      <img class="portrait mr-3" src="/authors/admin/avatar_hu4079b1a087300ec54e2e7a1b37c78e50_49934_250x250_fill_q90_lanczos_center.jpg" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="https://pcx.linkedinfo.co/">PENG, Cong</a></h5>
+      <h6 class="card-subtitle">Ph.D. Student</h6>
+      
+      <ul class="network-icon" aria-hidden="true">
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+          <li>
+            <a href="mailto:cong.peng@bth.se" >
+              <i class="fas fa-envelope"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://scholar.google.com/citations?user=87g_0KgAAAAJ" target="_blank" rel="noopener">
+              <i class="ai ai-google-scholar"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://www.researchgate.net/profile/Cong_Peng5" target="_blank" rel="noopener">
+              <i class="fab fa-researchgate"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://github.com/ddxgz" target="_blank" rel="noopener">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+
+      
+      
+      <div class="article-widget">
+        <div class="hr-light"></div>
+        <h3>Related</h3>
+        <ul>
+          
+          <li><a href="/post/texttagspred/">Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</a></li>
+          
+          <li><a href="/post/houseprice/">Explore the house prices kaggle competition</a></li>
+          
+          <li><a href="/project/linkedinfo/">LinkedInfo.co</a></li>
+          
+        </ul>
+      </div>
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.130521ecfc6f534c52c158217bbff718.js"></script>
+
+    
+
+
+
+
+
+
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    ©2014–2019 Cong Peng &middot; 
+
+    Powered by
+    <a href="https://orgmode.org/" target="_blank" rel="noopener">Org-mode</a> and the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

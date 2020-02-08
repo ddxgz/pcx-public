@@ -5,12 +5,21 @@
     <link>https://pcx.linkedinfo.co/project/</link>
       <atom:link href="https://pcx.linkedinfo.co/project/index.xml" rel="self" type="application/rss+xml" />
     <description>Projects</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Sun, 27 Jan 2019 11:17:54 +0100</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Fri, 07 Feb 2020 19:51:26 +0100</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>Projects</title>
       <link>https://pcx.linkedinfo.co/project/</link>
     </image>
+    
+    <item>
+      <title>Skin Lesion Classifier</title>
+      <link>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</link>
+      <pubDate>Fri, 07 Feb 2020 19:51:26 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</guid>
+      <description>&lt;p&gt;A skin lesion classifier that uses a deep neural network trained on the HAM10000 dataset. An implementation of the ISIC challenge 2018 task 3.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>LinkedInfo.co</title>

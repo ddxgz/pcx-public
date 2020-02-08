@@ -5,7 +5,7 @@
     <link>https://pcx.linkedinfo.co/tags/</link>
       <atom:link href="https://pcx.linkedinfo.co/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Wed, 11 Sep 2019 13:36:43 +0200</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Fri, 07 Feb 2020 19:51:26 +0100</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>Tags</title>
@@ -13,18 +13,34 @@
     </image>
     
     <item>
-      <title>LinkedInfo.co</title>
-      <link>https://pcx.linkedinfo.co/tags/linkedinfo.co/</link>
-      <pubDate>Wed, 11 Sep 2019 13:36:43 +0200</pubDate>
-      <guid>https://pcx.linkedinfo.co/tags/linkedinfo.co/</guid>
+      <title>Deep Learning</title>
+      <link>https://pcx.linkedinfo.co/tags/deep-learning/</link>
+      <pubDate>Fri, 07 Feb 2020 19:51:26 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/deep-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Image Classification</title>
+      <link>https://pcx.linkedinfo.co/tags/image-classification/</link>
+      <pubDate>Fri, 07 Feb 2020 19:51:26 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/image-classification/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Machine Learning</title>
       <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
-      <pubDate>Wed, 11 Sep 2019 13:36:43 +0200</pubDate>
+      <pubDate>Fri, 07 Feb 2020 19:51:26 +0100</pubDate>
       <guid>https://pcx.linkedinfo.co/tags/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>LinkedInfo.co</title>
+      <link>https://pcx.linkedinfo.co/tags/linkedinfo.co/</link>
+      <pubDate>Wed, 11 Sep 2019 13:36:43 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/linkedinfo.co/</guid>
       <description></description>
     </item>
     

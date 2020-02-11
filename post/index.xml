@@ -1122,8 +1122,8 @@ them into vectors. In order to do this, we will use &lt;code class=&#34;verbatim
 preprocess, tokenize, filter stop words and transform the text data. The
 &lt;code class=&#34;verbatim&#34;&gt;TfidfVectorizer&lt;/code&gt; implements the
 &lt;a href=&#34;https://en.wikipedia.org/wiki/Tf%E2%80%93idf&#34;&gt;&lt;em&gt;tf-idf&lt;/em&gt;&lt;/a&gt; (Term
-Frequency-Inverse Deocument Frequency) to reflect how important a word
-is to to a docuemnt in a collection of documents.
+Frequency-Inverse Document Frequency) to reflect how important a word
+is to to a document in a collection of documents.
 &lt;/p&gt;
 &lt;div class=&#34;src src-python&#34;&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn.feature_extraction.text &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; TfidfVectorizer

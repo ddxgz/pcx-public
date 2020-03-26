@@ -5,12 +5,21 @@
     <link>https://pcx.linkedinfo.co/tags/text-classification/</link>
       <atom:link href="https://pcx.linkedinfo.co/tags/text-classification/index.xml" rel="self" type="application/rss+xml" />
     <description>Text classification</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Wed, 11 Sep 2019 13:36:43 +0200</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Sat, 04 Jan 2020 19:22:26 +0100</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>Text classification</title>
       <link>https://pcx.linkedinfo.co/tags/text-classification/</link>
     </image>
+    
+    <item>
+      <title>Topic Tag Predictor</title>
+      <link>https://pcx.linkedinfo.co/project/topic-tag-predictor/</link>
+      <pubDate>Sat, 04 Jan 2020 19:22:26 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/project/topic-tag-predictor/</guid>
+      <description>&lt;p&gt;A topic tag prediction service for technical articles. The model uses a pre-trained BERT and fine-tuned on the dataset of LinkedInfo.co.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</title>

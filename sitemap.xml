@@ -38,6 +38,16 @@
   </url>
   
   <url>
+    <loc>https://pcx.linkedinfo.co/tags/text-classification/</loc>
+    <lastmod>2020-01-04T19:22:26+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/project/topic-tag-predictor/</loc>
+    <lastmod>2020-01-04T19:22:26+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://pcx.linkedinfo.co/post/</loc>
     <lastmod>2020-01-06T19:56:49+01:00</lastmod>
   </url>
@@ -94,11 +104,6 @@
   
   <url>
     <loc>https://pcx.linkedinfo.co/post/texttagspred/</loc>
-    <lastmod>2019-09-13T13:36:43+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/tags/text-classification/</loc>
     <lastmod>2019-09-13T13:36:43+02:00</lastmod>
   </url>
   

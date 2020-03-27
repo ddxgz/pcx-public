@@ -5,12 +5,28 @@
     <link>https://pcx.linkedinfo.co/tags/</link>
       <atom:link href="https://pcx.linkedinfo.co/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Fri, 07 Feb 2020 19:51:26 +0100</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 10 Feb 2020 10:07:11 +0100</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://pcx.linkedinfo.co/tags/</link>
     </image>
+    
+    <item>
+      <title>Fraud Detection</title>
+      <link>https://pcx.linkedinfo.co/tags/fraud-detection/</link>
+      <pubDate>Mon, 10 Feb 2020 10:07:11 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/fraud-detection/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Machine Learning</title>
+      <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
+      <pubDate>Mon, 10 Feb 2020 10:07:11 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/machine-learning/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>Deep Learning</title>
@@ -29,10 +45,10 @@
     </item>
     
     <item>
-      <title>Machine Learning</title>
-      <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
-      <pubDate>Fri, 07 Feb 2020 19:51:26 +0100</pubDate>
-      <guid>https://pcx.linkedinfo.co/tags/machine-learning/</guid>
+      <title>BERT</title>
+      <link>https://pcx.linkedinfo.co/tags/bert/</link>
+      <pubDate>Sat, 04 Jan 2020 19:22:26 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/bert/</guid>
       <description></description>
     </item>
     

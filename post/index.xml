@@ -5,12 +5,1954 @@
     <link>https://pcx.linkedinfo.co/post/</link>
       <atom:link href="https://pcx.linkedinfo.co/post/index.xml" rel="self" type="application/rss+xml" />
     <description>Posts</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 02 Dec 2019 21:26:33 +0100</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 10 Feb 2020 10:07:11 +0100</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>Posts</title>
       <link>https://pcx.linkedinfo.co/post/</link>
     </image>
+    
+    <item>
+      <title>A Walk Through of the IEEE-CIS Fraud Detection Challenge</title>
+      <link>https://pcx.linkedinfo.co/post/fraud-detection/</link>
+      <pubDate>Mon, 10 Feb 2020 10:07:11 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/post/fraud-detection/</guid>
+      <description>
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;This is a brief walk through of the Kaggle challenge IEEE-CIS Fraud Detection. The process in this post is not meant to compete the top solution by performing an extre feature engineering and a greedy search for the best model with hyper-parameters. This is just to walk through the problem and demonstrate a relatively good solution, by doing feature analysis and a few experiments with reference to other&amp;rsquo;s methods.&lt;/p&gt;
+
+&lt;p&gt;The problem of this challenge is to detect payment frauds by using the data of the transactions and identities. The performance of the prediction is evaluated on &lt;em&gt;ROC AUC&lt;/em&gt;. The reason why this measure is suitable for this problem (rather than Precision-Recall) can refer to the discussion &lt;a href=&#34;https://www.kaggle.com/c/ieee-fraud-detection/discussion/99982&#34; target=&#34;_blank&#34;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h1 id=&#34;look-into-the-data&#34;&gt;Look into the data&lt;/h1&gt;
+
+&lt;p&gt;The provided dataset is broken into two files named &lt;code&gt;identity&lt;/code&gt; and &lt;code&gt;transaction&lt;/code&gt;, which are joined by &lt;code&gt;TransactionID&lt;/code&gt; (note that NOT all the transactions have corresponding identity information).&lt;/p&gt;
+
+&lt;h3 id=&#34;transaction-table&#34;&gt;Transaction Table&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;TransactionDT: timedelta from a given reference datetime (not an actual
+timestamp),  the number of seconds in a day (60 * 60 * 24 = 86400)&lt;/li&gt;
+&lt;li&gt;TransactionAMT: transaction payment amount in USD&lt;/li&gt;
+&lt;li&gt;ProductCD: product code, the product for each transaction&lt;/li&gt;
+&lt;li&gt;card1 - card6: payment card information, such as card type, card category, issue bank, country, etc.&lt;/li&gt;
+&lt;li&gt;addr: address&lt;/li&gt;
+&lt;li&gt;dist: distance&lt;/li&gt;
+&lt;li&gt;P_ and (R__) emaildomain: purchaser and recipient email domain&lt;/li&gt;
+&lt;li&gt;C1-C14: counting, such as how many addresses are found to be associated with the payment card, etc. The actual meaning is masked.&lt;/li&gt;
+&lt;li&gt;D1-D15: timedelta, such as days between previous transaction, etc.&lt;/li&gt;
+&lt;li&gt;M1-M9: match, such as names on card and address, etc.&lt;/li&gt;
+&lt;li&gt;Vxxx: Vesta engineered rich features, including ranking, counting, and other entity relations.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Among these variables, categorical variables are:
+   - ProductCD
+   - card1 - card6
+   - addr1, addr2
+   - Pemaildomain Remaildomain
+   - M1 - M9&lt;/p&gt;
+
+&lt;h3 id=&#34;identity-table&#34;&gt;Identity Table&lt;/h3&gt;
+
+&lt;p&gt;All the variable in this table are categorical:
+   - DeviceType
+   - DeviceInfo
+   - id12 - id38&lt;/p&gt;
+
+&lt;p&gt;A more detailed explanation of the data can be found in the reply of &lt;a href=&#34;https://www.kaggle.com/c/ieee-fraud-detection/discussion/101203&#34; target=&#34;_blank&#34;&gt;this discussion&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s have a close look at the data.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;from IPython.core.interactiveshell import InteractiveShell
+InteractiveShell.ast_node_interactivity = &amp;quot;all&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;import numpy as np
+import pandas as pd
+import plotly.express as px
+
+
+DATA_DIR = &#39;/content/drive/My Drive/colab-data/fraud detect/data&#39;
+
+tran_train = reduce_mem_usage(pd.read_csv(f&#39;{DATA_DIR}/train_transaction.csv&#39;))
+id_train = reduce_mem_usage(pd.read_csv(f&#39;{DATA_DIR}/train_identity.csv&#39;))
+
+tran_train.info()
+tran_train.head()
+id_train.info()
+id_train.head()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;Mem. usage decreased to 542.35 Mb (69.4% reduction)
+Mem. usage decreased to 25.86 Mb (42.7% reduction)
+&amp;lt;class &#39;pandas.core.frame.DataFrame&#39;&amp;gt;
+RangeIndex: 590540 entries, 0 to 590539
+Columns: 394 entries, TransactionID to V339
+dtypes: float16(332), float32(44), int16(1), int32(2), int8(1), object(14)
+memory usage: 542.3+ MB
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;TransactionID&lt;/th&gt;
+      &lt;th&gt;isFraud&lt;/th&gt;
+      &lt;th&gt;TransactionDT&lt;/th&gt;
+      &lt;th&gt;TransactionAmt&lt;/th&gt;
+      &lt;th&gt;ProductCD&lt;/th&gt;
+      &lt;th&gt;card1&lt;/th&gt;
+      &lt;th&gt;card2&lt;/th&gt;
+      &lt;th&gt;card3&lt;/th&gt;
+      &lt;th&gt;card4&lt;/th&gt;
+      &lt;th&gt;card5&lt;/th&gt;
+      &lt;th&gt;card6&lt;/th&gt;
+      &lt;th&gt;addr1&lt;/th&gt;
+      &lt;th&gt;addr2&lt;/th&gt;
+      &lt;th&gt;dist1&lt;/th&gt;
+      &lt;th&gt;dist2&lt;/th&gt;
+      &lt;th&gt;P_emaildomain&lt;/th&gt;
+      &lt;th&gt;R_emaildomain&lt;/th&gt;
+      &lt;th&gt;C1&lt;/th&gt;
+      &lt;th&gt;C2&lt;/th&gt;
+      &lt;th&gt;C3&lt;/th&gt;
+      &lt;th&gt;C4&lt;/th&gt;
+      &lt;th&gt;C5&lt;/th&gt;
+      &lt;th&gt;C6&lt;/th&gt;
+      &lt;th&gt;C7&lt;/th&gt;
+      &lt;th&gt;C8&lt;/th&gt;
+      &lt;th&gt;C9&lt;/th&gt;
+      &lt;th&gt;C10&lt;/th&gt;
+      &lt;th&gt;C11&lt;/th&gt;
+      &lt;th&gt;C12&lt;/th&gt;
+      &lt;th&gt;C13&lt;/th&gt;
+      &lt;th&gt;C14&lt;/th&gt;
+      &lt;th&gt;D1&lt;/th&gt;
+      &lt;th&gt;D2&lt;/th&gt;
+      &lt;th&gt;D3&lt;/th&gt;
+      &lt;th&gt;D4&lt;/th&gt;
+      &lt;th&gt;D5&lt;/th&gt;
+      &lt;th&gt;D6&lt;/th&gt;
+      &lt;th&gt;D7&lt;/th&gt;
+      &lt;th&gt;D8&lt;/th&gt;
+      &lt;th&gt;D9&lt;/th&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;th&gt;V300&lt;/th&gt;
+      &lt;th&gt;V301&lt;/th&gt;
+      &lt;th&gt;V302&lt;/th&gt;
+      &lt;th&gt;V303&lt;/th&gt;
+      &lt;th&gt;V304&lt;/th&gt;
+      &lt;th&gt;V305&lt;/th&gt;
+      &lt;th&gt;V306&lt;/th&gt;
+      &lt;th&gt;V307&lt;/th&gt;
+      &lt;th&gt;V308&lt;/th&gt;
+      &lt;th&gt;V309&lt;/th&gt;
+      &lt;th&gt;V310&lt;/th&gt;
+      &lt;th&gt;V311&lt;/th&gt;
+      &lt;th&gt;V312&lt;/th&gt;
+      &lt;th&gt;V313&lt;/th&gt;
+      &lt;th&gt;V314&lt;/th&gt;
+      &lt;th&gt;V315&lt;/th&gt;
+      &lt;th&gt;V316&lt;/th&gt;
+      &lt;th&gt;V317&lt;/th&gt;
+      &lt;th&gt;V318&lt;/th&gt;
+      &lt;th&gt;V319&lt;/th&gt;
+      &lt;th&gt;V320&lt;/th&gt;
+      &lt;th&gt;V321&lt;/th&gt;
+      &lt;th&gt;V322&lt;/th&gt;
+      &lt;th&gt;V323&lt;/th&gt;
+      &lt;th&gt;V324&lt;/th&gt;
+      &lt;th&gt;V325&lt;/th&gt;
+      &lt;th&gt;V326&lt;/th&gt;
+      &lt;th&gt;V327&lt;/th&gt;
+      &lt;th&gt;V328&lt;/th&gt;
+      &lt;th&gt;V329&lt;/th&gt;
+      &lt;th&gt;V330&lt;/th&gt;
+      &lt;th&gt;V331&lt;/th&gt;
+      &lt;th&gt;V332&lt;/th&gt;
+      &lt;th&gt;V333&lt;/th&gt;
+      &lt;th&gt;V334&lt;/th&gt;
+      &lt;th&gt;V335&lt;/th&gt;
+      &lt;th&gt;V336&lt;/th&gt;
+      &lt;th&gt;V337&lt;/th&gt;
+      &lt;th&gt;V338&lt;/th&gt;
+      &lt;th&gt;V339&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2987000&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;86400&lt;/td&gt;
+      &lt;td&gt;68.5&lt;/td&gt;
+      &lt;td&gt;W&lt;/td&gt;
+      &lt;td&gt;13926&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;150.0&lt;/td&gt;
+      &lt;td&gt;discover&lt;/td&gt;
+      &lt;td&gt;142.0&lt;/td&gt;
+      &lt;td&gt;credit&lt;/td&gt;
+      &lt;td&gt;315.0&lt;/td&gt;
+      &lt;td&gt;87.0&lt;/td&gt;
+      &lt;td&gt;19.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;2.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;14.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;13.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;117.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;117.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2987001&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;86401&lt;/td&gt;
+      &lt;td&gt;29.0&lt;/td&gt;
+      &lt;td&gt;W&lt;/td&gt;
+      &lt;td&gt;2755&lt;/td&gt;
+      &lt;td&gt;404.0&lt;/td&gt;
+      &lt;td&gt;150.0&lt;/td&gt;
+      &lt;td&gt;mastercard&lt;/td&gt;
+      &lt;td&gt;102.0&lt;/td&gt;
+      &lt;td&gt;credit&lt;/td&gt;
+      &lt;td&gt;325.0&lt;/td&gt;
+      &lt;td&gt;87.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;gmail.com&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;2987002&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;86469&lt;/td&gt;
+      &lt;td&gt;59.0&lt;/td&gt;
+      &lt;td&gt;W&lt;/td&gt;
+      &lt;td&gt;4663&lt;/td&gt;
+      &lt;td&gt;490.0&lt;/td&gt;
+      &lt;td&gt;150.0&lt;/td&gt;
+      &lt;td&gt;visa&lt;/td&gt;
+      &lt;td&gt;166.0&lt;/td&gt;
+      &lt;td&gt;debit&lt;/td&gt;
+      &lt;td&gt;330.0&lt;/td&gt;
+      &lt;td&gt;87.0&lt;/td&gt;
+      &lt;td&gt;287.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;outlook.com&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;2987003&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;86499&lt;/td&gt;
+      &lt;td&gt;50.0&lt;/td&gt;
+      &lt;td&gt;W&lt;/td&gt;
+      &lt;td&gt;18132&lt;/td&gt;
+      &lt;td&gt;567.0&lt;/td&gt;
+      &lt;td&gt;150.0&lt;/td&gt;
+      &lt;td&gt;mastercard&lt;/td&gt;
+      &lt;td&gt;117.0&lt;/td&gt;
+      &lt;td&gt;debit&lt;/td&gt;
+      &lt;td&gt;476.0&lt;/td&gt;
+      &lt;td&gt;87.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;yahoo.com&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;2.0&lt;/td&gt;
+      &lt;td&gt;5.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;4.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;25.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;112.0&lt;/td&gt;
+      &lt;td&gt;112.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;94.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;50.0&lt;/td&gt;
+      &lt;td&gt;1758.0&lt;/td&gt;
+      &lt;td&gt;925.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;354.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;135.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;50.0&lt;/td&gt;
+      &lt;td&gt;1404.0&lt;/td&gt;
+      &lt;td&gt;790.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;2987004&lt;/td&gt;
+      &lt;td&gt;0&lt;/td&gt;
+      &lt;td&gt;86506&lt;/td&gt;
+      &lt;td&gt;50.0&lt;/td&gt;
+      &lt;td&gt;H&lt;/td&gt;
+      &lt;td&gt;4497&lt;/td&gt;
+      &lt;td&gt;514.0&lt;/td&gt;
+      &lt;td&gt;150.0&lt;/td&gt;
+      &lt;td&gt;mastercard&lt;/td&gt;
+      &lt;td&gt;102.0&lt;/td&gt;
+      &lt;td&gt;credit&lt;/td&gt;
+      &lt;td&gt;420.0&lt;/td&gt;
+      &lt;td&gt;87.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;gmail.com&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;...&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;5 rows × 394 columns&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code&gt;&amp;lt;class &#39;pandas.core.frame.DataFrame&#39;&amp;gt;
+RangeIndex: 144233 entries, 0 to 144232
+Data columns (total 41 columns):
+TransactionID    144233 non-null int32
+id_01            144233 non-null float16
+id_02            140872 non-null float32
+id_03            66324 non-null float16
+id_04            66324 non-null float16
+id_05            136865 non-null float16
+id_06            136865 non-null float16
+id_07            5155 non-null float16
+id_08            5155 non-null float16
+id_09            74926 non-null float16
+id_10            74926 non-null float16
+id_11            140978 non-null float16
+id_12            144233 non-null object
+id_13            127320 non-null float16
+id_14            80044 non-null float16
+id_15            140985 non-null object
+id_16            129340 non-null object
+id_17            139369 non-null float16
+id_18            45113 non-null float16
+id_19            139318 non-null float16
+id_20            139261 non-null float16
+id_21            5159 non-null float16
+id_22            5169 non-null float16
+id_23            5169 non-null object
+id_24            4747 non-null float16
+id_25            5132 non-null float16
+id_26            5163 non-null float16
+id_27            5169 non-null object
+id_28            140978 non-null object
+id_29            140978 non-null object
+id_30            77565 non-null object
+id_31            140282 non-null object
+id_32            77586 non-null float16
+id_33            73289 non-null object
+id_34            77805 non-null object
+id_35            140985 non-null object
+id_36            140985 non-null object
+id_37            140985 non-null object
+id_38            140985 non-null object
+DeviceType       140810 non-null object
+DeviceInfo       118666 non-null object
+dtypes: float16(22), float32(1), int32(1), object(17)
+memory usage: 25.9+ MB
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;TransactionID&lt;/th&gt;
+      &lt;th&gt;id_01&lt;/th&gt;
+      &lt;th&gt;id_02&lt;/th&gt;
+      &lt;th&gt;id_03&lt;/th&gt;
+      &lt;th&gt;id_04&lt;/th&gt;
+      &lt;th&gt;id_05&lt;/th&gt;
+      &lt;th&gt;id_06&lt;/th&gt;
+      &lt;th&gt;id_07&lt;/th&gt;
+      &lt;th&gt;id_08&lt;/th&gt;
+      &lt;th&gt;id_09&lt;/th&gt;
+      &lt;th&gt;id_10&lt;/th&gt;
+      &lt;th&gt;id_11&lt;/th&gt;
+      &lt;th&gt;id_12&lt;/th&gt;
+      &lt;th&gt;id_13&lt;/th&gt;
+      &lt;th&gt;id_14&lt;/th&gt;
+      &lt;th&gt;id_15&lt;/th&gt;
+      &lt;th&gt;id_16&lt;/th&gt;
+      &lt;th&gt;id_17&lt;/th&gt;
+      &lt;th&gt;id_18&lt;/th&gt;
+      &lt;th&gt;id_19&lt;/th&gt;
+      &lt;th&gt;id_20&lt;/th&gt;
+      &lt;th&gt;id_21&lt;/th&gt;
+      &lt;th&gt;id_22&lt;/th&gt;
+      &lt;th&gt;id_23&lt;/th&gt;
+      &lt;th&gt;id_24&lt;/th&gt;
+      &lt;th&gt;id_25&lt;/th&gt;
+      &lt;th&gt;id_26&lt;/th&gt;
+      &lt;th&gt;id_27&lt;/th&gt;
+      &lt;th&gt;id_28&lt;/th&gt;
+      &lt;th&gt;id_29&lt;/th&gt;
+      &lt;th&gt;id_30&lt;/th&gt;
+      &lt;th&gt;id_31&lt;/th&gt;
+      &lt;th&gt;id_32&lt;/th&gt;
+      &lt;th&gt;id_33&lt;/th&gt;
+      &lt;th&gt;id_34&lt;/th&gt;
+      &lt;th&gt;id_35&lt;/th&gt;
+      &lt;th&gt;id_36&lt;/th&gt;
+      &lt;th&gt;id_37&lt;/th&gt;
+      &lt;th&gt;id_38&lt;/th&gt;
+      &lt;th&gt;DeviceType&lt;/th&gt;
+      &lt;th&gt;DeviceInfo&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;0&lt;/th&gt;
+      &lt;td&gt;2987004&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;70787.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;100.0&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;-480.0&lt;/td&gt;
+      &lt;td&gt;New&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;166.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;542.0&lt;/td&gt;
+      &lt;td&gt;144.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;New&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;Android 7.0&lt;/td&gt;
+      &lt;td&gt;samsung browser 6.2&lt;/td&gt;
+      &lt;td&gt;32.0&lt;/td&gt;
+      &lt;td&gt;2220x1080&lt;/td&gt;
+      &lt;td&gt;match_status:2&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;F&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;mobile&lt;/td&gt;
+      &lt;td&gt;SAMSUNG SM-G892A Build/NRD90M&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;1&lt;/th&gt;
+      &lt;td&gt;2987008&lt;/td&gt;
+      &lt;td&gt;-5.0&lt;/td&gt;
+      &lt;td&gt;98945.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;-5.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;100.0&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;49.0&lt;/td&gt;
+      &lt;td&gt;-300.0&lt;/td&gt;
+      &lt;td&gt;New&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;166.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;621.0&lt;/td&gt;
+      &lt;td&gt;500.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;New&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;iOS 11.1.2&lt;/td&gt;
+      &lt;td&gt;mobile safari 11.0&lt;/td&gt;
+      &lt;td&gt;32.0&lt;/td&gt;
+      &lt;td&gt;1334x750&lt;/td&gt;
+      &lt;td&gt;match_status:1&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;F&lt;/td&gt;
+      &lt;td&gt;F&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;mobile&lt;/td&gt;
+      &lt;td&gt;iOS Device&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;2&lt;/th&gt;
+      &lt;td&gt;2987010&lt;/td&gt;
+      &lt;td&gt;-5.0&lt;/td&gt;
+      &lt;td&gt;191631.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;100.0&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;52.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;Found&lt;/td&gt;
+      &lt;td&gt;Found&lt;/td&gt;
+      &lt;td&gt;121.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;410.0&lt;/td&gt;
+      &lt;td&gt;142.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;Found&lt;/td&gt;
+      &lt;td&gt;Found&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;chrome 62.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;F&lt;/td&gt;
+      &lt;td&gt;F&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;desktop&lt;/td&gt;
+      &lt;td&gt;Windows&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;3&lt;/th&gt;
+      &lt;td&gt;2987011&lt;/td&gt;
+      &lt;td&gt;-5.0&lt;/td&gt;
+      &lt;td&gt;221832.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;-6.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;100.0&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;52.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;New&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;225.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;176.0&lt;/td&gt;
+      &lt;td&gt;507.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;New&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;chrome 62.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;F&lt;/td&gt;
+      &lt;td&gt;F&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;desktop&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;4&lt;/th&gt;
+      &lt;td&gt;2987016&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;7460.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;1.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;0.0&lt;/td&gt;
+      &lt;td&gt;100.0&lt;/td&gt;
+      &lt;td&gt;NotFound&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;-300.0&lt;/td&gt;
+      &lt;td&gt;Found&lt;/td&gt;
+      &lt;td&gt;Found&lt;/td&gt;
+      &lt;td&gt;166.0&lt;/td&gt;
+      &lt;td&gt;15.0&lt;/td&gt;
+      &lt;td&gt;529.0&lt;/td&gt;
+      &lt;td&gt;575.0&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;NaN&lt;/td&gt;
+      &lt;td&gt;Found&lt;/td&gt;
+      &lt;td&gt;Found&lt;/td&gt;
+      &lt;td&gt;Mac OS X 10_11_6&lt;/td&gt;
+      &lt;td&gt;chrome 62.0&lt;/td&gt;
+      &lt;td&gt;24.0&lt;/td&gt;
+      &lt;td&gt;1280x800&lt;/td&gt;
+      &lt;td&gt;match_status:2&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;F&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;T&lt;/td&gt;
+      &lt;td&gt;desktop&lt;/td&gt;
+      &lt;td&gt;MacOS&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;pre&gt;&lt;code&gt;is_fraud = tran_train[[&#39;isFraud&#39;, &#39;TransactionID&#39;]].groupby(&#39;isFraud&#39;).count()
+
+is_fraud[&#39;ratio&#39;] = is_fraud[&#39;TransactionID&#39;] / is_fraud[&#39;TransactionID&#39;].sum()
+fig_Y = px.bar(is_fraud, x=is_fraud.index, y=&#39;TransactionID&#39;,
+               text=&#39;ratio&#39;,
+               labels={&#39;TransactionID&#39;: &#39;Number of transactions&#39;,
+                       &#39;x&#39;: &#39;is fraud&#39;})
+fig_Y.update_traces(texttemplate=&#39;%{text:.6p}&#39;)
+&lt;/code&gt;&lt;/pre&gt;
+
+
+
+&lt;html&gt;
+&lt;head&gt;&lt;meta charset=&#34;utf-8&#34; /&gt;&lt;/head&gt;
+&lt;body&gt;
+    &lt;div&gt;
+            &lt;script src=&#34;https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG&#34;&gt;&lt;/script&gt;&lt;script type=&#34;text/javascript&#34;&gt;if (window.MathJax) {MathJax.Hub.Config({SVG: {font: &#34;STIX-Web&#34;}});}&lt;/script&gt;
+                &lt;script type=&#34;text/javascript&#34;&gt;window.PlotlyConfig = {MathJaxConfig: &#39;local&#39;};&lt;/script&gt;
+        &lt;script src=&#34;https://cdn.plot.ly/plotly-latest.min.js&#34;&gt;&lt;/script&gt;    
+            &lt;div id=&#34;ac80ada0-952e-4492-9d69-bdab360ef9d6&#34; class=&#34;plotly-graph-div&#34; style=&#34;height:525px; width:100%;&#34;&gt;&lt;/div&gt;
+            &lt;script type=&#34;text/javascript&#34;&gt;
+                
+                    window.PLOTLYENV=window.PLOTLYENV || {};
+                    
+                if (document.getElementById(&#34;ac80ada0-952e-4492-9d69-bdab360ef9d6&#34;)) {
+                    Plotly.newPlot(
+                        &#39;ac80ada0-952e-4492-9d69-bdab360ef9d6&#39;,
+                        [{&#34;alignmentgroup&#34;: &#34;True&#34;, &#34;hoverlabel&#34;: {&#34;namelength&#34;: 0}, &#34;hovertemplate&#34;: &#34;is fraud=%{x}&lt;br&gt;Number of transactions=%{y}&lt;br&gt;ratio=%{text}&#34;, &#34;legendgroup&#34;: &#34;&#34;, &#34;marker&#34;: {&#34;color&#34;: &#34;#636efa&#34;}, &#34;name&#34;: &#34;&#34;, &#34;offsetgroup&#34;: &#34;&#34;, &#34;orientation&#34;: &#34;v&#34;, &#34;showlegend&#34;: false, &#34;text&#34;: [0.9650099908558268, 0.03499000914417313], &#34;textposition&#34;: &#34;auto&#34;, &#34;texttemplate&#34;: &#34;%{text:.6p}&#34;, &#34;type&#34;: &#34;bar&#34;, &#34;x&#34;: [0, 1], &#34;xaxis&#34;: &#34;x&#34;, &#34;y&#34;: [569877, 20663], &#34;yaxis&#34;: &#34;y&#34;}],
+                        {&#34;barmode&#34;: &#34;relative&#34;, &#34;legend&#34;: {&#34;tracegroupgap&#34;: 0}, &#34;margin&#34;: {&#34;t&#34;: 60}, &#34;template&#34;: {&#34;data&#34;: {&#34;bar&#34;: [{&#34;error_x&#34;: {&#34;color&#34;: &#34;#2a3f5f&#34;}, &#34;error_y&#34;: {&#34;color&#34;: &#34;#2a3f5f&#34;}, &#34;marker&#34;: {&#34;line&#34;: {&#34;color&#34;: &#34;#E5ECF6&#34;, &#34;width&#34;: 0.5}}, &#34;type&#34;: &#34;bar&#34;}], &#34;barpolar&#34;: [{&#34;marker&#34;: {&#34;line&#34;: {&#34;color&#34;: &#34;#E5ECF6&#34;, &#34;width&#34;: 0.5}}, &#34;type&#34;: &#34;barpolar&#34;}], &#34;carpet&#34;: [{&#34;aaxis&#34;: {&#34;endlinecolor&#34;: &#34;#2a3f5f&#34;, &#34;gridcolor&#34;: &#34;white&#34;, &#34;linecolor&#34;: &#34;white&#34;, &#34;minorgridcolor&#34;: &#34;white&#34;, &#34;startlinecolor&#34;: &#34;#2a3f5f&#34;}, &#34;baxis&#34;: {&#34;endlinecolor&#34;: &#34;#2a3f5f&#34;, &#34;gridcolor&#34;: &#34;white&#34;, &#34;linecolor&#34;: &#34;white&#34;, &#34;minorgridcolor&#34;: &#34;white&#34;, &#34;startlinecolor&#34;: &#34;#2a3f5f&#34;}, &#34;type&#34;: &#34;carpet&#34;}], &#34;choropleth&#34;: [{&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}, &#34;type&#34;: &#34;choropleth&#34;}], &#34;contour&#34;: [{&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}, &#34;colorscale&#34;: [[0.0, &#34;#0d0887&#34;], [0.1111111111111111, &#34;#46039f&#34;], [0.2222222222222222, &#34;#7201a8&#34;], [0.3333333333333333, &#34;#9c179e&#34;], [0.4444444444444444, &#34;#bd3786&#34;], [0.5555555555555556, &#34;#d8576b&#34;], [0.6666666666666666, &#34;#ed7953&#34;], [0.7777777777777778, &#34;#fb9f3a&#34;], [0.8888888888888888, &#34;#fdca26&#34;], [1.0, &#34;#f0f921&#34;]], &#34;type&#34;: &#34;contour&#34;}], &#34;contourcarpet&#34;: [{&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}, &#34;type&#34;: &#34;contourcarpet&#34;}], &#34;heatmap&#34;: [{&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}, &#34;colorscale&#34;: [[0.0, &#34;#0d0887&#34;], [0.1111111111111111, &#34;#46039f&#34;], [0.2222222222222222, &#34;#7201a8&#34;], [0.3333333333333333, &#34;#9c179e&#34;], [0.4444444444444444, &#34;#bd3786&#34;], [0.5555555555555556, &#34;#d8576b&#34;], [0.6666666666666666, &#34;#ed7953&#34;], [0.7777777777777778, &#34;#fb9f3a&#34;], [0.8888888888888888, &#34;#fdca26&#34;], [1.0, &#34;#f0f921&#34;]], &#34;type&#34;: &#34;heatmap&#34;}], &#34;heatmapgl&#34;: [{&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}, &#34;colorscale&#34;: [[0.0, &#34;#0d0887&#34;], [0.1111111111111111, &#34;#46039f&#34;], [0.2222222222222222, &#34;#7201a8&#34;], [0.3333333333333333, &#34;#9c179e&#34;], [0.4444444444444444, &#34;#bd3786&#34;], [0.5555555555555556, &#34;#d8576b&#34;], [0.6666666666666666, &#34;#ed7953&#34;], [0.7777777777777778, &#34;#fb9f3a&#34;], [0.8888888888888888, &#34;#fdca26&#34;], [1.0, &#34;#f0f921&#34;]], &#34;type&#34;: &#34;heatmapgl&#34;}], &#34;histogram&#34;: [{&#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;histogram&#34;}], &#34;histogram2d&#34;: [{&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}, &#34;colorscale&#34;: [[0.0, &#34;#0d0887&#34;], [0.1111111111111111, &#34;#46039f&#34;], [0.2222222222222222, &#34;#7201a8&#34;], [0.3333333333333333, &#34;#9c179e&#34;], [0.4444444444444444, &#34;#bd3786&#34;], [0.5555555555555556, &#34;#d8576b&#34;], [0.6666666666666666, &#34;#ed7953&#34;], [0.7777777777777778, &#34;#fb9f3a&#34;], [0.8888888888888888, &#34;#fdca26&#34;], [1.0, &#34;#f0f921&#34;]], &#34;type&#34;: &#34;histogram2d&#34;}], &#34;histogram2dcontour&#34;: [{&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}, &#34;colorscale&#34;: [[0.0, &#34;#0d0887&#34;], [0.1111111111111111, &#34;#46039f&#34;], [0.2222222222222222, &#34;#7201a8&#34;], [0.3333333333333333, &#34;#9c179e&#34;], [0.4444444444444444, &#34;#bd3786&#34;], [0.5555555555555556, &#34;#d8576b&#34;], [0.6666666666666666, &#34;#ed7953&#34;], [0.7777777777777778, &#34;#fb9f3a&#34;], [0.8888888888888888, &#34;#fdca26&#34;], [1.0, &#34;#f0f921&#34;]], &#34;type&#34;: &#34;histogram2dcontour&#34;}], &#34;mesh3d&#34;: [{&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}, &#34;type&#34;: &#34;mesh3d&#34;}], &#34;parcoords&#34;: [{&#34;line&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;parcoords&#34;}], &#34;pie&#34;: [{&#34;automargin&#34;: true, &#34;type&#34;: &#34;pie&#34;}], &#34;scatter&#34;: [{&#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;scatter&#34;}], &#34;scatter3d&#34;: [{&#34;line&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;scatter3d&#34;}], &#34;scattercarpet&#34;: [{&#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;scattercarpet&#34;}], &#34;scattergeo&#34;: [{&#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;scattergeo&#34;}], &#34;scattergl&#34;: [{&#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;scattergl&#34;}], &#34;scattermapbox&#34;: [{&#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;scattermapbox&#34;}], &#34;scatterpolar&#34;: [{&#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;scatterpolar&#34;}], &#34;scatterpolargl&#34;: [{&#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;scatterpolargl&#34;}], &#34;scatterternary&#34;: [{&#34;marker&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;type&#34;: &#34;scatterternary&#34;}], &#34;surface&#34;: [{&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}, &#34;colorscale&#34;: [[0.0, &#34;#0d0887&#34;], [0.1111111111111111, &#34;#46039f&#34;], [0.2222222222222222, &#34;#7201a8&#34;], [0.3333333333333333, &#34;#9c179e&#34;], [0.4444444444444444, &#34;#bd3786&#34;], [0.5555555555555556, &#34;#d8576b&#34;], [0.6666666666666666, &#34;#ed7953&#34;], [0.7777777777777778, &#34;#fb9f3a&#34;], [0.8888888888888888, &#34;#fdca26&#34;], [1.0, &#34;#f0f921&#34;]], &#34;type&#34;: &#34;surface&#34;}], &#34;table&#34;: [{&#34;cells&#34;: {&#34;fill&#34;: {&#34;color&#34;: &#34;#EBF0F8&#34;}, &#34;line&#34;: {&#34;color&#34;: &#34;white&#34;}}, &#34;header&#34;: {&#34;fill&#34;: {&#34;color&#34;: &#34;#C8D4E3&#34;}, &#34;line&#34;: {&#34;color&#34;: &#34;white&#34;}}, &#34;type&#34;: &#34;table&#34;}]}, &#34;layout&#34;: {&#34;annotationdefaults&#34;: {&#34;arrowcolor&#34;: &#34;#2a3f5f&#34;, &#34;arrowhead&#34;: 0, &#34;arrowwidth&#34;: 1}, &#34;coloraxis&#34;: {&#34;colorbar&#34;: {&#34;outlinewidth&#34;: 0, &#34;ticks&#34;: &#34;&#34;}}, &#34;colorscale&#34;: {&#34;diverging&#34;: [[0, &#34;#8e0152&#34;], [0.1, &#34;#c51b7d&#34;], [0.2, &#34;#de77ae&#34;], [0.3, &#34;#f1b6da&#34;], [0.4, &#34;#fde0ef&#34;], [0.5, &#34;#f7f7f7&#34;], [0.6, &#34;#e6f5d0&#34;], [0.7, &#34;#b8e186&#34;], [0.8, &#34;#7fbc41&#34;], [0.9, &#34;#4d9221&#34;], [1, &#34;#276419&#34;]], &#34;sequential&#34;: [[0.0, &#34;#0d0887&#34;], [0.1111111111111111, &#34;#46039f&#34;], [0.2222222222222222, &#34;#7201a8&#34;], [0.3333333333333333, &#34;#9c179e&#34;], [0.4444444444444444, &#34;#bd3786&#34;], [0.5555555555555556, &#34;#d8576b&#34;], [0.6666666666666666, &#34;#ed7953&#34;], [0.7777777777777778, &#34;#fb9f3a&#34;], [0.8888888888888888, &#34;#fdca26&#34;], [1.0, &#34;#f0f921&#34;]], &#34;sequentialminus&#34;: [[0.0, &#34;#0d0887&#34;], [0.1111111111111111, &#34;#46039f&#34;], [0.2222222222222222, &#34;#7201a8&#34;], [0.3333333333333333, &#34;#9c179e&#34;], [0.4444444444444444, &#34;#bd3786&#34;], [0.5555555555555556, &#34;#d8576b&#34;], [0.6666666666666666, &#34;#ed7953&#34;], [0.7777777777777778, &#34;#fb9f3a&#34;], [0.8888888888888888, &#34;#fdca26&#34;], [1.0, &#34;#f0f921&#34;]]}, &#34;colorway&#34;: [&#34;#636efa&#34;, &#34;#EF553B&#34;, &#34;#00cc96&#34;, &#34;#ab63fa&#34;, &#34;#FFA15A&#34;, &#34;#19d3f3&#34;, &#34;#FF6692&#34;, &#34;#B6E880&#34;, &#34;#FF97FF&#34;, &#34;#FECB52&#34;], &#34;font&#34;: {&#34;color&#34;: &#34;#2a3f5f&#34;}, &#34;geo&#34;: {&#34;bgcolor&#34;: &#34;white&#34;, &#34;lakecolor&#34;: &#34;white&#34;, &#34;landcolor&#34;: &#34;#E5ECF6&#34;, &#34;showlakes&#34;: true, &#34;showland&#34;: true, &#34;subunitcolor&#34;: &#34;white&#34;}, &#34;hoverlabel&#34;: {&#34;align&#34;: &#34;left&#34;}, &#34;hovermode&#34;: &#34;closest&#34;, &#34;mapbox&#34;: {&#34;style&#34;: &#34;light&#34;}, &#34;paper_bgcolor&#34;: &#34;white&#34;, &#34;plot_bgcolor&#34;: &#34;#E5ECF6&#34;, &#34;polar&#34;: {&#34;angularaxis&#34;: {&#34;gridcolor&#34;: &#34;white&#34;, &#34;linecolor&#34;: &#34;white&#34;, &#34;ticks&#34;: &#34;&#34;}, &#34;bgcolor&#34;: &#34;#E5ECF6&#34;, &#34;radialaxis&#34;: {&#34;gridcolor&#34;: &#34;white&#34;, &#34;linecolor&#34;: &#34;white&#34;, &#34;ticks&#34;: &#34;&#34;}}, &#34;scene&#34;: {&#34;xaxis&#34;: {&#34;backgroundcolor&#34;: &#34;#E5ECF6&#34;, &#34;gridcolor&#34;: &#34;white&#34;, &#34;gridwidth&#34;: 2, &#34;linecolor&#34;: &#34;white&#34;, &#34;showbackground&#34;: true, &#34;ticks&#34;: &#34;&#34;, &#34;zerolinecolor&#34;: &#34;white&#34;}, &#34;yaxis&#34;: {&#34;backgroundcolor&#34;: &#34;#E5ECF6&#34;, &#34;gridcolor&#34;: &#34;white&#34;, &#34;gridwidth&#34;: 2, &#34;linecolor&#34;: &#34;white&#34;, &#34;showbackground&#34;: true, &#34;ticks&#34;: &#34;&#34;, &#34;zerolinecolor&#34;: &#34;white&#34;}, &#34;zaxis&#34;: {&#34;backgroundcolor&#34;: &#34;#E5ECF6&#34;, &#34;gridcolor&#34;: &#34;white&#34;, &#34;gridwidth&#34;: 2, &#34;linecolor&#34;: &#34;white&#34;, &#34;showbackground&#34;: true, &#34;ticks&#34;: &#34;&#34;, &#34;zerolinecolor&#34;: &#34;white&#34;}}, &#34;shapedefaults&#34;: {&#34;line&#34;: {&#34;color&#34;: &#34;#2a3f5f&#34;}}, &#34;ternary&#34;: {&#34;aaxis&#34;: {&#34;gridcolor&#34;: &#34;white&#34;, &#34;linecolor&#34;: &#34;white&#34;, &#34;ticks&#34;: &#34;&#34;}, &#34;baxis&#34;: {&#34;gridcolor&#34;: &#34;white&#34;, &#34;linecolor&#34;: &#34;white&#34;, &#34;ticks&#34;: &#34;&#34;}, &#34;bgcolor&#34;: &#34;#E5ECF6&#34;, &#34;caxis&#34;: {&#34;gridcolor&#34;: &#34;white&#34;, &#34;linecolor&#34;: &#34;white&#34;, &#34;ticks&#34;: &#34;&#34;}}, &#34;title&#34;: {&#34;x&#34;: 0.05}, &#34;xaxis&#34;: {&#34;automargin&#34;: true, &#34;gridcolor&#34;: &#34;white&#34;, &#34;linecolor&#34;: &#34;white&#34;, &#34;ticks&#34;: &#34;&#34;, &#34;title&#34;: {&#34;standoff&#34;: 15}, &#34;zerolinecolor&#34;: &#34;white&#34;, &#34;zerolinewidth&#34;: 2}, &#34;yaxis&#34;: {&#34;automargin&#34;: true, &#34;gridcolor&#34;: &#34;white&#34;, &#34;linecolor&#34;: &#34;white&#34;, &#34;ticks&#34;: &#34;&#34;, &#34;title&#34;: {&#34;standoff&#34;: 15}, &#34;zerolinecolor&#34;: &#34;white&#34;, &#34;zerolinewidth&#34;: 2}}}, &#34;xaxis&#34;: {&#34;anchor&#34;: &#34;y&#34;, &#34;domain&#34;: [0.0, 1.0], &#34;title&#34;: {&#34;text&#34;: &#34;is fraud&#34;}}, &#34;yaxis&#34;: {&#34;anchor&#34;: &#34;x&#34;, &#34;domain&#34;: [0.0, 1.0], &#34;title&#34;: {&#34;text&#34;: &#34;Number of transactions&#34;}}},
+                        {&#34;responsive&#34;: true}
+                    ).then(function(){
+                            
+var gd = document.getElementById(&#39;ac80ada0-952e-4492-9d69-bdab360ef9d6&#39;);
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === &#39;none&#39;) {{
+            console.log([gd, &#39;removed!&#39;]);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest(&#39;#notebook-container&#39;);
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest(&#39;.output&#39;);
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })
+                };
+                
+            &lt;/script&gt;
+        &lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+
+
+&lt;h2 id=&#34;very-imbalanced-target-varible&#34;&gt;Very imbalanced target varible&lt;/h2&gt;
+
+&lt;p&gt;Positives of &lt;code&gt;isFraud&lt;/code&gt; is very low of 3.5% in the entire dataset. For this classification problem, it&amp;rsquo;s very important to have high true positive rate. That is, how good can the model identify the fraud cases from all the fraud cases. So recall is in a sense more important than precision in this problem. Macro average of recall would be a good side metric for this problem. Of cource, in reality we need to consider the belance between the cost of a few frauds and the cost of handling cases.&lt;/p&gt;
+
+&lt;p&gt;In addition, we need to put some effort on the sampling and train-val split method, to ensure that the minority class samples have enough impact to the model while training. Class weights of the model could be set to see if there&amp;rsquo;s difference in performance.&lt;/p&gt;
+
+&lt;h2 id=&#34;check-missing-values&#34;&gt;Check missing values&lt;/h2&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s have a look at if there&amp;rsquo;s any missing value in the dataset. We can see from the table below that there&amp;rsquo;re quite a lot of missing values.&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s hard to tell how we should handle with them before we look into each variable. Sometimes a missing value stands for something. It also depends on what kind of model we are going to use. We can leave them as missing value when using a tree model.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;def missing_ratio_col(df):
+    df_na = (df.isna().sum() / len(df)) * 100
+    if isinstance(df, pd.DataFrame):
+        df_na = df_na.drop(
+            df_na[df_na == 0].index).sort_values(ascending=False)
+        missing_data = pd.DataFrame(
+            {&#39;Missing Ratio %&#39;: df_na})
+    else:
+        missing_data = pd.DataFrame(
+            {&#39;Missing Ratio %&#39;: df_na}, index=[0])
+            
+    return missing_data
+
+missing_ratio_col(tran_train)
+missing_ratio_col(id_train)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Missing Ratio %&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;dist2&lt;/th&gt;
+      &lt;td&gt;93.628374&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;D7&lt;/th&gt;
+      &lt;td&gt;93.409930&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;D13&lt;/th&gt;
+      &lt;td&gt;89.509263&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;D14&lt;/th&gt;
+      &lt;td&gt;89.469469&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;D12&lt;/th&gt;
+      &lt;td&gt;89.041047&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;...&lt;/th&gt;
+      &lt;td&gt;...&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;V307&lt;/th&gt;
+      &lt;td&gt;0.002032&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;V299&lt;/th&gt;
+      &lt;td&gt;0.002032&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;V309&lt;/th&gt;
+      &lt;td&gt;0.002032&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;V310&lt;/th&gt;
+      &lt;td&gt;0.002032&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;V308&lt;/th&gt;
+      &lt;td&gt;0.002032&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;374 rows × 1 columns&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;Missing Ratio %&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_24&lt;/th&gt;
+      &lt;td&gt;96.708798&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_25&lt;/th&gt;
+      &lt;td&gt;96.441868&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_07&lt;/th&gt;
+      &lt;td&gt;96.425922&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_08&lt;/th&gt;
+      &lt;td&gt;96.425922&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_21&lt;/th&gt;
+      &lt;td&gt;96.423149&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_26&lt;/th&gt;
+      &lt;td&gt;96.420375&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_27&lt;/th&gt;
+      &lt;td&gt;96.416215&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_23&lt;/th&gt;
+      &lt;td&gt;96.416215&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_22&lt;/th&gt;
+      &lt;td&gt;96.416215&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_18&lt;/th&gt;
+      &lt;td&gt;68.722137&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_04&lt;/th&gt;
+      &lt;td&gt;54.016071&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_03&lt;/th&gt;
+      &lt;td&gt;54.016071&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_33&lt;/th&gt;
+      &lt;td&gt;49.187079&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_10&lt;/th&gt;
+      &lt;td&gt;48.052110&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_09&lt;/th&gt;
+      &lt;td&gt;48.052110&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_30&lt;/th&gt;
+      &lt;td&gt;46.222432&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_32&lt;/th&gt;
+      &lt;td&gt;46.207872&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_34&lt;/th&gt;
+      &lt;td&gt;46.056034&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_14&lt;/th&gt;
+      &lt;td&gt;44.503685&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;DeviceInfo&lt;/th&gt;
+      &lt;td&gt;17.726179&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_13&lt;/th&gt;
+      &lt;td&gt;11.726165&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_16&lt;/th&gt;
+      &lt;td&gt;10.325654&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_05&lt;/th&gt;
+      &lt;td&gt;5.108401&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_06&lt;/th&gt;
+      &lt;td&gt;5.108401&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_20&lt;/th&gt;
+      &lt;td&gt;3.447200&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_19&lt;/th&gt;
+      &lt;td&gt;3.407681&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_17&lt;/th&gt;
+      &lt;td&gt;3.372321&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_31&lt;/th&gt;
+      &lt;td&gt;2.739318&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;DeviceType&lt;/th&gt;
+      &lt;td&gt;2.373243&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_02&lt;/th&gt;
+      &lt;td&gt;2.330257&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_11&lt;/th&gt;
+      &lt;td&gt;2.256765&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_28&lt;/th&gt;
+      &lt;td&gt;2.256765&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_29&lt;/th&gt;
+      &lt;td&gt;2.256765&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_35&lt;/th&gt;
+      &lt;td&gt;2.251912&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_36&lt;/th&gt;
+      &lt;td&gt;2.251912&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_15&lt;/th&gt;
+      &lt;td&gt;2.251912&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_37&lt;/th&gt;
+      &lt;td&gt;2.251912&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;id_38&lt;/th&gt;
+      &lt;td&gt;2.251912&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;h2 id=&#34;detailed-look-at-each-variable&#34;&gt;Detailed look at each variable&lt;/h2&gt;
+
+&lt;p&gt;There&amp;rsquo;re very good references of EDA and feature engineering on the dataset, so it&amp;rsquo;s meaningless to repeat here. Please check the list here if you&amp;rsquo;re interested:
+- &lt;a href=&#34;https://www.kaggle.com/c/ieee-fraud-detection/discussion/108575&#34; target=&#34;_blank&#34;&gt;Feature Engineering Techniques&lt;/a&gt;
+- &lt;a href=&#34;https://www.kaggle.com/cdeotte/eda-for-columns-v-and-id#EDA-for-Columns-V-and-ID&#34; target=&#34;_blank&#34;&gt;EDA for Columns V and ID&lt;/a&gt;
+- &lt;a href=&#34;https://www.kaggle.com/cdeotte/xgb-fraud-with-magic-0-9600#Feature-Engineering&#34; target=&#34;_blank&#34;&gt;XGB Fraud with Magic scores LB 0.96&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;data-transformation-pipeline&#34;&gt;Data transformation pipeline&lt;/h1&gt;
+
+&lt;p&gt;Based on the references and my own analysis, here we have a pipeline of the transformations to perform on the dataset. It can be adjusted for experimenting. Explanation of the transformations see in code comments.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import numpy as np
+import pandas as pd
+import plotly.express as px
+from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.pipeline import Pipeline
+from sklearn import preprocessing
+from sklearn.model_selection import train_test_split
+from typing import List, Callable
+
+
+DATA_DIR = &#39;/content/drive/My Drive/colab-data/fraud detect/data&#39;
+
+
+def reduce_mem_usage(df, verbose=True):
+    numerics = [&#39;int16&#39;, &#39;int32&#39;, &#39;int64&#39;, &#39;float16&#39;, &#39;float32&#39;, &#39;float64&#39;]
+    start_mem = df.memory_usage().sum() / 1024**2    
+    for col in df.columns:
+        col_type = df[col].dtypes
+        if col_type in numerics:
+            c_min = df[col].min()
+            c_max = df[col].max()
+            if str(col_type)[:3] == &#39;int&#39;:
+                if c_min &amp;gt; np.iinfo(np.int8).min and c_max &amp;lt; np.iinfo(np.int8).max:
+                    df[col] = df[col].astype(np.int8)
+                elif c_min &amp;gt; np.iinfo(np.int16).min and c_max &amp;lt; np.iinfo(np.int16).max:
+                    df[col] = df[col].astype(np.int16)
+                elif c_min &amp;gt; np.iinfo(np.int32).min and c_max &amp;lt; np.iinfo(np.int32).max:
+                    df[col] = df[col].astype(np.int32)
+                elif c_min &amp;gt; np.iinfo(np.int64).min and c_max &amp;lt; np.iinfo(np.int64).max:
+                    df[col] = df[col].astype(np.int64)  
+            else:
+                if c_min &amp;gt; np.finfo(np.float16).min and c_max &amp;lt; np.finfo(np.float16).max:
+                    df[col] = df[col].astype(np.float16)
+                elif c_min &amp;gt; np.finfo(np.float32).min and c_max &amp;lt; np.finfo(np.float32).max:
+                    df[col] = df[col].astype(np.float32)
+                else:
+                    df[col] = df[col].astype(np.float64)    
+    end_mem = df.memory_usage().sum() / 1024**2
+    if verbose: print(&#39;Mem. usage decreased to {:5.2f} Mb ({:.1f}% reduction)&#39;.format(end_mem, 100 * (start_mem - end_mem) / start_mem))
+    return df
+
+    
+def load_df(test_set: bool = False, nrows: int = None, sample_ratio: float = None, reduce_mem: bool = True) -&amp;gt; pd.DataFrame:
+    if test_set:
+        tran = pd.read_csv(f&#39;{DATA_DIR}/test_transaction.csv&#39;, nrows=nrows)
+        ids = pd.read_csv(f&#39;{DATA_DIR}/test_identity.csv&#39;, nrows=nrows)
+    else:
+        tran = pd.read_csv(f&#39;{DATA_DIR}/train_transaction.csv&#39;, nrows=nrows)
+        ids = pd.read_csv(f&#39;{DATA_DIR}/train_identity.csv&#39;, nrows=nrows)
+
+    if sample_ratio:
+        size = int(len(tran) * sample_ratio)
+        tran = tran.sample(n=size, random_state=RAND_STATE)
+        ids = ids.sample(n=size, random_state=RAND_STATE)
+    df = tran.merge(ids, how=&#39;left&#39;, on=&#39;TransactionID&#39;)
+    if reduce_mem:
+        reduce_mem_usage(df)
+    return df
+
+
+def cat_cols(df: pd.DataFrame) -&amp;gt; List[str]:
+    cols: List[str] = []
+
+    cols.append(&#39;ProductCD&#39;)
+
+    cols_card = [c for c in df.columns if &#39;card&#39; in c]
+    cols.extend(cols_card)
+
+    cols_addr = [&#39;addr1&#39;, &#39;addr2&#39;]
+    cols.extend(cols_addr)
+
+    cols_emaildomain = [c for c in df if &#39;email&#39; in c]
+    cols.extend(cols_emaildomain)
+
+    cols_M = [c for c in df if c.startswith(&#39;M&#39;)]
+    cols.extend(cols_M)
+
+    cols.extend([&#39;DeviceType&#39;, &#39;DeviceInfo&#39;])
+
+    cols_id = [c for c in df if c.startswith(&#39;id&#39;)]
+    cols.extend(cols_id)
+
+    return cols
+
+
+def num_cols(df: pd.DataFrame, target_col=&#39;isFraud&#39;) -&amp;gt; List[str]:
+    cols_cat = cat_cols(df)
+    cats = df[cols_cat]
+    cols_num = list(set(df.columns) - set(cols_cat))
+
+    if target_col in cols_num:
+        cols_num.remove(target_col)
+
+    return cols_num
+
+
+def missing_ratio_col(df):
+    df_na = (df.isna().sum() / len(df)) * 100
+    if isinstance(df, pd.DataFrame):
+        df_na = df_na.drop(
+            df_na[df_na == 0].index).sort_values(ascending=False)
+        missing_data = pd.DataFrame({&#39;Missing Ratio %&#39;: df_na})
+    else:
+        missing_data = pd.DataFrame({&#39;Missing Ratio %&#39;: df_na}, index=[0])
+
+    return missing_data
+
+
+class NumColsNaMedianFiller(TransformerMixin, BaseEstimator):
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, df):
+        cols_cat = cat_cols(df)
+        cols_num = list(set(df.columns) - set(cols_cat))
+
+        for col in cols_num:
+            median = df[col].median()
+            df[col].fillna(median, inplace=True)
+
+        return df
+
+
+class NumColsNegFiller(TransformerMixin, BaseEstimator):
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, df):
+        cols_num = num_cols(df)
+
+        for col in cols_num:
+            df[col].fillna(-999, inplace=True)
+
+        return df
+
+
+class NumColsRatioDropper(TransformerMixin, BaseEstimator):
+    def __init__(self, ratio: float = 0.5):
+        self.ratio = ratio
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, df):
+        # print(X[self.attribute_names].columns)
+
+        cols_cat = cat_cols(df)
+        cats = df[cols_cat]
+        # nums = df.drop(columns=cols_cat)
+        # cols_num = df[~df[cols_cat]].columns
+        cols_num = list(set(df.columns) - set(cols_cat))
+        nums = df[cols_num]
+
+        ratio = self.ratio * 100
+        missings = missing_ratio_col(nums)
+        # print(missings)
+        inds = missings[missings[&#39;Missing Ratio %&#39;] &amp;gt; ratio].index
+        df = df.drop(columns=inds)
+        return df
+
+
+class ColsDropper(TransformerMixin, BaseEstimator):
+    def __init__(self, cols: List[str]):
+        self.cols = cols
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, df):
+        return df.drop(columns=self.cols)
+
+
+class DataFrameSelector(TransformerMixin, BaseEstimator):
+    def __init__(self, col_names):
+        self.attribute_names = col_names
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        print(X[self.attribute_names].columns)
+
+        return X[self.attribute_names].values
+
+
+class DummyEncoder(TransformerMixin, BaseEstimator):
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, df):
+        cols_cat = cat_cols(df)
+
+        cats = df[cols_cat]
+        noncats = df.drop(columns=cols_cat)
+
+        cats = cats.astype(&#39;category&#39;)
+        cats_enc = pd.get_dummies(cats, prefix=cols_cat, dummy_na=True)
+
+        return noncats.join(cats_enc)
+
+
+# Label encoding is OK when we&#39;re using tree models
+class MyLabelEncoder(TransformerMixin, BaseEstimator):
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, df):
+        cols_cat = cat_cols(df)
+
+        for col in cols_cat:
+            df[col] = df[col].astype(&#39;category&#39;).cat.add_categories(
+                &#39;missing&#39;).fillna(&#39;missing&#39;)
+            le = preprocessing.LabelEncoder()
+            # TODO add test set together to encoding
+            # le.fit(df[col].astype(str).values)
+            df[col] = le.fit_transform(df[col].astype(str).values)
+        return df
+
+
+class FrequencyEncoder(TransformerMixin, BaseEstimator):
+    def __init__(self, cols):
+        self.cols = cols
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, df):
+        for col in self.cols:
+            vc = df[col].value_counts(dropna=True, normalize=True).to_dict()
+            vc[-1] = -1
+            nm = col + &#39;_FE&#39;
+            df[nm] = df[col].map(vc)
+            df[nm] = df[nm].astype(&#39;float32&#39;)
+        return df
+
+
+class CombineEncoder(TransformerMixin, BaseEstimator):
+    def __init__(self, cols_pairs: List[List[str]]):
+        self.cols_pairs = cols_pairs
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, df):
+        for pair in self.cols_pairs:
+            col1 = pair[0]
+            col2 = pair[1]
+            nm = col1 + &#39;_&#39; + col2
+            df[nm] = df[col1].astype(str) + &#39;_&#39; + df[col2].astype(str)
+            df[nm] = df[nm].astype(&#39;category&#39;)
+            # print(nm, &#39;, &#39;, end=&#39;&#39;)
+        return df
+
+
+class AggregateEncoder(TransformerMixin, BaseEstimator):
+    def __init__(self, main_cols: List[str], uids: List[str], aggr_types: List[str],
+                 fill_na: bool = True, use_na: bool = False):
+        self.main_cols = main_cols
+        self.uids = uids
+        self.aggr_types = aggr_types
+        self.use_na = use_na
+        self.fill_na = fill_na
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, df):
+        for col in self.main_cols:
+            for uid in self.uids:
+                for aggr_type in self.aggr_types:
+                    col_new = f&#39;{col}_{uid}_{aggr_type}&#39;
+                    tmp = df.groupby([uid])[col].agg([aggr_type]).reset_index().rename(
+                        columns={aggr_type: col_new})
+                    tmp.index = list(tmp[uid])
+                    tmp = tmp[col_new].to_dict()
+                    df[col_new] = df[uid].map(tmp).astype(&#39;float32&#39;)
+                    if self.fill_na:
+                        df[col_new].fillna(-1, inplace=True)
+        return df
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;from sklearn.pipeline import Pipeline
+
+pipe = Pipeline(steps=[
+    # Based on feature engineering from 
+    # https://www.kaggle.com/cdeotte/xgb-fraud-with-magic-0-9600#Encoding-Functions
+    (&#39;combine_enc&#39;, CombineEncoder(
+        [[&#39;card1&#39;, &#39;addr1&#39;], [&#39;card1_addr1&#39;, &#39;P_emaildomain&#39;]])),
+    (&#39;freq_enc&#39;, FrequencyEncoder(
+        [&#39;addr1&#39;, &#39;card1&#39;, &#39;card2&#39;, &#39;card3&#39;, &#39;P_emaildomain&#39;])),
+    (&#39;aggr_enc&#39;, AggregateEncoder([&#39;TransactionAmt&#39;, &#39;D9&#39;, &#39;D11&#39;], [
+        &#39;card1&#39;, &#39;card1_addr1&#39;, &#39;card1_addr1_P_emaildomain&#39;], [&#39;mean&#39;, &#39;std&#39;])),
+
+    # Drop columns that have certain high ratio of missing values, and then fill
+    # in values e.g. median value. May not be used if using a tree model.
+    (&#39;reduce_missing&#39;, NumColsRatioDropper(0.5)),
+    (&#39;fillna_median&#39;, NumColsNaMedianFiller()),
+
+    # Drop some columns that will not be used
+    (&#39;drop_cols_basic&#39;, ColsDropper([&#39;TransactionID&#39;, &#39;TransactionDT&#39;, &#39;D6&#39;, 
+                                     &#39;D7&#39;, &#39;D8&#39;, &#39;D9&#39;, &#39;D12&#39;, &#39;D13&#39;, &#39;D14&#39;, &#39;C3&#39;,
+                                     &#39;M5&#39;, &#39;id_08&#39;, &#39;id_33&#39;, &#39;card4&#39;, &#39;id_07&#39;, 
+                                     &#39;id_14&#39;, &#39;id_21&#39;, &#39;id_30&#39;, &#39;id_32&#39;, &#39;id_34&#39;])),
+
+    # Drop some columns based on feature importance got from a model.
+    (&#39;drop_cols_feat_importance&#39;, ColsDropper(
+        [&#39;v107&#39;, &#39;v117&#39;, &#39;v119&#39;, &#39;v120&#39;, &#39;v27&#39;, &#39;v28&#39;, &#39;v305&#39;])),
+
+    (&#39;fillna_negative&#39;, NumColsNegFiller()),
+
+    # Encode categorical variables. Depending on the kind of model we use, 
+    # we can choose between label encoding and onehot encoding.
+    # (&#39;onehot_enc&#39;, DummyEncoder()),
+    (&#39;label_enc&#39;, MyLabelEncoder()),
+])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3 id=&#34;split-dataset&#34;&gt;Split dataset&lt;/h3&gt;
+
+&lt;p&gt;And as we want to predict future payment fraud based on the past data, so we should not shuffle the dataset when split training and testing sets, but just time-based split.&lt;/p&gt;
+
+&lt;p&gt;As this is a imbalanced dataset with 1 class of the target variable have only about 3.5%, so we may want to try sampling methods like over-sampling or SMOTE sampling on the training dataset.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;RAND_STATE = 20200119
+
+def data_split_v1(X: pd.DataFrame, y: pd.Series):
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=0.25, shuffle=False, random_state=RAND_STATE)
+
+    return X_train, X_val, y_train, y_val
+
+
+def data_split_oversample_v1(X: pd.DataFrame, y: pd.Series):
+    from imblearn.over_sampling import RandomOverSampler
+
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=0.25, shuffle=False, random_state=RAND_STATE)
+
+    ros = RandomOverSampler(random_state=RAND_STATE)
+    X_train, y_train = ros.fit_resample(X_train, y_train)
+
+    return X_train, X_val, y_train, y_val
+
+
+def data_split_smoteenn_v1(X: pd.DataFrame, y: pd.Series):
+    from imblearn.combine import SMOTEENN
+
+    X_train, X_val, y_train, y_val = train_test_split(
+        X, y, test_size=0.2, shuffle=False, random_state=RAND_STATE)
+
+    ros = SMOTEENN(random_state=RAND_STATE)
+    X_train, y_train = ros.fit_resample(X_train, y_train)
+
+    return X_train, X_val, y_train, y_val
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;experiments&#34;&gt;Experiments&lt;/h1&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s start play with experimenting with simple models like Logistic Regression, or complex models like Gradient Boosting.&lt;/p&gt;
+
+&lt;p&gt;Here below is a scaffold for performing experiments.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import os
+from datetime import datetime
+import json
+import pprint
+
+from sklearn import metrics
+from sklearn.pipeline import Pipeline
+from typing import List, Callable
+        
+EXP_DIR = &#39;exp&#39;
+
+class Experiment:
+    def __init__(self, df_nrows: int = None, transform_pipe: Pipeline = None,
+                 data_split: Callable = None, model=None, model_class=None,
+                 model_param: dict = None):
+        self.df_nrows = df_nrows
+        self.pipe = transform_pipe
+
+        if data_split is None:
+            self.data_split = data_split_v1
+        else:
+            self.data_split = data_split
+
+        if model_class:
+            self.model = model_class(**model_param)
+        else:
+            self.model = model
+
+        self.model_param = model_param
+
+    def transform(self, X):
+        return self.pipe.fit_transform(X)
+
+    def run(self, df_train: pd.DataFrame, save_exp: bool = True) -&amp;gt; float:
+        # self.df = load_df(nrows=self.df_nrows)
+
+        y = df_train[&#39;isFraud&#39;]
+        X = df_train.drop(columns=[&#39;isFraud&#39;])
+
+        X = self.transform(X)
+
+        X_train, X_val, Y_train, Y_val = self.data_split(X, y)
+
+        # del X
+        # gc.collect()
+
+        self.model.fit(X_train, Y_train)
+
+        Y_pred = self.model.predict(X_val)
+        self.last_roc_auc = metrics.roc_auc_score(Y_val, Y_pred)
+
+        if save_exp:
+            self.save_result()
+
+        return self.last_roc_auc
+    
+    def save_result(self, feature_importance:bool=False):
+        save_time = datetime.now().strftime(&#39;%Y-%m-%d_%H-%M-%S&#39;)
+        result = {}
+        result[&#39;roc_auc&#39;] = self.last_roc_auc
+        result[&#39;transform&#39;] = list(self.pipe.named_steps.keys())
+        result[&#39;model&#39;] = self.model.__class__.__name__
+        result[&#39;model_param&#39;] = self.model_param
+        result[&#39;data_split&#39;] = self.data_split.__name__
+        result[&#39;num_sample_rows&#39;] = self.df_nrows
+        result[&#39;save_time&#39;] = save_time
+        if feature_importance:
+            if hasattr(self.model, &#39;feature_importances_&#39;):
+                result[&#39;feature_importances_&#39;] = dict(
+                    zip(self.X.columns, self.model.feature_importances_.tolist()))
+            if hasattr(self.model, &#39;feature_importance&#39;):
+                result[&#39;feature_importances_&#39;] = dict(
+                    zip(self.df.columns, self.model.feature_importance.tolist()))
+
+        pprint.pprint(result, indent=4)
+
+        if not os.path.exists(EXP_DIR):
+            os.makedirs(EXP_DIR)
+        with open(f&#39;{EXP_DIR}/exp_{save_time}_{self.last_roc_auc:.4f}.json&#39;, &#39;w&#39;) as f:
+            json.dump(result, f, indent=4)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;import gc
+
+
+del tran_train, id_train
+gc.collect()
+
+df_train = load_df()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;df_train = load_df()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;Mem. usage decreased to 650.48 Mb (66.8% reduction)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;logistic-regression-as-baseline&#34;&gt;Logistic Regression as baseline&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;def exp1():
+    from sklearn.linear_model import LogisticRegression
+
+    pipe = Pipeline(steps=[
+        (&#39;combine_enc&#39;, CombineEncoder(
+            [[&#39;card1&#39;, &#39;addr1&#39;], [&#39;card1_addr1&#39;, &#39;P_emaildomain&#39;]])),
+        (&#39;freq_enc&#39;, FrequencyEncoder(
+            [&#39;addr1&#39;, &#39;card1&#39;, &#39;card2&#39;, &#39;card3&#39;, &#39;P_emaildomain&#39;])),
+        (&#39;aggr_enc&#39;, AggregateEncoder([&#39;TransactionAmt&#39;, &#39;D9&#39;, &#39;D11&#39;], [
+         &#39;card1&#39;, &#39;card1_addr1&#39;, &#39;card1_addr1_P_emaildomain&#39;], [&#39;mean&#39;, &#39;std&#39;])),
+
+        (&#39;reduce_missing&#39;, NumColsRatioDropper(0.3)),
+        (&#39;fillna_median&#39;, NumColsNaMedianFiller()),
+
+        (&#39;drop_cols_basic&#39;, ColsDropper([&#39;TransactionID&#39;, &#39;TransactionDT&#39;, &#39;C3&#39;, &#39;M5&#39;, &#39;id_08&#39;, &#39;id_33&#39;, &#39;card4&#39;, &#39;id_07&#39;, &#39;id_14&#39;, &#39;id_21&#39;, &#39;id_30&#39;, &#39;id_32&#39;, &#39;id_34&#39;])),
+
+        # Though onehot encoding is more appropriate for logistic regression, we
+        # don&#39;t have enough memory to encode that many variables. So we take a 
+        # step back using label encoding.
+        # (&#39;onehot_enc&#39;, DummyEncoder()),
+        (&#39;label_enc&#39;, MyLabelEncoder()),
+    ])
+
+    exp = Experiment(transform_pipe=pipe,
+                      data_split=data_split_v1,
+                      model_class=LogisticRegression,
+                      # just use the default hyper paramenters
+                      model_param={},
+                     )
+    exp.run(df_train=df_train)
+
+exp1()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;/usr/local/lib/python3.6/dist-packages/sklearn/linear_model/_logistic.py:940: ConvergenceWarning:
+
+lbfgs failed to converge (status=1):
+STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
+
+Increase the number of iterations (max_iter) or scale the data as shown in:
+    https://scikit-learn.org/stable/modules/preprocessing.html
+Please also refer to the documentation for alternative solver options:
+    https://scikit-learn.org/stable/modules/linear_model.html#logistic-regression
+
+
+
+{   &#39;data_split&#39;: &#39;data_split_v1&#39;,
+    &#39;model&#39;: &#39;LogisticRegression&#39;,
+    &#39;model_param&#39;: {},
+    &#39;num_sample_rows&#39;: None,
+    &#39;roc_auc&#39;: 0.4956463187232307,
+    &#39;save_time&#39;: &#39;2020-03-26_20-27-08&#39;,
+    &#39;transform&#39;: [   &#39;combine_enc&#39;,
+                     &#39;freq_enc&#39;,
+                     &#39;aggr_enc&#39;,
+                     &#39;reduce_missing&#39;,
+                     &#39;fillna_median&#39;,
+                     &#39;drop_cols_basic&#39;,
+                     &#39;label_enc&#39;]}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;gradient-boosting-with-lightgbm&#34;&gt;Gradient Boosting with LightGBM&lt;/h2&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s try a Gradient Boosting tree model using the LightGBM implementation, and tune a little on the hyper-parameters to make it a more complex model.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import lightgbm as lgb
+
+
+class LgbmWrapper:
+    def __init__(self, **param):
+        self.param = param
+        self.trained = None
+
+    def fit(self, X_train, y_train):
+        train = lgb.Dataset(X_train, label=y_train)
+        self.trained = lgb.train(self.param, train)
+        self.feature_importances_ = self.trained.feature_importance()
+        return self.trained
+
+    def predict(self, X_val):
+        return self.trained.predict(X_val, num_iteration=self.trained.best_iteration)
+
+
+def exp2():
+    pipe = Pipeline(steps=[
+        # Based on feature engineering from 
+        # https://www.kaggle.com/cdeotte/xgb-fraud-with-magic-0-9600#Encoding-Functions
+        (&#39;combine_enc&#39;, CombineEncoder(
+            [[&#39;card1&#39;, &#39;addr1&#39;], [&#39;card1_addr1&#39;, &#39;P_emaildomain&#39;]])),
+        (&#39;freq_enc&#39;, FrequencyEncoder(
+            [&#39;addr1&#39;, &#39;card1&#39;, &#39;card2&#39;, &#39;card3&#39;, &#39;P_emaildomain&#39;])),
+        (&#39;aggr_enc&#39;, AggregateEncoder([&#39;TransactionAmt&#39;, &#39;D9&#39;, &#39;D11&#39;], [
+            &#39;card1&#39;, &#39;card1_addr1&#39;, &#39;card1_addr1_P_emaildomain&#39;], [&#39;mean&#39;, &#39;std&#39;])),
+    
+        # Drop some columns that will not be used
+        (&#39;drop_cols_basic&#39;, ColsDropper([&#39;TransactionID&#39;, &#39;TransactionDT&#39;, &#39;D6&#39;, 
+                                        &#39;D7&#39;, &#39;D8&#39;, &#39;D9&#39;, &#39;D12&#39;, &#39;D13&#39;, &#39;D14&#39;, &#39;C3&#39;,
+                                        &#39;M5&#39;, &#39;id_08&#39;, &#39;id_33&#39;, &#39;card4&#39;, &#39;id_07&#39;, 
+                                        &#39;id_14&#39;, &#39;id_21&#39;, &#39;id_30&#39;, &#39;id_32&#39;, &#39;id_34&#39;])),
+    
+        # Drop some columns based on feature importance got from a model.
+        # (&#39;drop_cols_feat_importance&#39;, ColsDropper(
+        #     [&#39;v107&#39;, &#39;v117&#39;, &#39;v119&#39;, &#39;v120&#39;, &#39;v27&#39;, &#39;v28&#39;, &#39;v305&#39;])),
+    
+        (&#39;fillna_negative&#39;, NumColsNegFiller()),
+    
+        # Label encoding used for tree models.
+        # (&#39;onehot_enc&#39;, DummyEncoder()),
+        (&#39;label_enc&#39;, MyLabelEncoder()),
+    ])
+
+    param_lgbm = {&#39;objective&#39;: &#39;binary&#39;,
+                  &#39;boosting_type&#39;: &#39;gbdt&#39;,
+                  &#39;metric&#39;: &#39;auc&#39;,
+                  &#39;learning_rate&#39;: 0.01,
+                  &#39;num_leaves&#39;: 2**8,
+                  &#39;max_depth&#39;: -1,
+                  &#39;tree_learner&#39;: &#39;serial&#39;,
+                  &#39;colsample_bytree&#39;: 0.7,
+                  &#39;subsample_freq&#39;: 1,
+                  &#39;subsample&#39;: 0.7,
+                  &#39;n_estimators&#39;: 10000,
+                  #  &#39;n_estimators&#39;: 80000,
+                  &#39;max_bin&#39;: 255,
+                  &#39;n_jobs&#39;: -1,
+                  &#39;verbose&#39;: -1,
+                  &#39;seed&#39;: RAND_STATE,
+                  # &#39;early_stopping_rounds&#39;: 100,
+                  }
+
+
+    exp = Experiment(transform_pipe=pipe,
+                    data_split=data_split_v1,
+                     model_class=LgbmWrapper,
+                     model_param=param_lgbm,
+                     )
+    exp.run(df_train=df_train)
+
+
+exp2()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;/usr/local/lib/python3.6/dist-packages/lightgbm/engine.py:118: UserWarning:
+
+Found `n_estimators` in params. Will use it instead of argument
+
+
+
+{   &#39;data_split&#39;: &#39;data_split_v1&#39;,
+    &#39;model&#39;: &#39;LgbmWrapper&#39;,
+    &#39;model_param&#39;: {   &#39;boosting_type&#39;: &#39;gbdt&#39;,
+                       &#39;colsample_bytree&#39;: 0.7,
+                       &#39;learning_rate&#39;: 0.01,
+                       &#39;max_bin&#39;: 255,
+                       &#39;max_depth&#39;: -1,
+                       &#39;metric&#39;: &#39;auc&#39;,
+                       &#39;n_estimators&#39;: 10000,
+                       &#39;n_jobs&#39;: -1,
+                       &#39;num_leaves&#39;: 256,
+                       &#39;objective&#39;: &#39;binary&#39;,
+                       &#39;seed&#39;: 20200119,
+                       &#39;subsample&#39;: 0.7,
+                       &#39;subsample_freq&#39;: 1,
+                       &#39;tree_learner&#39;: &#39;serial&#39;,
+                       &#39;verbose&#39;: -1},
+    &#39;num_sample_rows&#39;: None,
+    &#39;roc_auc&#39;: 0.919589853747652,
+    &#39;save_time&#39;: &#39;2020-03-27_09-55-43&#39;,
+    &#39;transform&#39;: [   &#39;combine_enc&#39;,
+                     &#39;freq_enc&#39;,
+                     &#39;aggr_enc&#39;,
+                     &#39;drop_cols_basic&#39;,
+                     &#39;fillna_negative&#39;,
+                     &#39;label_enc&#39;]}
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So we got local validation ROC AUC of about 0.9196, this is a looks OK score.&lt;/p&gt;
+
+&lt;p&gt;This model&amp;rsquo;s prediction on the test dataset got 0.9398 on publica leader board, and 0.9058 on private leader board. These scores have a somehow big gap to the top scores, but still good enough as there&amp;rsquo;re potentially many ways for improvement. For example, more different ways of transformations and engineering could be performed on the features, try model implementation like CatBoost and XGB, and search for better hyper-parameters. But it assumes you have plenty of computation resource and time.&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Skin Lesion Image Classification with Deep Convolutional Neural Networks</title>

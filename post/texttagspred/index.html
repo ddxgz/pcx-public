@@ -1104,8 +1104,25 @@ Let&#39;s look at the <strong>micro</strong> row. Why? Let me quote scikit-learn
 Here we&#39;re more interested in the average precision, which is 0.74. As we mentioned, for this problem and for me, it&#39;s more important to not predict a label that should be negative to an article. Some of the labels for an article, e.g., the label <code class="verbatim">interface</code> for the just mentioned article, are less important. So I&#39;m OK for having a low score of recall, which measure how good the model predicts all the labels as the manually labeled.
 </p>
 <p>
-However, there&#39;s much room for improvement. Another problem to be though about is, the training samples are not equally labeled, i.e., for the same example all the articles talking about golang&#39;s interface, some of them labeled with <code class="verbatim">golang</code> + <code class="verbatim">interface</code> while some of them labeled only <code class="verbatim">golang</code>.
+However, there&#39;s much room for improvement.
 </p>
+<ul>
+<li>
+<p>
+Many of the labels have very few appearances or even once. These labels could be filtered out or oversampling with text augmentation to mitigate the impact to model performance.
+</p>
+</li>
+<li>
+<p>
+The training-test set split should be controlled by methods like stratified sampling, so that all the labels would appear in both sets with similar percentages. But again this problem is unlikely to be solved by now since there isn&#39;t enough samples.
+</p>
+</li>
+<li>
+<p>
+Another problem to be though about is, the training samples are not equally labeled, i.e., for the same example all the articles talking about golang&#39;s interface, some of them labeled with <code class="verbatim">golang</code> + <code class="verbatim">interface</code> while some of them labeled only <code class="verbatim">golang</code>.
+</p>
+</li>
+</ul>
 
     </div>
 

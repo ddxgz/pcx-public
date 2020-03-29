@@ -3476,8 +3476,25 @@ Let&amp;#39;s look at the &lt;strong&gt;micro&lt;/strong&gt; row. Why? Let me qu
 Here we&amp;#39;re more interested in the average precision, which is 0.74. As we mentioned, for this problem and for me, it&amp;#39;s more important to not predict a label that should be negative to an article. Some of the labels for an article, e.g., the label &lt;code class=&#34;verbatim&#34;&gt;interface&lt;/code&gt; for the just mentioned article, are less important. So I&amp;#39;m OK for having a low score of recall, which measure how good the model predicts all the labels as the manually labeled.
 &lt;/p&gt;
 &lt;p&gt;
-However, there&amp;#39;s much room for improvement. Another problem to be though about is, the training samples are not equally labeled, i.e., for the same example all the articles talking about golang&amp;#39;s interface, some of them labeled with &lt;code class=&#34;verbatim&#34;&gt;golang&lt;/code&gt; + &lt;code class=&#34;verbatim&#34;&gt;interface&lt;/code&gt; while some of them labeled only &lt;code class=&#34;verbatim&#34;&gt;golang&lt;/code&gt;.
+However, there&amp;#39;s much room for improvement.
 &lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;
+Many of the labels have very few appearances or even once. These labels could be filtered out or oversampling with text augmentation to mitigate the impact to model performance.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+The training-test set split should be controlled by methods like stratified sampling, so that all the labels would appear in both sets with similar percentages. But again this problem is unlikely to be solved by now since there isn&amp;#39;t enough samples.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;
+Another problem to be though about is, the training samples are not equally labeled, i.e., for the same example all the articles talking about golang&amp;#39;s interface, some of them labeled with &lt;code class=&#34;verbatim&#34;&gt;golang&lt;/code&gt; + &lt;code class=&#34;verbatim&#34;&gt;interface&lt;/code&gt; while some of them labeled only &lt;code class=&#34;verbatim&#34;&gt;golang&lt;/code&gt;.
+&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 </description>
     </item>
     

@@ -5,12 +5,356 @@
     <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
       <atom:link href="https://pcx.linkedinfo.co/tags/machine-learning/index.xml" rel="self" type="application/rss+xml" />
     <description>Machine Learning</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Mon, 10 Feb 2020 10:07:11 +0100</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Thu, 13 Feb 2020 11:20:19 +0200</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>Machine Learning</title>
       <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
     </image>
+    
+    <item>
+      <title>Using BERT to perform Topic Tag Prediction of Technical Articles</title>
+      <link>https://pcx.linkedinfo.co/post/text-tag-prediction-bert/</link>
+      <pubDate>Thu, 13 Feb 2020 11:20:19 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/post/text-tag-prediction-bert/</guid>
+      <description>
+
+&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
+
+&lt;p&gt;This is a follow up post of &lt;a href=&#34;https://pcx.linkedinfo.co/post/text-tag-prediction/&#34; target=&#34;_blank&#34;&gt;Multi-label classification to predict topic tags of technical articles from LinkedInfo.co&lt;/a&gt;. We will continute the same task by using BERT.&lt;/p&gt;
+
+&lt;p&gt;Firstly we&amp;rsquo;ll just use the embeddings from BERT, and then feed them to the same classification model used in the last post, SVM with linear kenel. The reason of keep using SVM is that the size of the dataset is quite small.&lt;/p&gt;
+
+&lt;h1 id=&#34;experiments&#34;&gt;Experiments&lt;/h1&gt;
+
+&lt;h2 id=&#34;classify-by-using-bert-mini-and-svm-with-linear-kernel&#34;&gt;Classify by using BERT-Mini and SVM with Linear Kernel&lt;/h2&gt;
+
+&lt;p&gt;Due to the limited computation capacity, we&amp;rsquo;ll use a smaller BERT model - BERT-Mini. The first experiment we&amp;rsquo;ll try to train on only the titles of the articles.&lt;/p&gt;
+
+&lt;p&gt;Now we firstly load the dataset. And then load the pretrained BERT tokenizer and model. Note that we only load the article samples that are in English since the BERT-Mini model here were pretrained in English.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import cross_val_score
+import torch
+from transformers import DistilBertModel, DistilBertTokenizer, AutoTokenizer, AutoModel
+
+import dataset
+from mltb.model_utils import download_once_pretrained_transformers
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;ds = dataset.ds_info_tags(from_batch_cache=&#39;fulltext&#39;,
+                          aug_level=0, lan=&#39;en&#39;,
+                          concate_title=True,
+                          filter_tags_threshold=0, partial_len=3000)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;from transformers import  AutoTokenizer, AutoModel
+
+PRETRAINED_BERT_WEIGHTS = download_once_pretrained_transformers(
+    &amp;quot;google/bert_uncased_L-4_H-256_A-4&amp;quot;)
+tokenizer = AutoTokenizer.from_pretrained(PRETRAINED_BERT_WEIGHTS)
+model = AutoModel.from_pretrained(PRETRAINED_BERT_WEIGHTS)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we encode all the titles by the BERT-Mini model. We&amp;rsquo;ll use only the 1st output vector from the model as it&amp;rsquo;s used for classification task.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import nltk
+
+
+nltk.download(&#39;punkt&#39;)
+
+col_text = &#39;title&#39;
+max_length = ds.data[col_text].apply(lambda x: len(nltk.word_tokenize(x))).max()
+
+encoded = ds.data[col_text].apply(
+    (lambda x: tokenizer.encode_plus(x, add_special_tokens=True,
+                                     pad_to_max_length=True,
+                                     return_attention_mask=True,
+                                     max_length=max_length,
+                                     return_tensors=&#39;pt&#39;)))
+
+input_ids = torch.cat(tuple(encoded.apply(lambda x:x[&#39;input_ids&#39;])))
+attention_mask = torch.cat(tuple(encoded.apply(lambda x:x[&#39;attention_mask&#39;])))
+
+features = []
+with torch.no_grad():
+    last_hidden_states = model(input_ids, attention_mask=attention_mask)
+    features = last_hidden_states[0][:, 0, :].numpy()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As the features are changed from Tf-idf transformed to BERT transformed, so we&amp;rsquo;ll re-search for the hyper-parameters for the LinearSVC to use.&lt;/p&gt;
+
+&lt;p&gt;The scorer we used in grid search is f-0.5 score since we want to weight higher precision over recall.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
+from sklearn.svm import LinearSVC
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn import metrics
+
+
+clf = OneVsRestClassifier(LinearSVC())
+
+C_OPTIONS = [0.01, 0.1, 0.5, 1, 10]
+
+parameters = {
+    &#39;estimator__penalty&#39;: [&#39;l1&#39;, &#39;l2&#39;],
+    &#39;estimator__dual&#39;: [True, False],
+    &#39;estimator__C&#39;: C_OPTIONS,
+}
+
+micro_f05_sco = metrics.make_scorer(
+    metrics.fbeta_score, beta=0.5, average=&#39;micro&#39;)
+
+gs_clf = GridSearchCV(clf, parameters,
+                      scoring=micro_f05_sco,
+                      cv=3, n_jobs=-1)
+
+gs_clf.fit(train_features, train_labels)
+
+Y_predicted = gs_clf.predict(test_features)
+
+print(metrics.classification_report(test_labels, Y_predicted))
+
+print(gs_clf.best_params_)
+print(gs_clf.best_score_)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;              precision    recall  f1-score   support
+   micro avg       0.70      0.36      0.47      1152
+   macro avg       0.32      0.19      0.22      1152
+weighted avg       0.58      0.36      0.43      1152
+ samples avg       0.46      0.38      0.40      1152
+
+{&#39;estimator__C&#39;: 0.1, &#39;estimator__dual&#39;: True, &#39;estimator__penalty&#39;: &#39;l2&#39;}
+0.5195981110298558
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Though it&amp;rsquo;s not comparable, the result metrics are somehow similar to the Tf-idf one when we use only the English samples with their titles here. The micro averages are about the same, the macro averages are slightly better.&lt;/p&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s combine the titles and short descriptions to see if there&amp;rsquo;s any improment.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import nltk
+
+nltk.download(&#39;punkt&#39;)
+
+col_text = &#39;description&#39;
+max_length = ds.data[col_text].apply(lambda x: len(nltk.word_tokenize(x))).max()
+encoded = ds.data[col_text].apply(
+    (lambda x: tokenizer.encode_plus(x, add_special_tokens=True,
+                                     pad_to_max_length=True,
+                                     return_attention_mask=True,
+                                     max_length=max_length,
+                                     return_tensors=&#39;pt&#39;)))
+
+input_ids = torch.cat(tuple(encoded.apply(lambda x:x[&#39;input_ids&#39;])))
+attention_mask = torch.cat(tuple(encoded.apply(lambda x:x[&#39;attention_mask&#39;])))
+
+features = []
+with torch.no_grad():
+    last_hidden_states = model(input_ids, attention_mask=attention_mask)
+    features = last_hidden_states[0][:, 0, :].numpy()
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;RAND_STATE = 20200122
+
+train_features, test_features, train_labels, test_labels = train_test_split(
+    features, ds.target, test_size=0.3, random_state=RAND_STATE)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
+from sklearn.svm import SVC, LinearSVC
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn import metrics
+
+
+clf = OneVsRestClassifier(LinearSVC())
+
+C_OPTIONS = [0.1, 1]
+
+parameters = {
+    &#39;estimator__penalty&#39;: [&#39;l2&#39;],
+    &#39;estimator__dual&#39;: [True],
+    &#39;estimator__C&#39;: C_OPTIONS,
+}
+
+micro_f05_sco = metrics.make_scorer(
+    metrics.fbeta_score, beta=0.5, average=&#39;micro&#39;)
+
+gs_clf = GridSearchCV(clf, parameters,
+                      scoring=micro_f05_sco,
+                      cv=3, n_jobs=-1)
+
+gs_clf.fit(train_features, train_labels)
+
+# Predict the outcome on the testing set in a variable named y_predicted
+Y_predicted = gs_clf.predict(test_features)
+
+print(metrics.classification_report(test_labels, Y_predicted))
+
+print(gs_clf.best_params_)
+print(gs_clf.best_score_)
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;              precision    recall  f1-score   support
+
+   micro avg       0.68      0.29      0.41      1238
+   macro avg       0.18      0.11      0.13      1238
+weighted avg       0.52      0.29      0.36      1238
+ samples avg       0.40      0.31      0.34      1238
+
+{&#39;estimator__C&#39;: 1, &#39;estimator__dual&#39;: True, &#39;estimator__penalty&#39;: &#39;l2&#39;}
+0.49852671465233817
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There is no improvement, the macro averages even got a little bit worse. Let&amp;rsquo;s try to explore further.&lt;/p&gt;
+
+&lt;h2 id=&#34;iterative-stratified-multilabel-data-sampling&#34;&gt;Iterative stratified multilabel data sampling&lt;/h2&gt;
+
+&lt;p&gt;It would be a good idea to perform stratified sampling for spliting training and test sets since there&amp;rsquo;s a big imbalancement in the dataset for the labels. The problem is that the size of dataset is very small, which causes it that using normal stratified sampling method would fail since it&amp;rsquo;s likely that some labels may not appear in both training and testing sets. That&amp;rsquo;s why we have to use iterative stratified multilabel sampling. The explanation of this method can refer to &lt;a href=&#34;http://scikit.ml/stratification.html&#34; target=&#34;_blank&#34;&gt;document of scikit-multilearn&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;In the code below we have wrapped the split method to make the process smoother.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;import nltk
+
+from mltb.experiment import multilearn_iterative_train_test_split
+from mltb.transformers import bert_tokenize, bert_transform
+
+
+nltk.download(&#39;punkt&#39;)
+COL_TEXT = &#39;description&#39;
+
+train_features, test_features, train_labels, test_labels = multilearn_iterative_train_test_split(
+    ds.data, ds.target, test_size=0.3, cols=ds.data.columns)
+
+batch_size = 128
+model_name = &amp;quot;google/bert_uncased_L-4_H-256_A-4&amp;quot;
+
+train_features, test_features = bert_transform(
+    train_features, test_features, COL_TEXT, model_name, batch_size)
+
+
+from sklearn.model_selection import train_test_split, GridSearchCV, RandomizedSearchCV
+from sklearn.svm import SVC, LinearSVC
+from sklearn.multiclass import OneVsRestClassifier
+from sklearn import metrics
+
+
+clf = OneVsRestClassifier(LinearSVC())
+
+C_OPTIONS = [0.1, 1]
+
+parameters = {
+    &#39;estimator__penalty&#39;: [&#39;l2&#39;],
+    &#39;estimator__dual&#39;: [True],
+    &#39;estimator__C&#39;: C_OPTIONS,
+}
+
+micro_f05_sco = metrics.make_scorer(
+    metrics.fbeta_score, beta=0.5, average=&#39;micro&#39;)
+
+gs_clf = GridSearchCV(clf, parameters,
+                      scoring=micro_f05_sco,
+                      cv=3, n_jobs=-1)
+
+gs_clf.fit(train_features, train_labels)
+
+# Predict the outcome on the testing set in a variable named y_predicted
+Y_predicted = gs_clf.predict(test_features)
+
+print(metrics.classification_report(test_labels, Y_predicted))
+
+print(gs_clf.best_params_)
+print(gs_clf.best_score_)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;              precision    recall  f1-score   support
+
+   micro avg       0.69      0.36      0.47      1193
+   macro avg       0.24      0.16      0.19      1193
+weighted avg       0.57      0.36      0.43      1193
+ samples avg       0.47      0.38      0.40      1193
+
+{&#39;estimator__C&#39;: 0.1, &#39;estimator__dual&#39;: True, &#39;estimator__penalty&#39;: &#39;l2&#39;}
+0.33116317929125705
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;There seems no improvement. But the cross validation F-0.5 score is lower than the testing score. It might be a sign that it&amp;rsquo;s under-fitting.&lt;/p&gt;
+
+&lt;h2 id=&#34;training-set-augmentation&#34;&gt;Training set augmentation&lt;/h2&gt;
+
+&lt;p&gt;As the dataset is quite small, now we&amp;rsquo;ll try to augment the trainig set to see if there&amp;rsquo;s any improvement.&lt;/p&gt;
+
+&lt;p&gt;Here we set the augmentation level to 2, which means the dataset are concatenated by 2 times of the samples. And the added samples&amp;rsquo; content will be randomly chopped out as &lt;sup&gt;9&lt;/sup&gt;&amp;frasl;&lt;sub&gt;10&lt;/sub&gt; of its original content. Of course, both the actions only apply to the training set. The 30% test set is kept aside.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;COL_TEXT = &#39;description&#39;
+
+train_features, test_features, train_labels, test_labels = multilearn_iterative_train_test_split(
+    ds.data, ds.target, test_size=0.3, cols=ds.data.columns)
+
+train_features, train_labels = dataset.augmented_samples(
+    train_features, train_labels, level=2, crop_ratio=0.1)
+
+batch_size = 128
+model_name = &amp;quot;google/bert_uncased_L-4_H-256_A-4&amp;quot;
+
+train_features, test_features = bert_transform(
+    train_features, test_features, COL_TEXT, model_name, batch_size)
+
+clf = OneVsRestClassifier(LinearSVC())
+
+C_OPTIONS = [0.1, 1]
+
+parameters = {
+    &#39;estimator__penalty&#39;: [&#39;l2&#39;],
+    &#39;estimator__dual&#39;: [True],
+    &#39;estimator__C&#39;: C_OPTIONS,
+}
+
+micro_f05_sco = metrics.make_scorer(
+    metrics.fbeta_score, beta=0.5, average=&#39;micro&#39;)
+
+gs_clf = GridSearchCV(clf, parameters,
+                      scoring=micro_f05_sco,
+                      cv=3, n_jobs=-1)
+
+gs_clf.fit(train_features, train_labels)
+
+# Predict the outcome on the testing set in a variable named y_predicted
+Y_predicted = gs_clf.predict(test_features)
+
+print(metrics.classification_report(test_labels, Y_predicted))
+
+print(gs_clf.best_params_)
+print(gs_clf.best_score_)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;              precision    recall  f1-score   support
+
+   micro avg       0.64      0.33      0.44      1186
+   macro avg       0.22      0.15      0.17      1186
+weighted avg       0.53      0.33      0.40      1186
+ samples avg       0.44      0.36      0.38      1186
+
+{&#39;estimator__C&#39;: 0.1, &#39;estimator__dual&#39;: True, &#39;estimator__penalty&#39;: &#39;l2&#39;}
+0.6115829006361205
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;We can see that there&amp;rsquo;s still no improvement. It seems that we should change direction.&lt;/p&gt;
+
+&lt;h2 id=&#34;fine-tuning-bert-model&#34;&gt;Fine-tuning BERT model&lt;/h2&gt;
+
+&lt;p&gt;The next step is to see if we can make some progress by fine-tuning the BERT-Mini model.&lt;/p&gt;
+
+&lt;p&gt;To be continuted&amp;hellip;&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>A Walk Through of the IEEE-CIS Fraud Detection Challenge</title>
@@ -2921,9 +3265,9 @@ df_results_lesion.columns = [&#39;Recall&#39;, &#39;Precision&#39;, &#39;F1&#39;
     
     <item>
       <title>Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</title>
-      <link>https://pcx.linkedinfo.co/post/texttagspred/</link>
+      <link>https://pcx.linkedinfo.co/post/text-tag-prediction/</link>
       <pubDate>Wed, 11 Sep 2019 13:36:43 +0200</pubDate>
-      <guid>https://pcx.linkedinfo.co/post/texttagspred/</guid>
+      <guid>https://pcx.linkedinfo.co/post/text-tag-prediction/</guid>
       <description>
 &lt;p&gt;
 This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&amp;#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.

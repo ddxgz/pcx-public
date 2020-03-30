@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.5.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="PENG, Cong">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.  In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="https://pcx.linkedinfo.co/post/text-tag-prediction/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#2962ff">
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.0/css/all.css" integrity="sha384-aOkxzJ5uQz7WBObEZcHvV5JvRW3TUc2rNPA7pe3AwnsUohiw1Vj2Rgx2KSOkF5+h" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+        
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ==" crossorigin="anonymous">
+    
+
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto:400,400italic,700%7CRoboto+Mono&display=swap">
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.min.5ac49d52d669340d29cb50b00bb7867f.css">
+
+  
+
+  
+  
+    <script>
+      window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+      ga('create', 'UA-87823019-3', 'auto');
+      
+      ga('require', 'eventTracker');
+      ga('require', 'outboundLinkTracker');
+      ga('require', 'urlChangeTracker');
+      ga('send', 'pageview');
+    </script>
+    <script async src="https://www.google-analytics.com/analytics.js"></script>
+    
+    <script async src="https://cdnjs.cloudflare.com/ajax/libs/autotrack/2.4.1/autotrack.js" integrity="sha512-HUmooslVKj4m6OBu0OgzjXXr+QuFYy/k7eLI5jdeEy/F4RSgMn6XRWRGkFi5IFaFgy7uFTkegp3Z0XnJf3Jq+g==" crossorigin="anonymous"></script>
+    
+  
+  
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon-32.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="https://pcx.linkedinfo.co/post/text-tag-prediction/">
+
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary">
+  
+  <meta property="og:site_name" content="Cong Peng">
+  <meta property="og:url" content="https://pcx.linkedinfo.co/post/text-tag-prediction/">
+  <meta property="og:title" content="Multi-label classification to predict topic tags of technical articles from LinkedInfo.co | Cong Peng">
+  <meta property="og:description" content="This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.  In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification."><meta property="og:image" content="https://pcx.linkedinfo.co/img/icon-192.png">
+  <meta property="twitter:image" content="https://pcx.linkedinfo.co/img/icon-192.png"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-09-11T13:36:43&#43;02:00">
+    
+    <meta property="article:modified_time" content="2019-09-13T13:36:43&#43;02:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://pcx.linkedinfo.co/post/text-tag-prediction/"
+  },
+  "headline": "Multi-label classification to predict topic tags of technical articles from LinkedInfo.co",
+  
+  "datePublished": "2019-09-11T13:36:43+02:00",
+  "dateModified": "2019-09-13T13:36:43+02:00",
+  
+  "author": {
+    "@type": "Person",
+    "name": "PENG, Cong"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": "Cong Peng",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://pcx.linkedinfo.co/img/icon-512.png"
+    }
+  },
+  "description": "This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It\u0026#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.  In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification."
+}
+</script>
+
+  
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  <title>Multi-label classification to predict topic tags of technical articles from LinkedInfo.co | Cong Peng</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" >
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+<nav class="navbar navbar-light fixed-top navbar-expand-lg py-0 compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+      <a class="navbar-brand" href="/">Cong Peng</a>
+      
+      <button type="button" class="navbar-toggler" data-toggle="collapse"
+              data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+        <span><i class="fas fa-bars"></i></span>
+      </button>
+      
+
+    
+    <div class="collapse navbar-collapse" id="navbar">
+
+      
+      
+      <ul class="navbar-nav ml-auto">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#projects"><span>Projects</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#publications"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        </li>
+        
+
+        
+
+        
+        <li class="nav-item">
+          <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+        </li>
+        
+
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</h1>
+
+  
+
+  
+    
+
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
+    Sep 13, 2019
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    10 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+
+  
+    
+
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="btn-links mb-3">
+  
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  
+  
+  
+    
+  
+  <a class="btn btn-outline-primary my-1 mr-1" href="https://www.kaggle.com/pcx813/multi-label-classification-for-article-tags-svm" target="_blank" rel="noopener">
+    
+    kaggle Notebook
+  </a>
+
+
+</div>
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      
+<p>
+This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.
+</p>
+<p>
+In this snippet, we will use <code class="verbatim">OneVsRestClassifier</code> (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification. The article data will be retrieved from <a href="https://linkedinfo.co">LinkedInfo.co</a> via Web API. The methods in this snippet should give credits to <a href="https://scikit-learn.org/stable/tutorial/text_analytics/working_with_text_data.html">Working With Text Data - scikit-learn</a> and <a href="https://towardsdatascience.com/journey-to-the-center-of-multi-label-classification-384c40229bff">this post</a>.
+</p>
+    
+  <h2>Table of Contents</h2>
+  <nav id="TableOfContents">
+<ul>
+<li><a href="#preprocessing-data-and-explore-the-method">Preprocessing data and explore the method</a>
+</li>
+<li><a href="#search-for-best-model-parameters-for-svm-with-linear-kernel">Search for best model parameters for SVM with linear kernel</a>
+</li>
+<li><a href="#headline-3">Training and testing with the best parameters</a>
+</li>
+<li><a href="#headline-4">A glance at the different evaluation metrics</a>
+</li>
+</ul>
+</nav>
+<h2 id="preprocessing-data-and-explore-the-method">
+Preprocessing data and explore the method
+</h2>
+<p>
+<code class="verbatim">dataset.df_tags</code> fetches the data set from <a href="https://linkedinfo.co">LinkedInfo.co</a>. It calls Web API of LinkedInfo.co to retrieve the article list, and then download and extract the full text of each article based on an article&#39;s url. The tags of each article are encoded using <code class="verbatim">MultiLabelBinarizer</code> in scikit-learn. The implementation of the code could be found in <a href="https://github.com/ddxgz/linkedinfo-ml-models/blob/master/dataset.py">dataset.py</a>. We&#39;ve set the parameter of <code class="verbatim">content_length_threshold</code> to 100 to screen out the articles with less than 100 for the description or full text.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> dataset
+
+ds <span style="color:#f92672">=</span> dataset<span style="color:#f92672">.</span>df_tags(content_length_threshold<span style="color:#f92672">=</span><span style="color:#ae81ff">100</span>)</code></pre></div>
+</div>
+<p>
+The dataset contains 3353 articles by the time retrieved the data. The
+dataset re returned as an object with the following attribute:
+</p>
+<blockquote>
+<ul>
+<li>
+<p>
+ds.data: pandas.DataFrame with cols of title, description, fulltext
+</p>
+</li>
+<li>
+<p>
+ds.target: encoding of tagsID
+</p>
+</li>
+<li>
+<p>
+ds.target_names: tagsID
+</p>
+</li>
+<li>
+<p>
+ds.target_decoded: the list of lists contains tagsID for each info
+</p>
+</li>
+</ul>
+</blockquote>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span> ds<span style="color:#f92672">.</span>data<span style="color:#f92672">.</span>head()</code></pre></div>
+</div>
+<table>
+<tbody>
+<tr>
+<td class="align-right"></td>
+<td>description</td>
+<td>fulltext</td>
+<td>title</td>
+</tr>
+<tr>
+<td class="align-right">0</td>
+<td>Both HTTP 1.x and HTTP/2 rely on lower level c…</td>
+<td>[Stressgrid](<em>)\n\n__\n\n[](</em> &#34;home&#34;)\n\n * […</td>
+<td>Achieving 100k connections per second with Elixir</td>
+</tr>
+<tr>
+<td class="align-right">1</td>
+<td>At Phusion we run a simple multithreaded HTTP …</td>
+<td>[![Hongli Lai](<em>images/avatar-b64f1ad5.png)](</em>…</td>
+<td>What causes Ruby memory bloat?</td>
+</tr>
+<tr>
+<td class="align-right">2</td>
+<td>Have you ever wanted to contribute to a projec…</td>
+<td>[ ![Real Python](/static/real-python-logo.ab1a…</td>
+<td>Managing Multiple Python Versions With pyenv</td>
+</tr>
+<tr>
+<td class="align-right">3</td>
+<td>安卓在版本Pie中第一次引入了ART优化配置文件，这个新特性利用发送到Play Cloud的…</td>
+<td>安卓在版本Pie中第一次引入了[ART优化配置文件](<a href="https://youtu.be/Yi...">https://youtu.be/Yi...</a></td>
+<td>ART云配置文件，提高安卓应用的性能</td>
+</tr>
+<tr>
+<td class="align-right">4</td>
+<td>I work at Red Hat on GCC, the GNU Compiler Col…</td>
+<td>[ ![Red Hat\nLogo](<a href="https://developers.redhat.c...">https://developers.redhat.c...</a></td>
+<td>Usability improvements in GCC 9</td>
+</tr>
+</tbody>
+</table>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span> ds<span style="color:#f92672">.</span>target[:<span style="color:#ae81ff">5</span>]
+array([[<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],
+       [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],
+       [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],
+       [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>],
+       [<span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#f92672">...</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>, <span style="color:#ae81ff">0</span>]])</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span> ds<span style="color:#f92672">.</span>target_names[:<span style="color:#ae81ff">5</span>]
+array([<span style="color:#e6db74">&#39;academia&#39;</span>, <span style="color:#e6db74">&#39;access-control&#39;</span>, <span style="color:#e6db74">&#39;activemq&#39;</span>, <span style="color:#e6db74">&#39;aes&#39;</span>, <span style="color:#e6db74">&#39;agile&#39;</span>],
+      dtype<span style="color:#f92672">=</span>object)</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">&gt;&gt;</span> ds<span style="color:#f92672">.</span>target_decoded[:<span style="color:#ae81ff">5</span>]
+[[<span style="color:#e6db74">&#39;concurrency&#39;</span>, <span style="color:#e6db74">&#39;elixir&#39;</span>],
+ [<span style="color:#e6db74">&#39;ruby&#39;</span>],
+ [<span style="color:#e6db74">&#39;python&#39;</span>, <span style="color:#e6db74">&#39;virtualenv&#39;</span>],
+ [<span style="color:#e6db74">&#39;android&#39;</span>],
+ [<span style="color:#e6db74">&#39;gcc&#39;</span>]]</code></pre></div>
+</div>
+<p>
+The following snippet is the actual process of getting the above
+dataset, by reading from file.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> json
+<span style="color:#f92672">import</span> pandas <span style="color:#f92672">as</span> pd
+<span style="color:#f92672">from</span> sklearn.preprocessing <span style="color:#f92672">import</span> MultiLabelBinarizer
+
+infos_file <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;data/infos/infos_0_3353_fulltext.json&#39;</span>
+<span style="color:#66d9ef">with</span> open(infos_file, <span style="color:#e6db74">&#39;r&#39;</span>) <span style="color:#66d9ef">as</span> f:
+    infos <span style="color:#f92672">=</span> json<span style="color:#f92672">.</span>load(f)
+
+content_length_threshold <span style="color:#f92672">=</span> <span style="color:#ae81ff">100</span>
+
+data_lst <span style="color:#f92672">=</span> []
+tags_lst <span style="color:#f92672">=</span> []
+<span style="color:#66d9ef">for</span> info <span style="color:#f92672">in</span> infos[<span style="color:#e6db74">&#39;content&#39;</span>]:
+    <span style="color:#66d9ef">if</span> len(info[<span style="color:#e6db74">&#39;fulltext&#39;</span>]) <span style="color:#f92672">&lt;</span> content_length_threshold:
+        <span style="color:#66d9ef">continue</span>
+    <span style="color:#66d9ef">if</span> len(info[<span style="color:#e6db74">&#39;description&#39;</span>]) <span style="color:#f92672">&lt;</span> content_length_threshold:
+        <span style="color:#66d9ef">continue</span>
+    data_lst<span style="color:#f92672">.</span>append({<span style="color:#e6db74">&#39;title&#39;</span>: info[<span style="color:#e6db74">&#39;title&#39;</span>],
+                     <span style="color:#e6db74">&#39;description&#39;</span>: info[<span style="color:#e6db74">&#39;description&#39;</span>],
+                     <span style="color:#e6db74">&#39;fulltext&#39;</span>: info[<span style="color:#e6db74">&#39;fulltext&#39;</span>]})
+    tags_lst<span style="color:#f92672">.</span>append([tag[<span style="color:#e6db74">&#39;tagID&#39;</span>] <span style="color:#66d9ef">for</span> tag <span style="color:#f92672">in</span> info[<span style="color:#e6db74">&#39;tags&#39;</span>]])
+
+df_data <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(data_lst)
+df_tags <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(tags_lst)
+
+<span style="color:#75715e"># fit and transform the binarizer</span>
+mlb <span style="color:#f92672">=</span> MultiLabelBinarizer()
+Y <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>fit_transform(tags_lst)
+Y<span style="color:#f92672">.</span>shape</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">(<span style="color:#ae81ff">3221</span>, <span style="color:#ae81ff">560</span>)</code></pre></div>
+</div>
+<p>
+Now we&#39;ve transformed the target (tags) but we cannot directly perform
+the algorithms on the text data, so we have to process and transform
+them into vectors. In order to do this, we will use <code class="verbatim">TfidfVectorizer</code> to
+preprocess, tokenize, filter stop words and transform the text data. The
+<code class="verbatim">TfidfVectorizer</code> implements the
+<a href="https://en.wikipedia.org/wiki/Tf%E2%80%93idf"><em>tf-idf</em></a> (Term
+Frequency-Inverse Document Frequency) to reflect how important a word
+is to to a document in a collection of documents.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn.feature_extraction.text <span style="color:#f92672">import</span> TfidfVectorizer
+
+<span style="color:#75715e"># Use the default parameters for now, use_idf=True in default</span>
+vectorizer <span style="color:#f92672">=</span> TfidfVectorizer()
+<span style="color:#75715e"># Use the short descriptions for now for faster processing</span>
+X <span style="color:#f92672">=</span> vectorizer<span style="color:#f92672">.</span>fit_transform(df_data<span style="color:#f92672">.</span>description)
+X<span style="color:#f92672">.</span>shape</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">(<span style="color:#ae81ff">3221</span>, <span style="color:#ae81ff">35506</span>)</code></pre></div>
+</div>
+<p>
+As mentioned in the beginning, this is a multi-label classification
+problem, we will use <code class="verbatim">OneVsRestClassifier</code> to tackle our problem. And
+firstly we will use the SVM (Support Vector Machines) with linear
+kernel, implemented as <code class="verbatim">LinearSVC</code> in scikit-learn, to do the
+classification.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn.multiclass <span style="color:#f92672">import</span> OneVsRestClassifier
+<span style="color:#f92672">from</span> sklearn.svm <span style="color:#f92672">import</span> LinearSVC
+<span style="color:#f92672">from</span> sklearn.model_selection <span style="color:#f92672">import</span> train_test_split
+
+<span style="color:#75715e"># Use default parameters, and train and test with small set of samples.</span>
+clf <span style="color:#f92672">=</span> OneVsRestClassifier(LinearSVC())
+
+<span style="color:#f92672">from</span> sklearn.utils <span style="color:#f92672">import</span> resample
+
+X_sample, Y_sample <span style="color:#f92672">=</span> resample(
+    X, Y, n_samples<span style="color:#f92672">=</span><span style="color:#ae81ff">1000</span>, replace<span style="color:#f92672">=</span>False, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">7</span>)
+
+<span style="color:#75715e"># X_sample_test, Y_sample_test = resample(</span>
+<span style="color:#75715e">#     X, Y, n_samples=10, replace=False, random_state=1)</span>
+
+X_sample_train, X_sample_test, Y_sample_train, Y_sample_test <span style="color:#f92672">=</span> train_test_split(
+    X_sample, Y_sample, test_size<span style="color:#f92672">=</span><span style="color:#ae81ff">0.01</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>)
+
+clf<span style="color:#f92672">.</span>fit(X_sample, Y_sample)
+Y_sample_pred <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>predict(X_sample_test)
+
+<span style="color:#75715e"># Inverse transform the vectors back to tags</span>
+pred_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>inverse_transform(Y_sample_pred)
+test_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>inverse_transform(Y_sample_test)
+
+<span style="color:#66d9ef">for</span> (t, p) <span style="color:#f92672">in</span> zip(test_transformed, pred_transformed):
+    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#39;tags: {t} predicted as: {p}&#39;</span>)</code></pre></div>
+</div>
+<pre class="example">
+tags: ('javascript',) predicted as: ('javascript',)
+tags: ('erasure-code', 'storage') predicted as: ()
+tags: ('mysql', 'network') predicted as: ()
+tags: ('token',) predicted as: ()
+tags: ('flask', 'python', 'web') predicted as: ()
+tags: ('refactoring',) predicted as: ()
+tags: ('emacs',) predicted as: ()
+tags: ('async', 'javascript', 'promises') predicted as: ('async', 'javascript')
+tags: ('neural-networks',) predicted as: ()
+tags: ('kubernetes',) predicted as: ('kubernetes',)
+</pre>
+<p>
+Though not very satisfied, this classifier predicted right a few tags.
+Next we&#39;ll try to search for the best parameters for the classifier and
+train with fulltext of articles.
+</p>
+<h2 id="search-for-best-model-parameters-for-svm-with-linear-kernel">
+Search for best model parameters for SVM with linear kernel
+</h2>
+<p>
+For the estimators <code class="verbatim">TfidfVectorizer</code> and <code class="verbatim">LinearSVC</code>, they both have
+many parameters could be tuned for better performance. We&#39;ll the
+<code class="verbatim">GridSearchCV</code> to search for the best parameters with the help of
+<code class="verbatim">Pipeline</code>.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn.pipeline <span style="color:#f92672">import</span> Pipeline
+<span style="color:#f92672">from</span> sklearn.model_selection <span style="color:#f92672">import</span> train_test_split, GridSearchCV
+
+
+<span style="color:#75715e"># Split the dataset into training and test set, and use fulltext of articles:</span>
+X_train, X_test, Y_train, Y_test <span style="color:#f92672">=</span> train_test_split(
+    df_data<span style="color:#f92672">.</span>fulltext, Y, test_size<span style="color:#f92672">=</span><span style="color:#ae81ff">0.5</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>)
+
+<span style="color:#75715e"># Build vectorizer classifier pipeline</span>
+clf <span style="color:#f92672">=</span> Pipeline([
+    (<span style="color:#e6db74">&#39;vect&#39;</span>, TfidfVectorizer()),
+    (<span style="color:#e6db74">&#39;clf&#39;</span>, OneVsRestClassifier(LinearSVC())),
+])
+
+<span style="color:#75715e"># Grid search parameters, I minimized the parameter set based on previous</span>
+<span style="color:#75715e"># experience to accelerate the processing speed.</span>
+<span style="color:#75715e"># And the combination of penalty=&#39;l1&#39; and loss=&#39;squared_hinge&#39; are not supported when dual=True</span>
+parameters <span style="color:#f92672">=</span> {
+    <span style="color:#e6db74">&#39;vect__ngram_range&#39;</span>: [(<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">2</span>), (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">3</span>), (<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>)],
+    <span style="color:#e6db74">&#39;vect__max_df&#39;</span>: [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0.9</span>, <span style="color:#ae81ff">0.8</span>, <span style="color:#ae81ff">0.7</span>],
+    <span style="color:#e6db74">&#39;vect__min_df&#39;</span>: [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">0.9</span>, <span style="color:#ae81ff">0.8</span>, <span style="color:#ae81ff">0.7</span>, <span style="color:#ae81ff">0</span>],
+    <span style="color:#e6db74">&#39;vect__use_idf&#39;</span>: [True, False],
+    <span style="color:#e6db74">&#39;clf__estimator__penalty&#39;</span>: [<span style="color:#e6db74">&#39;l1&#39;</span>, <span style="color:#e6db74">&#39;l2&#39;</span>],
+    <span style="color:#e6db74">&#39;clf__estimator__C&#39;</span>: [<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">10</span>, <span style="color:#ae81ff">100</span>, <span style="color:#ae81ff">1000</span>],
+    <span style="color:#e6db74">&#39;clf__estimator__dual&#39;</span>: [False],
+}
+
+gs_clf <span style="color:#f92672">=</span> GridSearchCV(clf, parameters, cv<span style="color:#f92672">=</span><span style="color:#ae81ff">5</span>, n_jobs<span style="color:#f92672">=-</span><span style="color:#ae81ff">1</span>)
+gs_clf<span style="color:#f92672">.</span>fit(X_train, Y_train)</code></pre></div>
+</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">import</span> datetime
+<span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> metrics
+
+
+<span style="color:#75715e"># Predict the outcome on the testing set in a variable named y_predicted</span>
+Y_predicted <span style="color:#f92672">=</span> gs_clf<span style="color:#f92672">.</span>predict(X_test)
+
+<span style="color:#66d9ef">print</span>(metrics<span style="color:#f92672">.</span>classification_report(Y_test, Y_predicted))
+<span style="color:#66d9ef">print</span>(gs_clf<span style="color:#f92672">.</span>best_params_)
+<span style="color:#66d9ef">print</span>(gs_clf<span style="color:#f92672">.</span>best_score_)
+
+<span style="color:#75715e"># Export some of the result cols</span>
+cols <span style="color:#f92672">=</span> [
+    <span style="color:#e6db74">&#39;mean_test_score&#39;</span>,
+    <span style="color:#e6db74">&#39;mean_fit_time&#39;</span>,
+    <span style="color:#e6db74">&#39;param_vect__ngram_range&#39;</span>,
+]
+df_result <span style="color:#f92672">=</span> pd<span style="color:#f92672">.</span>DataFrame(gs_clf<span style="color:#f92672">.</span>cv_results_)
+df_result <span style="color:#f92672">=</span> df_result<span style="color:#f92672">.</span>sort_values(by<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;rank_test_score&#39;</span>)
+df_result <span style="color:#f92672">=</span> df_result[cols]
+
+timestamp <span style="color:#f92672">=</span> datetime<span style="color:#f92672">.</span>now()<span style="color:#f92672">.</span>strftime(<span style="color:#e6db74">&#39;%Y-%m-</span><span style="color:#e6db74">%d</span><span style="color:#e6db74">_%H-%M-%S&#39;</span>)
+df_result<span style="color:#f92672">.</span>to_html(
+    f<span style="color:#e6db74">&#39;data/results/gridcv_results_{timestamp}_linearSVC.html&#39;</span>)</code></pre></div>
+</div>
+<p>
+Here we attach the top-5 performed classifiers with selected parameters.
+</p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>rank_test_score</th>
+      <th>mean_test_score</th>
+      <th>mean_fit_time</th>
+      <th>param_vect__max_df</th>
+      <th>param_vect__ngram_range</th>
+      <th>param_vect__use_idf</th>
+      <th>param_clf__estimator__penalty</th>
+      <th>param_clf__estimator__C</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>64</th>
+      <td>1</td>
+      <td>0.140811</td>
+      <td>96.127405</td>
+      <td>0.8</td>
+      <td>(1, 4)</td>
+      <td>True</td>
+      <td>l1</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>70</th>
+      <td>2</td>
+      <td>0.140215</td>
+      <td>103.252332</td>
+      <td>0.7</td>
+      <td>(1, 4)</td>
+      <td>True</td>
+      <td>l1</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>58</th>
+      <td>2</td>
+      <td>0.140215</td>
+      <td>98.990952</td>
+      <td>0.9</td>
+      <td>(1, 4)</td>
+      <td>True</td>
+      <td>l1</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>154</th>
+      <td>2</td>
+      <td>0.140215</td>
+      <td>1690.433151</td>
+      <td>0.9</td>
+      <td>(1, 4)</td>
+      <td>True</td>
+      <td>l1</td>
+      <td>1000</td>
+    </tr>
+    <tr>
+      <th>68</th>
+      <td>5</td>
+      <td>0.139618</td>
+      <td>70.778621</td>
+      <td>0.7</td>
+      <td>(1, 3)</td>
+      <td>True</td>
+      <td>l1</td>
+      <td>10</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id="headline-3">
+Training and testing with the best parameters
+</h2>
+<p>
+Based on the grid search results, we found the following parameters
+combined with the default parameters have the best performance. Now
+let&#39;s see how it will perform.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python">X_train, X_test, Y_train, Y_test <span style="color:#f92672">=</span> train_test_split(
+    df_data, Y, test_size<span style="color:#f92672">=</span><span style="color:#ae81ff">0.2</span>, random_state<span style="color:#f92672">=</span><span style="color:#ae81ff">42</span>)
+
+clf <span style="color:#f92672">=</span> Pipeline([
+    (<span style="color:#e6db74">&#39;vect&#39;</span>, TfidfVectorizer(use_idf<span style="color:#f92672">=</span>True,
+                             max_df<span style="color:#f92672">=</span><span style="color:#ae81ff">0.8</span>, ngram_range<span style="color:#f92672">=</span>[<span style="color:#ae81ff">1</span>, <span style="color:#ae81ff">4</span>])),
+    (<span style="color:#e6db74">&#39;clf&#39;</span>, OneVsRestClassifier(LinearSVC(penalty<span style="color:#f92672">=</span><span style="color:#e6db74">&#39;l1&#39;</span>, C<span style="color:#f92672">=</span><span style="color:#ae81ff">10</span>, dual<span style="color:#f92672">=</span>False))),
+])
+
+clf<span style="color:#f92672">.</span>fit(X_train<span style="color:#f92672">.</span>fulltext, Y_train)
+
+
+Y_pred <span style="color:#f92672">=</span> clf<span style="color:#f92672">.</span>predict(X_test<span style="color:#f92672">.</span>fulltext)
+
+<span style="color:#75715e"># Inverse transform the vectors back to tags</span>
+pred_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>inverse_transform(Y_pred)
+test_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92672">.</span>inverse_transform(Y_test)
+
+<span style="color:#66d9ef">for</span> (title, t, p) <span style="color:#f92672">in</span> zip(X_test<span style="color:#f92672">.</span>title, test_transformed, pred_transformed):
+    <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#39;Article title: {title} </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+          f<span style="color:#e6db74">&#39;Manual tags:  {t} </span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>
+          f<span style="color:#e6db74">&#39;predicted as: {p}</span><span style="color:#ae81ff">\n</span><span style="color:#e6db74">&#39;</span>)</code></pre></div>
+</div>
+<p>
+Here below is a fraction of the list that shows the manually input tags and the predicted tags. We can see that usually the more frequently appeared and more popular tags have better change to be correctly predicted. Personally, I would say the prediction is satisfied to me comparing when I tag the articles manually. However, there&#39;s much room for improvement.
+</p>
+<div class="src src-markdown">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-markdown" data-lang="markdown">Article title: Will PWAs Replace Native Mobile Apps?
+Manual tags:  (&#39;pwa&#39;,)
+predicted as: (&#39;pwa&#39;,)
+
+Article title: 基于Consul的分布式信号量实现
+Manual tags:  (&#39;consul&#39;, &#39;distributed-system&#39;)
+predicted as: (&#39;microservices&#39;, &#39;multithreading&#39;)
+
+Article title: commit 和 branch 理解深入
+Manual tags:  (&#39;git&#39;,)
+predicted as: (&#39;git&#39;,)
+
+Article title: Existential types in Scala
+Manual tags:  (&#39;scala&#39;,)
+predicted as: (&#39;scala&#39;,)
+
+Article title: Calling back into Python from llvmlite-JITed code
+Manual tags:  (&#39;jit&#39;, &#39;python&#39;)
+predicted as: (&#39;compiler&#39;, &#39;python&#39;)
+
+Article title: Writing a Simple Linux Kernel Module
+Manual tags:  (&#39;kernel&#39;, &#39;linux&#39;)
+predicted as: (&#39;linux&#39;,)
+
+Article title: Semantic segmentation with OpenCV and deep learning
+Manual tags:  (&#39;deep-learning&#39;, &#39;opencv&#39;)
+predicted as: (&#39;deep-learning&#39;, &#39;image-classification&#39;, &#39;opencv&#39;)
+
+Article title: Transducers: Efficient Data Processing Pipelines in JavaScript
+Manual tags:  (&#39;javascript&#39;,)
+predicted as: (&#39;javascript&#39;,)
+
+Article title: C++之stl::string写时拷贝导致的问题
+Manual tags:  (&#39;cpp&#39;,)
+predicted as: (&#39;functional-programming&#39;,)
+
+Article title: WebSocket 浅析
+Manual tags:  (&#39;websocket&#39;,)
+predicted as: (&#39;websocket&#39;,)
+
+Article title: You shouldn’t name your variables after their types for the same reason you wouldn’t name your pets “dog” or “cat”
+Manual tags:  (&#39;golang&#39;,)
+predicted as: (&#39;golang&#39;,)
+
+Article title: Introduction to Data Visualization using Python
+Manual tags:  (&#39;data-visualization&#39;, &#39;python&#39;)
+predicted as: (&#39;data-visualization&#39;, &#39;matplotlib&#39;, &#39;python&#39;)
+
+Article title: How JavaScript works: A comparison with WebAssembly + why in certain cases it’s better to use it over JavaScript
+Manual tags:  (&#39;javascript&#39;, &#39;webassembly&#39;)
+predicted as: (&#39;javascript&#39;, &#39;webassembly&#39;)
+
+Article title: Parsing logs 230x faster with Rust
+Manual tags:  (&#39;log&#39;, &#39;rust&#39;)
+predicted as: (&#39;rust&#39;,)
+
+Article title: Troubleshooting Memory Issues in Java Applications
+Manual tags:  (&#39;java&#39;, &#39;memory&#39;)
+predicted as: (&#39;java&#39;,)
+
+Article title: How to use Docker for Node.js development
+Manual tags:  (&#39;docker&#39;, &#39;node.js&#39;)
+predicted as: (&#39;docker&#39;,)</code></pre></div>
+</div>
+<h2 id="headline-4">
+A glance at the different evaluation metrics
+</h2>
+<p>
+Now let&#39;s have a look at the evaluation metrics on the prediction performance. Evaluating multi-label classification is very different from evaluating binary classification. There&#39;re quite many different evaluation methods for different situations in <a href="https://scikit-learn.org/stable/modules/model_evaluation.html">the model evaluation part of scikit-learn&#39;s documentation</a>. We will take a look at the ones that suit this problem.
+</p>
+<p>
+We can start with the <code class="verbatim">accuracy_score</code> function in <code class="verbatim">metrics</code> module. As mentioned in scikit-learn documentation, in multi-label classification, a subset accuracy is 1.0 when the entire set of predicted labels for a sample matches strictly with the true label set. The equation is simple like this:
+</p>
+<div class="export-block">
+$$\operatorname{accuracy}(y, \hat{y})=\frac{1}{n_{\text {samples }}} \sum_{i=0}^{n_{\text {minples }}-1} 1\left(\hat{y}_{i}=y_{i}\right)$$</div>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> metrics
+<span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt
+
+metrics<span style="color:#f92672">.</span>accuracy_score(Y_test, Y_pred)</code></pre></div>
+</div>
+<div class="src src-md">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-md" data-lang="md">0.26356589147286824</code></pre></div>
+</div>
+<p>
+The score is somehow low. But we should be noted that for this problem, an inexact match of the labels is acceptable in many cases, e.g., an article talks about the golang&#39;s interface is predicted with an only label <code class="verbatim">golang</code> while it was manually labeled with <code class="verbatim">golang</code> and <code class="verbatim">interface</code>. So to my opinion, this <code class="verbatim">accuracy_score</code> is not a good evaluation metric for this problem.
+</p>
+<p>
+Now let&#39;s see the <code class="verbatim">classification_report</code> that presents averaged precision, recall and f1-score.
+</p>
+<div class="src src-python">
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#66d9ef">print</span>(metrics<span style="color:#f92672">.</span>classification_report(Y_test, Y_pred))</code></pre></div>
+</div>
+<table>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td class="align-right">precision</td>
+<td class="align-right">recall</td>
+<td class="align-right">f1-score</td>
+<td class="align-right">support</td>
+</tr>
+<tr>
+<td>micro</td>
+<td>avg</td>
+<td class="align-right">0.74</td>
+<td class="align-right">0.42</td>
+<td class="align-right">0.54</td>
+<td class="align-right">1186</td>
+</tr>
+<tr>
+<td>macro</td>
+<td>avg</td>
+<td class="align-right">0.17</td>
+<td class="align-right">0.13</td>
+<td class="align-right">0.14</td>
+<td class="align-right">1186</td>
+</tr>
+<tr>
+<td>weighted</td>
+<td>avg</td>
+<td class="align-right">0.60</td>
+<td class="align-right">0.42</td>
+<td class="align-right">0.48</td>
+<td class="align-right">1186</td>
+</tr>
+</tbody>
+</table>
+<p>
+Let&#39;s look at the <strong>micro</strong> row. Why? Let me quote scikit-learn&#39;s documentation:
+</p>
+<blockquote>
+<p>
+&#34;micro&#34; gives each sample-class pair an equal contribution to the overall metric (except as a result of sample-weight). Rather than summing the metric per class, this sums the dividends and divisors that make up the per-class metrics to calculate an overall quotient. Micro-averaging may be preferred in multilabel settings, including multiclass classification where a majority class is to be ignored.
+</p>
+</blockquote>
+<p>
+Here we&#39;re more interested in the average precision, which is 0.74. As we mentioned, for this problem and for me, it&#39;s more important to not predict a label that should be negative to an article. Some of the labels for an article, e.g., the label <code class="verbatim">interface</code> for the just mentioned article, are less important. So I&#39;m OK for having a low score of recall, which measure how good the model predicts all the labels as the manually labeled.
+</p>
+<p>
+However, there&#39;s much room for improvement.
+</p>
+<ul>
+<li>
+<p>
+Many of the labels have very few appearances or even once. These labels could be filtered out or oversampling with text augmentation to mitigate the impact to model performance.
+</p>
+</li>
+<li>
+<p>
+The training-test set split should be controlled by methods like stratified sampling, so that all the labels would appear in both sets with similar percentages. But again this problem is unlikely to be solved by now since there isn&#39;t enough samples.
+</p>
+</li>
+<li>
+<p>
+Another problem to be though about is, the training samples are not equally labeled, i.e., for the same example all the articles talking about golang&#39;s interface, some of them labeled with <code class="verbatim">golang</code> + <code class="verbatim">interface</code> while some of them labeled only <code class="verbatim">golang</code>.
+</p>
+</li>
+</ul>
+
+    </div>
+
+    
+
+
+    
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/machine-learning/">Machine Learning</a>
+  
+  <a class="badge badge-light" href="/tags/multi-label-classification/">Multi-label classification</a>
+  
+  <a class="badge badge-light" href="/tags/text-classification/">Text classification</a>
+  
+  <a class="badge badge-light" href="/tags/linkedinfo.co/">LinkedInfo.co</a>
+  
+</div>
+
+
+
+    
+      
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  <div class="media author-card">
+    
+      
+      <img class="portrait mr-3" src="/authors/admin/avatar_huf79fbb756ad93d32a2794d68e8fd33ec_47015_250x250_fill_q90_lanczos_center.jpg" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="https://pcx.linkedinfo.co/">PENG, Cong</a></h5>
+      <h6 class="card-subtitle">Ph.D. Student</h6>
+      
+      <ul class="network-icon" aria-hidden="true">
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+          <li>
+            <a href="mailto:cong.peng@bth.se" >
+              <i class="fas fa-envelope"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://scholar.google.com/citations?user=87g_0KgAAAAJ" target="_blank" rel="noopener">
+              <i class="ai ai-google-scholar"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://www.researchgate.net/profile/Cong_Peng5" target="_blank" rel="noopener">
+              <i class="fab fa-researchgate"></i>
+            </a>
+          </li>
+        
+          
+          
+          
+            
+          
+          
+          
+          
+          
+            
+          
+          <li>
+            <a href="https://github.com/ddxgz" target="_blank" rel="noopener">
+              <i class="fab fa-github"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+
+
+      
+      
+      <div class="article-widget">
+        <div class="hr-light"></div>
+        <h3>Related</h3>
+        <ul>
+          
+          <li><a href="/post/houseprice/">Explore the house prices kaggle competition</a></li>
+          
+          <li><a href="/project/linkedinfo/">LinkedInfo.co</a></li>
+          
+        </ul>
+      </div>
+      
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+    <script src="/js/mathjax-config.js"></script>
+    
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/highlight.min.js" integrity="sha256-aYTdUrn6Ow1DDgh5JTc3aDGnnju48y/1c8s1dgkYPQ8=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.6/languages/r.min.js"></script>
+        
+      
+
+      
+      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS_CHTML-full" integrity="sha256-GhM+5JHb6QUzOQPXSJLEWP7R73CbkisjzK5Eyij4U9w=" crossorigin="anonymous" async></script>
+      
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.2.0/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log==" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+    <script>
+      const search_index_filename = "/index.json";
+      const i18n = {
+        'placeholder': "Search...",
+        'results': "results found",
+        'no_results': "No results found"
+      };
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.130521ecfc6f534c52c158217bbff718.js"></script>
+
+    
+
+
+
+
+
+
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+
+  <p class="powered-by">
+    ©2014–2019 Cong Peng &middot; 
+
+    Powered by
+    <a href="https://orgmode.org/" target="_blank" rel="noopener">Org-mode</a> and the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" id="back_to_top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

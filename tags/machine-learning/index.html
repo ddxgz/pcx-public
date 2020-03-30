@@ -131,7 +131,7 @@
   <meta property="og:description" content="Ph.D. Student"><meta property="og:image" content="https://pcx.linkedinfo.co/img/icon-192.png">
   <meta property="twitter:image" content="https://pcx.linkedinfo.co/img/icon-192.png"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-10T10:07:11&#43;01:00">
+    <meta property="og:updated_time" content="2020-02-13T11:20:19&#43;02:00">
   
 
   
@@ -384,6 +384,16 @@
   
   
   <div>
+    <h2><a href="/post/text-tag-prediction-bert/">Using BERT to perform Topic Tag Prediction of Technical Articles</a></h2>
+    <div class="article-style">
+      
+      Introduction This is a follow up post of Multi-label classification to predict topic tags of technical articles from LinkedInfo.co. We will continute the same task by using BERT.
+Firstly we&rsquo;ll just use the embeddings from BERT, and then feed them to the same classification model used in the last post, SVM with linear kenel. The reason of keep using SVM is that the size of the dataset is quite small.
+      
+    </div>
+  </div>
+  
+  <div>
     <h2><a href="/post/fraud-detection/">A Walk Through of the IEEE-CIS Fraud Detection Challenge</a></h2>
     <div class="article-style">
       
@@ -422,7 +432,7 @@ The classification neural network model is tested with pretrained ResNet and Den
   </div>
   
   <div>
-    <h2><a href="/post/texttagspred/">Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</a></h2>
+    <h2><a href="/post/text-tag-prediction/">Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</a></h2>
     <div class="article-style">
       
       This code snippet is to predict topic tags based on the text of an article. Each article could have 1 or more tags (usually have at least 1 tag), and the tags are not mutually exclusive. So this is a multi-label classification problem. It&#39;s different from multi-class classification, the classes in multi-class classification are mutually exclusive, i.e., each item belongs to 1 and only 1 class.  In this snippet, we will use OneVsRestClassifier (the One-Vs-the-Rest) in scikit-learn to process the multi-label classification.

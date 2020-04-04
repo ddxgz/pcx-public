@@ -1030,7 +1030,7 @@ df_report.loc[cols_avg]
 
 &lt;h1 id=&#34;comeback-test-with-tf-idf&#34;&gt;Comeback test with tf-idf&lt;/h1&gt;
 
-&lt;p&gt;Comparing to the early post that the model uses tf-idf to transform the text, we&amp;rsquo;ve made some changes to the dataset loading, spliting and augmentation. I&amp;rsquo;m curious to see if these changes would improve the performance when using tf-idf other than BERT.&lt;/p&gt;
+&lt;p&gt;Comparing to the early post that the model uses tf-idf to transform the text, we&amp;rsquo;ve made some changes to the dataset loading, spliting and augmentation. I&amp;rsquo;m curious to see if these changes would improve the performance when using tf-idf other than BERT-Mini.&lt;/p&gt;
 
 &lt;p&gt;Let&amp;rsquo;s start with samples only in English still.&lt;/p&gt;
 
@@ -1229,6 +1229,112 @@ classification_report_avg(test_labels, Y_predicted)
 &lt;/div&gt;
 
 &lt;p&gt;We can see that, for both the models, the micro average precision is quite high and the recalls are still low. However, the macro averages are much better since we filtered out minority tags. The model trained on samples with both languages has a lower precisions but higher recalls.&lt;/p&gt;
+
+&lt;p&gt;Now lets see how would it perform training on the fulltext.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;col_text = &#39;fulltext&#39;
+
+ds_param = dict(from_batch_cache=&#39;fulltext&#39;, lan=None,
+                concate_title=True,
+                filter_tags_threshold=20)
+ds = dataset.ds_info_tags(**ds_param)
+
+train_features, test_features, train_labels, test_labels = multilearn_iterative_train_test_split(
+    ds.data, ds.target, test_size=0.3, cols=ds.data.columns)
+
+train_features, train_labels = dataset.augmented_samples(
+    train_features, train_labels, col=col_text, level=4, crop_ratio=0.2)
+
+clf = Pipeline([
+    (&#39;vect&#39;, TfidfVectorizer(use_idf=True, max_df=0.8)),
+    (&#39;clf&#39;, OneVsRestClassifier(LinearSVC(penalty=&#39;l2&#39;, dual=True))),
+])
+
+C_OPTIONS = [0.1, 1, 10]
+
+parameters = {
+    &#39;vect__ngram_range&#39;: [(1, 4)],
+    &#39;clf__estimator__C&#39;: C_OPTIONS,
+}
+gs_clf = GridSearchCV(clf, parameters, cv=3, n_jobs=-1)
+gs_clf.fit(train_features[col_text], train_labels)
+
+print(gs_clf.best_params_)
+print(gs_clf.best_score_)
+
+Y_predicted = gs_clf.predict(test_features[col_text])
+
+classification_report_avg(test_labels, Y_predicted)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;/usr/local/lib/python3.6/dist-packages/joblib/externals/loky/process_executor.py:706: UserWarning:
+
+A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
+
+
+
+{&#39;clf__estimator__C&#39;: 10, &#39;vect__ngram_range&#39;: (1, 4)}
+0.9719756244169426
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div&gt;
+&lt;style scoped&gt;
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+&lt;/style&gt;
+&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
+  &lt;thead&gt;
+    &lt;tr style=&#34;text-align: right;&#34;&gt;
+      &lt;th&gt;&lt;/th&gt;
+      &lt;th&gt;precision&lt;/th&gt;
+      &lt;th&gt;recall&lt;/th&gt;
+      &lt;th&gt;f1-score&lt;/th&gt;
+      &lt;th&gt;support&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th&gt;micro avg&lt;/th&gt;
+      &lt;td&gt;0.891927&lt;/td&gt;
+      &lt;td&gt;0.479692&lt;/td&gt;
+      &lt;td&gt;0.623862&lt;/td&gt;
+      &lt;td&gt;1428.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;macro avg&lt;/th&gt;
+      &lt;td&gt;0.858733&lt;/td&gt;
+      &lt;td&gt;0.385982&lt;/td&gt;
+      &lt;td&gt;0.502745&lt;/td&gt;
+      &lt;td&gt;1428.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;weighted avg&lt;/th&gt;
+      &lt;td&gt;0.864123&lt;/td&gt;
+      &lt;td&gt;0.479692&lt;/td&gt;
+      &lt;td&gt;0.584996&lt;/td&gt;
+      &lt;td&gt;1428.0&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;th&gt;samples avg&lt;/th&gt;
+      &lt;td&gt;0.559050&lt;/td&gt;
+      &lt;td&gt;0.494357&lt;/td&gt;
+      &lt;td&gt;0.510951&lt;/td&gt;
+      &lt;td&gt;1428.0&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The model trained on the fulltext is slightly better, but the training time is way much longer. A tuning on the length of the partial text could be explored with both tf-idf and BERT.&lt;/p&gt;
 </description>
     </item>
     

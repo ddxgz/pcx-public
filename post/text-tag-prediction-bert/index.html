@@ -461,7 +461,7 @@ Firstly we&rsquo;ll just use the embeddings from BERT, and then feed them to the
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    30 min read
+    31 min read
   </span>
   
 
@@ -1515,7 +1515,7 @@ df_report.loc[cols_avg]
 
 <h1 id="comeback-test-with-tf-idf">Comeback test with tf-idf</h1>
 
-<p>Comparing to the early post that the model uses tf-idf to transform the text, we&rsquo;ve made some changes to the dataset loading, spliting and augmentation. I&rsquo;m curious to see if these changes would improve the performance when using tf-idf other than BERT.</p>
+<p>Comparing to the early post that the model uses tf-idf to transform the text, we&rsquo;ve made some changes to the dataset loading, spliting and augmentation. I&rsquo;m curious to see if these changes would improve the performance when using tf-idf other than BERT-Mini.</p>
 
 <p>Let&rsquo;s start with samples only in English still.</p>
 
@@ -1714,6 +1714,112 @@ classification_report_avg(test_labels, Y_predicted)
 </div>
 
 <p>We can see that, for both the models, the micro average precision is quite high and the recalls are still low. However, the macro averages are much better since we filtered out minority tags. The model trained on samples with both languages has a lower precisions but higher recalls.</p>
+
+<p>Now lets see how would it perform training on the fulltext.</p>
+
+<pre><code>col_text = 'fulltext'
+
+ds_param = dict(from_batch_cache='fulltext', lan=None,
+                concate_title=True,
+                filter_tags_threshold=20)
+ds = dataset.ds_info_tags(**ds_param)
+
+train_features, test_features, train_labels, test_labels = multilearn_iterative_train_test_split(
+    ds.data, ds.target, test_size=0.3, cols=ds.data.columns)
+
+train_features, train_labels = dataset.augmented_samples(
+    train_features, train_labels, col=col_text, level=4, crop_ratio=0.2)
+
+clf = Pipeline([
+    ('vect', TfidfVectorizer(use_idf=True, max_df=0.8)),
+    ('clf', OneVsRestClassifier(LinearSVC(penalty='l2', dual=True))),
+])
+
+C_OPTIONS = [0.1, 1, 10]
+
+parameters = {
+    'vect__ngram_range': [(1, 4)],
+    'clf__estimator__C': C_OPTIONS,
+}
+gs_clf = GridSearchCV(clf, parameters, cv=3, n_jobs=-1)
+gs_clf.fit(train_features[col_text], train_labels)
+
+print(gs_clf.best_params_)
+print(gs_clf.best_score_)
+
+Y_predicted = gs_clf.predict(test_features[col_text])
+
+classification_report_avg(test_labels, Y_predicted)
+</code></pre>
+
+<pre><code>/usr/local/lib/python3.6/dist-packages/joblib/externals/loky/process_executor.py:706: UserWarning:
+
+A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
+
+
+
+{'clf__estimator__C': 10, 'vect__ngram_range': (1, 4)}
+0.9719756244169426
+</code></pre>
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>precision</th>
+      <th>recall</th>
+      <th>f1-score</th>
+      <th>support</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>micro avg</th>
+      <td>0.891927</td>
+      <td>0.479692</td>
+      <td>0.623862</td>
+      <td>1428.0</td>
+    </tr>
+    <tr>
+      <th>macro avg</th>
+      <td>0.858733</td>
+      <td>0.385982</td>
+      <td>0.502745</td>
+      <td>1428.0</td>
+    </tr>
+    <tr>
+      <th>weighted avg</th>
+      <td>0.864123</td>
+      <td>0.479692</td>
+      <td>0.584996</td>
+      <td>1428.0</td>
+    </tr>
+    <tr>
+      <th>samples avg</th>
+      <td>0.559050</td>
+      <td>0.494357</td>
+      <td>0.510951</td>
+      <td>1428.0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<p>The model trained on the fulltext is slightly better, but the training time is way much longer. A tuning on the length of the partial text could be explored with both tf-idf and BERT.</p>
 
     </div>
 

@@ -1267,13 +1267,7 @@ Y_predicted = gs_clf.predict(test_features[col_text])
 classification_report_avg(test_labels, Y_predicted)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;pre&gt;&lt;code&gt;/usr/local/lib/python3.6/dist-packages/joblib/externals/loky/process_executor.py:706: UserWarning:
-
-A worker stopped while some jobs were given to the executor. This can be caused by a too short worker timeout or by a memory leak.
-
-
-
-{&#39;clf__estimator__C&#39;: 10, &#39;vect__ngram_range&#39;: (1, 4)}
+&lt;pre&gt;&lt;code&gt;{&#39;clf__estimator__C&#39;: 10, &#39;vect__ngram_range&#39;: (1, 4)}
 0.9719756244169426
 &lt;/code&gt;&lt;/pre&gt;
 

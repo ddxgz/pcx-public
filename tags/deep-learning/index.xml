@@ -13,20 +13,20 @@
     </image>
     
     <item>
-      <title>Skin Lesion Classifier</title>
-      <link>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</link>
-      <pubDate>Fri, 07 Feb 2020 19:51:26 +0100</pubDate>
-      <guid>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</guid>
-      <description>&lt;p&gt;A skin lesion classifier that uses a deep neural network trained on the HAM10000 dataset. An implementation of the ISIC challenge 2018 task 3.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
       <title>Topic Tag Predictor</title>
       <link>https://pcx.linkedinfo.co/project/topic-tag-predictor/</link>
       <pubDate>Sat, 04 Jan 2020 19:22:26 +0100</pubDate>
       <guid>https://pcx.linkedinfo.co/project/topic-tag-predictor/</guid>
       <description>&lt;p&gt;A topic tag prediction service for technical articles. The model uses a pre-trained BERT and fine-tuned on the dataset of LinkedInfo.co.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Skin Lesion Classifier</title>
+      <link>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</link>
+      <pubDate>Fri, 07 Feb 2020 19:51:26 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</guid>
+      <description>&lt;p&gt;A skin lesion classifier that uses a deep neural network trained on the HAM10000 dataset. An implementation of the ISIC challenge 2018 task 3.&lt;/p&gt;
 </description>
     </item>
     

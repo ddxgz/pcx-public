@@ -3,6 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://pcx.linkedinfo.co/project/linkedinfo/</loc>
+    <lastmod>2019-01-27T11:17:54+01:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>https://pcx.linkedinfo.co/project/topic-tag-predictor/</loc>
+    <lastmod>2020-01-04T19:22:26+01:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://pcx.linkedinfo.co/tags/bert/</loc>
     <lastmod>2020-03-31T15:10:14+02:00</lastmod>
   </url>
@@ -75,11 +85,6 @@
   <url>
     <loc>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</loc>
     <lastmod>2020-02-07T19:51:26+01:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/project/topic-tag-predictor/</loc>
-    <lastmod>2020-01-04T19:22:26+01:00</lastmod>
   </url>
   
   <url>
@@ -185,11 +190,6 @@
   <url>
     <loc>https://pcx.linkedinfo.co/tags/wot/</loc>
     <lastmod>2019-04-01T00:00:00+02:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>https://pcx.linkedinfo.co/project/linkedinfo/</loc>
-    <lastmod>2019-01-27T11:17:54+01:00</lastmod>
   </url>
   
   <url>

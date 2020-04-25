@@ -13,11 +13,13 @@
     </image>
     
     <item>
-      <title>Skin Lesion Classifier</title>
-      <link>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</link>
-      <pubDate>Fri, 07 Feb 2020 19:51:26 +0100</pubDate>
-      <guid>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</guid>
-      <description>&lt;p&gt;A skin lesion classifier that uses a deep neural network trained on the HAM10000 dataset. An implementation of the ISIC challenge 2018 task 3.&lt;/p&gt;
+      <title>LinkedInfo.co</title>
+      <link>https://pcx.linkedinfo.co/project/linkedinfo/</link>
+      <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/project/linkedinfo/</guid>
+      <description>&lt;p&gt;The Web should be an open web. All the informations published on the Web are meant to be shared, share through links by search engines, rss, social networks, etc. This site is yet another method that tries to link all the informations (but starts with only technical articles on LinkedInfo) and share them.&lt;/p&gt;
+
+&lt;p&gt;The original idea of this side project is to utilize Semantic Web technologies and Machine learning to link the informations. Noble ambition shall start from basic, it needs to be improved little by little.&lt;/p&gt;
 </description>
     </item>
     
@@ -31,13 +33,11 @@
     </item>
     
     <item>
-      <title>LinkedInfo.co</title>
-      <link>https://pcx.linkedinfo.co/project/linkedinfo/</link>
-      <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
-      <guid>https://pcx.linkedinfo.co/project/linkedinfo/</guid>
-      <description>&lt;p&gt;The Web should be an open web. All the informations published on the Web are meant to be shared, share through links by search engines, rss, social networks, etc. This site is yet another method that tries to link all the informations (but starts with only technical articles on LinkedInfo) and share them.&lt;/p&gt;
-
-&lt;p&gt;The original idea of this side project is to utilize Semantic Web technologies and Machine learning to link the informations. Noble ambition shall start from basic, it needs to be improved little by little.&lt;/p&gt;
+      <title>Skin Lesion Classifier</title>
+      <link>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</link>
+      <pubDate>Fri, 07 Feb 2020 19:51:26 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/project/skin-lesion-classifier/</guid>
+      <description>&lt;p&gt;A skin lesion classifier that uses a deep neural network trained on the HAM10000 dataset. An implementation of the ISIC challenge 2018 task 3.&lt;/p&gt;
 </description>
     </item>
     

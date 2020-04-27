@@ -461,7 +461,7 @@ Firstly we&rsquo;ll just use the embeddings from BERT, and then feed them to the
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    31 min read
+    32 min read
   </span>
   
 
@@ -1713,7 +1713,9 @@ classification_report_avg(test_labels, Y_predicted)
 </table>
 </div>
 
-<p>We can see that, for both the models, the micro average precision is quite high and the recalls are still low. However, the macro averages are much better since we filtered out minority tags. The model trained on samples with both languages has a lower precisions but higher recalls.</p>
+<p>We can see that, for both the models, the micro average precision is quite high and the recalls are still low. However, the macro averages are much better since we filtered out minority tags.</p>
+
+<p>The model trained on samples with both languages has a lower precisions but higher recalls. The model trained on samples with both languages has a lower precisions but higher recalls. This is reasonable since that in those added Chinese articles, those key terms are more stand out that they can be better captured by tf-idf. That&rsquo;s why the recall goes up a little.</p>
 
 <p>Now lets see how would it perform training on the fulltext.</p>
 
@@ -1814,6 +1816,14 @@ classification_report_avg(test_labels, Y_predicted)
 </div>
 
 <p>The model trained on the fulltext is slightly better, but the training time is way much longer. A tuning on the length of the partial text could be explored with both tf-idf and BERT.</p>
+
+<h1 id="final-thoughts">Final thoughts</h1>
+
+<p>Comparing to the early naive model described in the previous post, we had much improment by stratified sampling, simple training set augmentation, and especially filter out rare tags.</p>
+
+<p>When comparing the using of embedding/encoding between BERT-Mini and tf-idf, one had better recall and the other had better precision, which is reasonable. tf-idf is mainly capturing those key terms, but not able to understand the semantic meaning of the text. That&rsquo;s why it had high precision if certain keywords are mentioned in the text, but low recall if when some tags are hiding behind the semantic mearning of the text. While BERT is powerful to capture some semantic meaning of the text, that leads to higher recall.</p>
+
+<p>Given that we have only a very small dataset used for the training, we certainly can have further improvement by using external dataset (the questions and answers from Stack Overflow is an ideal source) and adding additional tokens to BERT&rsquo;s vocabulary (technica articles is somehow a slightly different domain area that has dfferent terms and language usage comparing).</p>
 
     </div>
 

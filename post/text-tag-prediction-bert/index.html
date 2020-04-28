@@ -1399,20 +1399,7 @@ tokenizer.save_vocabulary(output_dir)
 
 <p>Now let&rsquo;s use the fine-tuned model to get the embeddings for the same SVM classification.</p>
 
-<pre><code>col_text = 'description'
-ds_param = dict(from_batch_cache='info', lan='en',
-                concate_title=True,
-                filter_tags_threshold=20)
-ds = dataset.ds_info_tags(**ds_param)
-
-test_size = 0.3
-train_features, test_features, train_labels, test_labels = multilearn_iterative_train_test_split(
-    ds.data, ds.target, test_size=test_size, cols=ds.data.columns)
-
-train_features, train_labels = dataset.augmented_samples(
-    train_features, train_labels, level=2, crop_ratio=0.1)
-
-batch_size = 128
+<pre><code>batch_size = 128
 model_name = output_dir
 
 train_features, test_features = bert_transform(

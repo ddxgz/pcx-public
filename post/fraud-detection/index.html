@@ -83,7 +83,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.5ac49d52d669340d29cb50b00bb7867f.css">
+  <link rel="stylesheet" href="/css/academic.min.3f344b41a854a4e86bdc347bbce3b34a.css">
 
   
 
@@ -457,7 +457,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    22 min read
+    18 min read
   </span>
   
 
@@ -498,20 +498,12 @@
   <div class="article-container">
 
     <div class="article-style">
-      
-
-<h1 id="introduction">Introduction</h1>
-
+      <h1 id="introduction">Introduction</h1>
 <p>This is a brief walk through of the Kaggle challenge IEEE-CIS Fraud Detection. The process in this post is not meant to compete the top solution by performing an extre feature engineering and a greedy search for the best model with hyper-parameters. This is just to walk through the problem and demonstrate a relatively good solution, by doing feature analysis and a few experiments with reference to other&rsquo;s methods.</p>
-
-<p>The problem of this challenge is to detect payment frauds by using the data of the transactions and identities. The performance of the prediction is evaluated on <em>ROC AUC</em>. The reason why this measure is suitable for this problem (rather than Precision-Recall) can refer to the discussion <a href="https://www.kaggle.com/c/ieee-fraud-detection/discussion/99982" target="_blank">here</a>.</p>
-
+<p>The problem of this challenge is to detect payment frauds by using the data of the transactions and identities. The performance of the prediction is evaluated on <em>ROC AUC</em>. The reason why this measure is suitable for this problem (rather than Precision-Recall) can refer to the discussion <a href="https://www.kaggle.com/c/ieee-fraud-detection/discussion/99982">here</a>.</p>
 <h1 id="look-into-the-data">Look into the data</h1>
-
 <p>The provided dataset is broken into two files named <code>identity</code> and <code>transaction</code>, which are joined by <code>TransactionID</code> (note that NOT all the transactions have corresponding identity information).</p>
-
 <h3 id="transaction-table">Transaction Table</h3>
-
 <ul>
 <li>TransactionDT: timedelta from a given reference datetime (not an actual
 timestamp),  the number of seconds in a day (60 * 60 * 24 = 86400)</li>
@@ -526,30 +518,26 @@ timestamp),  the number of seconds in a day (60 * 60 * 24 = 86400)</li>
 <li>M1-M9: match, such as names on card and address, etc.</li>
 <li>Vxxx: Vesta engineered rich features, including ranking, counting, and other entity relations.</li>
 </ul>
-
-<p>Among these variables, categorical variables are:
-   - ProductCD
-   - card1 - card6
-   - addr1, addr2
-   - Pemaildomain Remaildomain
-   - M1 - M9</p>
-
+<p>Among these variables, categorical variables are:</p>
+<ul>
+<li>ProductCD</li>
+<li>card1 - card6</li>
+<li>addr1, addr2</li>
+<li>Pemaildomain Remaildomain</li>
+<li>M1 - M9</li>
+</ul>
 <h3 id="identity-table">Identity Table</h3>
-
-<p>All the variable in this table are categorical:
-   - DeviceType
-   - DeviceInfo
-   - id12 - id38</p>
-
-<p>A more detailed explanation of the data can be found in the reply of <a href="https://www.kaggle.com/c/ieee-fraud-detection/discussion/101203" target="_blank">this discussion</a>.</p>
-
+<p>All the variable in this table are categorical:</p>
+<ul>
+<li>DeviceType</li>
+<li>DeviceInfo</li>
+<li>id12 - id38</li>
+</ul>
+<p>A more detailed explanation of the data can be found in the reply of <a href="https://www.kaggle.com/c/ieee-fraud-detection/discussion/101203">this discussion</a>.</p>
 <p>Now let&rsquo;s have a close look at the data.</p>
-
 <pre><code>from IPython.core.interactiveshell import InteractiveShell
 InteractiveShell.ast_node_interactivity = &quot;all&quot;
-</code></pre>
-
-<pre><code>import numpy as np
+</code></pre><pre><code>import numpy as np
 import pandas as pd
 import plotly.express as px
 
@@ -563,9 +551,7 @@ tran_train.info()
 tran_train.head()
 id_train.info()
 id_train.head()
-</code></pre>
-
-<pre><code>Mem. usage decreased to 542.35 Mb (69.4% reduction)
+</code></pre><pre><code>Mem. usage decreased to 542.35 Mb (69.4% reduction)
 Mem. usage decreased to 25.86 Mb (42.7% reduction)
 &lt;class 'pandas.core.frame.DataFrame'&gt;
 RangeIndex: 590540 entries, 0 to 590539
@@ -573,534 +559,17 @@ Columns: 394 entries, TransactionID to V339
 dtypes: float16(332), float32(44), int16(1), int32(2), int8(1), object(14)
 memory usage: 542.3+ MB
 </code></pre>
+<!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>TransactionID</th>
-      <th>isFraud</th>
-      <th>TransactionDT</th>
-      <th>TransactionAmt</th>
-      <th>ProductCD</th>
-      <th>card1</th>
-      <th>card2</th>
-      <th>card3</th>
-      <th>card4</th>
-      <th>card5</th>
-      <th>card6</th>
-      <th>addr1</th>
-      <th>addr2</th>
-      <th>dist1</th>
-      <th>dist2</th>
-      <th>P_emaildomain</th>
-      <th>R_emaildomain</th>
-      <th>C1</th>
-      <th>C2</th>
-      <th>C3</th>
-      <th>C4</th>
-      <th>C5</th>
-      <th>C6</th>
-      <th>C7</th>
-      <th>C8</th>
-      <th>C9</th>
-      <th>C10</th>
-      <th>C11</th>
-      <th>C12</th>
-      <th>C13</th>
-      <th>C14</th>
-      <th>D1</th>
-      <th>D2</th>
-      <th>D3</th>
-      <th>D4</th>
-      <th>D5</th>
-      <th>D6</th>
-      <th>D7</th>
-      <th>D8</th>
-      <th>D9</th>
-      <th>...</th>
-      <th>V300</th>
-      <th>V301</th>
-      <th>V302</th>
-      <th>V303</th>
-      <th>V304</th>
-      <th>V305</th>
-      <th>V306</th>
-      <th>V307</th>
-      <th>V308</th>
-      <th>V309</th>
-      <th>V310</th>
-      <th>V311</th>
-      <th>V312</th>
-      <th>V313</th>
-      <th>V314</th>
-      <th>V315</th>
-      <th>V316</th>
-      <th>V317</th>
-      <th>V318</th>
-      <th>V319</th>
-      <th>V320</th>
-      <th>V321</th>
-      <th>V322</th>
-      <th>V323</th>
-      <th>V324</th>
-      <th>V325</th>
-      <th>V326</th>
-      <th>V327</th>
-      <th>V328</th>
-      <th>V329</th>
-      <th>V330</th>
-      <th>V331</th>
-      <th>V332</th>
-      <th>V333</th>
-      <th>V334</th>
-      <th>V335</th>
-      <th>V336</th>
-      <th>V337</th>
-      <th>V338</th>
-      <th>V339</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>2987000</td>
-      <td>0</td>
-      <td>86400</td>
-      <td>68.5</td>
-      <td>W</td>
-      <td>13926</td>
-      <td>NaN</td>
-      <td>150.0</td>
-      <td>discover</td>
-      <td>142.0</td>
-      <td>credit</td>
-      <td>315.0</td>
-      <td>87.0</td>
-      <td>19.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>2.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>14.0</td>
-      <td>NaN</td>
-      <td>13.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>117.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>117.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>2987001</td>
-      <td>0</td>
-      <td>86401</td>
-      <td>29.0</td>
-      <td>W</td>
-      <td>2755</td>
-      <td>404.0</td>
-      <td>150.0</td>
-      <td>mastercard</td>
-      <td>102.0</td>
-      <td>credit</td>
-      <td>325.0</td>
-      <td>87.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>gmail.com</td>
-      <td>NaN</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2987002</td>
-      <td>0</td>
-      <td>86469</td>
-      <td>59.0</td>
-      <td>W</td>
-      <td>4663</td>
-      <td>490.0</td>
-      <td>150.0</td>
-      <td>visa</td>
-      <td>166.0</td>
-      <td>debit</td>
-      <td>330.0</td>
-      <td>87.0</td>
-      <td>287.0</td>
-      <td>NaN</td>
-      <td>outlook.com</td>
-      <td>NaN</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>2987003</td>
-      <td>0</td>
-      <td>86499</td>
-      <td>50.0</td>
-      <td>W</td>
-      <td>18132</td>
-      <td>567.0</td>
-      <td>150.0</td>
-      <td>mastercard</td>
-      <td>117.0</td>
-      <td>debit</td>
-      <td>476.0</td>
-      <td>87.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>yahoo.com</td>
-      <td>NaN</td>
-      <td>2.0</td>
-      <td>5.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>4.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>25.0</td>
-      <td>1.0</td>
-      <td>112.0</td>
-      <td>112.0</td>
-      <td>0.0</td>
-      <td>94.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>50.0</td>
-      <td>1758.0</td>
-      <td>925.0</td>
-      <td>0.0</td>
-      <td>354.0</td>
-      <td>0.0</td>
-      <td>135.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>50.0</td>
-      <td>1404.0</td>
-      <td>790.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>2987004</td>
-      <td>0</td>
-      <td>86506</td>
-      <td>50.0</td>
-      <td>H</td>
-      <td>4497</td>
-      <td>514.0</td>
-      <td>150.0</td>
-      <td>mastercard</td>
-      <td>102.0</td>
-      <td>credit</td>
-      <td>420.0</td>
-      <td>87.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>gmail.com</td>
-      <td>NaN</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>...</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-    </tr>
-  </tbody>
-</table>
-<p>5 rows × 394 columns</p>
-</div>
-
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <pre><code>&lt;class 'pandas.core.frame.DataFrame'&gt;
 RangeIndex: 144233 entries, 0 to 144232
 Data columns (total 41 columns):
@@ -1148,293 +617,17 @@ DeviceInfo       118666 non-null object
 dtypes: float16(22), float32(1), int32(1), object(17)
 memory usage: 25.9+ MB
 </code></pre>
+<!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>TransactionID</th>
-      <th>id_01</th>
-      <th>id_02</th>
-      <th>id_03</th>
-      <th>id_04</th>
-      <th>id_05</th>
-      <th>id_06</th>
-      <th>id_07</th>
-      <th>id_08</th>
-      <th>id_09</th>
-      <th>id_10</th>
-      <th>id_11</th>
-      <th>id_12</th>
-      <th>id_13</th>
-      <th>id_14</th>
-      <th>id_15</th>
-      <th>id_16</th>
-      <th>id_17</th>
-      <th>id_18</th>
-      <th>id_19</th>
-      <th>id_20</th>
-      <th>id_21</th>
-      <th>id_22</th>
-      <th>id_23</th>
-      <th>id_24</th>
-      <th>id_25</th>
-      <th>id_26</th>
-      <th>id_27</th>
-      <th>id_28</th>
-      <th>id_29</th>
-      <th>id_30</th>
-      <th>id_31</th>
-      <th>id_32</th>
-      <th>id_33</th>
-      <th>id_34</th>
-      <th>id_35</th>
-      <th>id_36</th>
-      <th>id_37</th>
-      <th>id_38</th>
-      <th>DeviceType</th>
-      <th>DeviceInfo</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>0</th>
-      <td>2987004</td>
-      <td>0.0</td>
-      <td>70787.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>100.0</td>
-      <td>NotFound</td>
-      <td>NaN</td>
-      <td>-480.0</td>
-      <td>New</td>
-      <td>NotFound</td>
-      <td>166.0</td>
-      <td>NaN</td>
-      <td>542.0</td>
-      <td>144.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>New</td>
-      <td>NotFound</td>
-      <td>Android 7.0</td>
-      <td>samsung browser 6.2</td>
-      <td>32.0</td>
-      <td>2220x1080</td>
-      <td>match_status:2</td>
-      <td>T</td>
-      <td>F</td>
-      <td>T</td>
-      <td>T</td>
-      <td>mobile</td>
-      <td>SAMSUNG SM-G892A Build/NRD90M</td>
-    </tr>
-    <tr>
-      <th>1</th>
-      <td>2987008</td>
-      <td>-5.0</td>
-      <td>98945.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>-5.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>100.0</td>
-      <td>NotFound</td>
-      <td>49.0</td>
-      <td>-300.0</td>
-      <td>New</td>
-      <td>NotFound</td>
-      <td>166.0</td>
-      <td>NaN</td>
-      <td>621.0</td>
-      <td>500.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>New</td>
-      <td>NotFound</td>
-      <td>iOS 11.1.2</td>
-      <td>mobile safari 11.0</td>
-      <td>32.0</td>
-      <td>1334x750</td>
-      <td>match_status:1</td>
-      <td>T</td>
-      <td>F</td>
-      <td>F</td>
-      <td>T</td>
-      <td>mobile</td>
-      <td>iOS Device</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>2987010</td>
-      <td>-5.0</td>
-      <td>191631.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>100.0</td>
-      <td>NotFound</td>
-      <td>52.0</td>
-      <td>NaN</td>
-      <td>Found</td>
-      <td>Found</td>
-      <td>121.0</td>
-      <td>NaN</td>
-      <td>410.0</td>
-      <td>142.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>Found</td>
-      <td>Found</td>
-      <td>NaN</td>
-      <td>chrome 62.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>F</td>
-      <td>F</td>
-      <td>T</td>
-      <td>T</td>
-      <td>desktop</td>
-      <td>Windows</td>
-    </tr>
-    <tr>
-      <th>3</th>
-      <td>2987011</td>
-      <td>-5.0</td>
-      <td>221832.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>-6.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>100.0</td>
-      <td>NotFound</td>
-      <td>52.0</td>
-      <td>NaN</td>
-      <td>New</td>
-      <td>NotFound</td>
-      <td>225.0</td>
-      <td>NaN</td>
-      <td>176.0</td>
-      <td>507.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>New</td>
-      <td>NotFound</td>
-      <td>NaN</td>
-      <td>chrome 62.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>F</td>
-      <td>F</td>
-      <td>T</td>
-      <td>T</td>
-      <td>desktop</td>
-      <td>NaN</td>
-    </tr>
-    <tr>
-      <th>4</th>
-      <td>2987016</td>
-      <td>0.0</td>
-      <td>7460.0</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>1.0</td>
-      <td>0.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>0.0</td>
-      <td>0.0</td>
-      <td>100.0</td>
-      <td>NotFound</td>
-      <td>NaN</td>
-      <td>-300.0</td>
-      <td>Found</td>
-      <td>Found</td>
-      <td>166.0</td>
-      <td>15.0</td>
-      <td>529.0</td>
-      <td>575.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>Found</td>
-      <td>Found</td>
-      <td>Mac OS X 10_11_6</td>
-      <td>chrome 62.0</td>
-      <td>24.0</td>
-      <td>1280x800</td>
-      <td>match_status:2</td>
-      <td>T</td>
-      <td>F</td>
-      <td>T</td>
-      <td>T</td>
-      <td>desktop</td>
-      <td>MacOS</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <pre><code>is_fraud = tran_train[['isFraud', 'TransactionID']].groupby('isFraud').count()
 
 is_fraud['ratio'] = is_fraud['TransactionID'] / is_fraud['TransactionID'].sum()
@@ -1444,8 +637,6 @@ fig_Y = px.bar(is_fraud, x=is_fraud.index, y='TransactionID',
                        'x': 'is fraud'})
 fig_Y.update_traces(texttemplate='%{text:.6p}')
 </code></pre>
-
-
 
 <html>
 <head><meta charset="utf-8" /></head>
@@ -1497,19 +688,12 @@ if (outputEl) {{
 </body>
 </html>
 
-
 <h2 id="very-imbalanced-target-varible">Very imbalanced target varible</h2>
-
 <p>Positives of <code>isFraud</code> is very low of 3.5% in the entire dataset. For this classification problem, it&rsquo;s very important to have high true positive rate. That is, how good can the model identify the fraud cases from all the fraud cases. So recall is in a sense more important than precision in this problem. Macro average of recall would be a good side metric for this problem. Of cource, in reality we need to consider the belance between the cost of a few frauds and the cost of handling cases.</p>
-
 <p>In addition, we need to put some effort on the sampling and train-val split method, to ensure that the minority class samples have enough impact to the model while training. Class weights of the model could be set to see if there&rsquo;s difference in performance.</p>
-
 <h2 id="check-missing-values">Check missing values</h2>
-
 <p>Now let&rsquo;s have a look at if there&rsquo;s any missing value in the dataset. We can see from the table below that there&rsquo;re quite a lot of missing values.</p>
-
 <p>It&rsquo;s hard to tell how we should handle with them before we look into each variable. Sometimes a missing value stands for something. It also depends on what kind of model we are going to use. We can leave them as missing value when using a tree model.</p>
-
 <pre><code>def missing_ratio_col(df):
     df_na = (df.isna().sum() / len(df)) * 100
     if isinstance(df, pd.DataFrame):
@@ -1525,268 +709,37 @@ if (outputEl) {{
 
 missing_ratio_col(tran_train)
 missing_ratio_col(id_train)
+</code></pre><!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
+
+.dataframe thead th {
+    text-align: right;
+}
 </code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Missing Ratio %</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>dist2</th>
-      <td>93.628374</td>
-    </tr>
-    <tr>
-      <th>D7</th>
-      <td>93.409930</td>
-    </tr>
-    <tr>
-      <th>D13</th>
-      <td>89.509263</td>
-    </tr>
-    <tr>
-      <th>D14</th>
-      <td>89.469469</td>
-    </tr>
-    <tr>
-      <th>D12</th>
-      <td>89.041047</td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td>...</td>
-    </tr>
-    <tr>
-      <th>V307</th>
-      <td>0.002032</td>
-    </tr>
-    <tr>
-      <th>V299</th>
-      <td>0.002032</td>
-    </tr>
-    <tr>
-      <th>V309</th>
-      <td>0.002032</td>
-    </tr>
-    <tr>
-      <th>V310</th>
-      <td>0.002032</td>
-    </tr>
-    <tr>
-      <th>V308</th>
-      <td>0.002032</td>
-    </tr>
-  </tbody>
-</table>
-<p>374 rows × 1 columns</p>
-</div>
-
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>Missing Ratio %</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>id_24</th>
-      <td>96.708798</td>
-    </tr>
-    <tr>
-      <th>id_25</th>
-      <td>96.441868</td>
-    </tr>
-    <tr>
-      <th>id_07</th>
-      <td>96.425922</td>
-    </tr>
-    <tr>
-      <th>id_08</th>
-      <td>96.425922</td>
-    </tr>
-    <tr>
-      <th>id_21</th>
-      <td>96.423149</td>
-    </tr>
-    <tr>
-      <th>id_26</th>
-      <td>96.420375</td>
-    </tr>
-    <tr>
-      <th>id_27</th>
-      <td>96.416215</td>
-    </tr>
-    <tr>
-      <th>id_23</th>
-      <td>96.416215</td>
-    </tr>
-    <tr>
-      <th>id_22</th>
-      <td>96.416215</td>
-    </tr>
-    <tr>
-      <th>id_18</th>
-      <td>68.722137</td>
-    </tr>
-    <tr>
-      <th>id_04</th>
-      <td>54.016071</td>
-    </tr>
-    <tr>
-      <th>id_03</th>
-      <td>54.016071</td>
-    </tr>
-    <tr>
-      <th>id_33</th>
-      <td>49.187079</td>
-    </tr>
-    <tr>
-      <th>id_10</th>
-      <td>48.052110</td>
-    </tr>
-    <tr>
-      <th>id_09</th>
-      <td>48.052110</td>
-    </tr>
-    <tr>
-      <th>id_30</th>
-      <td>46.222432</td>
-    </tr>
-    <tr>
-      <th>id_32</th>
-      <td>46.207872</td>
-    </tr>
-    <tr>
-      <th>id_34</th>
-      <td>46.056034</td>
-    </tr>
-    <tr>
-      <th>id_14</th>
-      <td>44.503685</td>
-    </tr>
-    <tr>
-      <th>DeviceInfo</th>
-      <td>17.726179</td>
-    </tr>
-    <tr>
-      <th>id_13</th>
-      <td>11.726165</td>
-    </tr>
-    <tr>
-      <th>id_16</th>
-      <td>10.325654</td>
-    </tr>
-    <tr>
-      <th>id_05</th>
-      <td>5.108401</td>
-    </tr>
-    <tr>
-      <th>id_06</th>
-      <td>5.108401</td>
-    </tr>
-    <tr>
-      <th>id_20</th>
-      <td>3.447200</td>
-    </tr>
-    <tr>
-      <th>id_19</th>
-      <td>3.407681</td>
-    </tr>
-    <tr>
-      <th>id_17</th>
-      <td>3.372321</td>
-    </tr>
-    <tr>
-      <th>id_31</th>
-      <td>2.739318</td>
-    </tr>
-    <tr>
-      <th>DeviceType</th>
-      <td>2.373243</td>
-    </tr>
-    <tr>
-      <th>id_02</th>
-      <td>2.330257</td>
-    </tr>
-    <tr>
-      <th>id_11</th>
-      <td>2.256765</td>
-    </tr>
-    <tr>
-      <th>id_28</th>
-      <td>2.256765</td>
-    </tr>
-    <tr>
-      <th>id_29</th>
-      <td>2.256765</td>
-    </tr>
-    <tr>
-      <th>id_35</th>
-      <td>2.251912</td>
-    </tr>
-    <tr>
-      <th>id_36</th>
-      <td>2.251912</td>
-    </tr>
-    <tr>
-      <th>id_15</th>
-      <td>2.251912</td>
-    </tr>
-    <tr>
-      <th>id_37</th>
-      <td>2.251912</td>
-    </tr>
-    <tr>
-      <th>id_38</th>
-      <td>2.251912</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <h2 id="detailed-look-at-each-variable">Detailed look at each variable</h2>
-
-<p>There&rsquo;re very good references of EDA and feature engineering on the dataset, so it&rsquo;s meaningless to repeat here. Please check the list here if you&rsquo;re interested:
-- <a href="https://www.kaggle.com/c/ieee-fraud-detection/discussion/108575" target="_blank">Feature Engineering Techniques</a>
-- <a href="https://www.kaggle.com/cdeotte/eda-for-columns-v-and-id#EDA-for-Columns-V-and-ID" target="_blank">EDA for Columns V and ID</a>
-- <a href="https://www.kaggle.com/cdeotte/xgb-fraud-with-magic-0-9600#Feature-Engineering" target="_blank">XGB Fraud with Magic scores LB 0.96</a></p>
-
+<p>There&rsquo;re very good references of EDA and feature engineering on the dataset, so it&rsquo;s meaningless to repeat here. Please check the list here if you&rsquo;re interested:</p>
+<ul>
+<li><a href="https://www.kaggle.com/c/ieee-fraud-detection/discussion/108575">Feature Engineering Techniques</a></li>
+<li><a href="https://www.kaggle.com/cdeotte/eda-for-columns-v-and-id#EDA-for-Columns-V-and-ID">EDA for Columns V and ID</a></li>
+<li><a href="https://www.kaggle.com/cdeotte/xgb-fraud-with-magic-0-9600#Feature-Engineering">XGB Fraud with Magic scores LB 0.96</a></li>
+</ul>
 <h1 id="data-transformation-pipeline">Data transformation pipeline</h1>
-
 <p>Based on the references and my own analysis, here we have a pipeline of the transformations to perform on the dataset. It can be adjusted for experimenting. Explanation of the transformations see in code comments.</p>
-
 <pre><code>import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -2070,9 +1023,7 @@ class AggregateEncoder(TransformerMixin, BaseEstimator):
                     if self.fill_na:
                         df[col_new].fillna(-1, inplace=True)
         return df
-</code></pre>
-
-<pre><code>from sklearn.pipeline import Pipeline
+</code></pre><pre><code>from sklearn.pipeline import Pipeline
 
 pipe = Pipeline(steps=[
     # Based on feature engineering from 
@@ -2106,14 +1057,9 @@ pipe = Pipeline(steps=[
     # ('onehot_enc', DummyEncoder()),
     ('label_enc', MyLabelEncoder()),
 ])
-</code></pre>
-
-<h3 id="split-dataset">Split dataset</h3>
-
+</code></pre><h3 id="split-dataset">Split dataset</h3>
 <p>And as we want to predict future payment fraud based on the past data, so we should not shuffle the dataset when split training and testing sets, but just time-based split.</p>
-
 <p>As this is a imbalanced dataset with 1 class of the target variable have only about 3.5%, so we may want to try sampling methods like over-sampling or SMOTE sampling on the training dataset.</p>
-
 <pre><code>RAND_STATE = 20200119
 
 def data_split_v1(X: pd.DataFrame, y: pd.Series):
@@ -2145,14 +1091,9 @@ def data_split_smoteenn_v1(X: pd.DataFrame, y: pd.Series):
     X_train, y_train = ros.fit_resample(X_train, y_train)
 
     return X_train, X_val, y_train, y_val
-</code></pre>
-
-<h1 id="experiments">Experiments</h1>
-
+</code></pre><h1 id="experiments">Experiments</h1>
 <p>Now let&rsquo;s start play with experimenting with simple models like Logistic Regression, or complex models like Gradient Boosting.</p>
-
 <p>Here below is a scaffold for performing experiments.</p>
-
 <pre><code>import os
 from datetime import datetime
 import json
@@ -2234,25 +1175,17 @@ class Experiment:
         with open(f'{EXP_DIR}/exp_{save_time}_{self.last_roc_auc:.4f}.json', 'w') as f:
             json.dump(result, f, indent=4)
 
-</code></pre>
-
-<pre><code>import gc
+</code></pre><pre><code>import gc
 
 
 del tran_train, id_train
 gc.collect()
 
 df_train = load_df()
+</code></pre><pre><code>df_train = load_df()
+</code></pre><pre><code>Mem. usage decreased to 650.48 Mb (66.8% reduction)
 </code></pre>
-
-<pre><code>df_train = load_df()
-</code></pre>
-
-<pre><code>Mem. usage decreased to 650.48 Mb (66.8% reduction)
-</code></pre>
-
 <h2 id="logistic-regression-as-baseline">Logistic Regression as baseline</h2>
-
 <pre><code>def exp1():
     from sklearn.linear_model import LogisticRegression
 
@@ -2285,9 +1218,7 @@ df_train = load_df()
     exp.run(df_train=df_train)
 
 exp1()
-</code></pre>
-
-<pre><code>/usr/local/lib/python3.6/dist-packages/sklearn/linear_model/_logistic.py:940: ConvergenceWarning:
+</code></pre><pre><code>/usr/local/lib/python3.6/dist-packages/sklearn/linear_model/_logistic.py:940: ConvergenceWarning:
 
 lbfgs failed to converge (status=1):
 STOP: TOTAL NO. of ITERATIONS REACHED LIMIT.
@@ -2313,11 +1244,8 @@ Please also refer to the documentation for alternative solver options:
                      'drop_cols_basic',
                      'label_enc']}
 </code></pre>
-
 <h2 id="gradient-boosting-with-lightgbm">Gradient Boosting with LightGBM</h2>
-
 <p>Now let&rsquo;s try a Gradient Boosting tree model using the LightGBM implementation, and tune a little on the hyper-parameters to make it a more complex model.</p>
-
 <pre><code>import lightgbm as lgb
 
 
@@ -2393,9 +1321,7 @@ def exp2():
 
 
 exp2()
-</code></pre>
-
-<pre><code>/usr/local/lib/python3.6/dist-packages/lightgbm/engine.py:118: UserWarning:
+</code></pre><pre><code>/usr/local/lib/python3.6/dist-packages/lightgbm/engine.py:118: UserWarning:
 
 Found `n_estimators` in params. Will use it instead of argument
 
@@ -2428,9 +1354,7 @@ Found `n_estimators` in params. Will use it instead of argument
                      'fillna_negative',
                      'label_enc']}
 </code></pre>
-
 <p>So we got local validation ROC AUC of about 0.9196, this is a looks OK score.</p>
-
 <p>This model&rsquo;s prediction on the test dataset got 0.9398 on publica leader board, and 0.9058 on private leader board. These scores have a somehow big gap to the top scores, but still good enough as there&rsquo;re potentially many ways for improvement. For example, more different ways of transformations and engineering could be performed on the features, try model implementation like CatBoost and XGB, and search for better hyper-parameters. But it assumes you have plenty of computation resource and time.</p>
 
     </div>

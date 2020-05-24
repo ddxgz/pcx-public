@@ -5,7 +5,7 @@
     <link>https://pcx.linkedinfo.co/project/</link>
       <atom:link href="https://pcx.linkedinfo.co/project/index.xml" rel="self" type="application/rss+xml" />
     <description>Projects</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Fri, 07 Feb 2020 19:51:26 +0100</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Sun, 24 May 2020 20:35:01 +0200</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>Projects</title>
@@ -18,7 +18,6 @@
       <pubDate>Sun, 27 Jan 2019 11:17:54 +0100</pubDate>
       <guid>https://pcx.linkedinfo.co/project/linkedinfo/</guid>
       <description>&lt;p&gt;The Web should be an open web. All the informations published on the Web are meant to be shared, share through links by search engines, rss, social networks, etc. This site is yet another method that tries to link all the informations (but starts with only technical articles on LinkedInfo) and share them.&lt;/p&gt;
-
 &lt;p&gt;The original idea of this side project is to utilize Semantic Web technologies and Machine learning to link the informations. Noble ambition shall start from basic, it needs to be improved little by little.&lt;/p&gt;
 </description>
     </item>
@@ -29,6 +28,15 @@
       <pubDate>Sat, 04 Jan 2020 19:22:26 +0100</pubDate>
       <guid>https://pcx.linkedinfo.co/project/topic-tag-predictor/</guid>
       <description>&lt;p&gt;A topic tag prediction service for technical articles. The model uses a pre-trained BERT and fine-tuned on the dataset of LinkedInfo.co.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>XGBoost Swift</title>
+      <link>https://pcx.linkedinfo.co/project/xgboost-swift/</link>
+      <pubDate>Sun, 24 May 2020 20:35:01 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/project/xgboost-swift/</guid>
+      <description>&lt;p&gt;The first Swift interface for &lt;a href=&#34;https://github.com/dmlc/xgboost&#34;&gt;XGBoost&lt;/a&gt;, which is an optimized distributed gradient boosting library implements Machine Learning algorithms under Gradient Boosting framework.&lt;/p&gt;
 </description>
     </item>
     

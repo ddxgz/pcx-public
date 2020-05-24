@@ -83,7 +83,7 @@
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.5ac49d52d669340d29cb50b00bb7867f.css">
+  <link rel="stylesheet" href="/css/academic.min.3f344b41a854a4e86bdc347bbce3b34a.css">
 
   
 
@@ -570,9 +570,9 @@ In this snippet, we will use <code class="verbatim">OneVsRestClassifier</code> (
 </li>
 </ul>
 </nav>
-<h2 id="preprocessing-data-and-explore-the-method">
+<h3 id="preprocessing-data-and-explore-the-method">
 Preprocessing data and explore the method
-</h2>
+</h3>
 <p>
 <code class="verbatim">dataset.df_tags</code> fetches the data set from <a href="https://linkedinfo.co">LinkedInfo.co</a>. It calls Web API of LinkedInfo.co to retrieve the article list, and then download and extract the full text of each article based on an article&#39;s url. The tags of each article are encoded using <code class="verbatim">MultiLabelBinarizer</code> in scikit-learn. The implementation of the code could be found in <a href="https://github.com/ddxgz/linkedinfo-ml-models/blob/master/dataset.py">dataset.py</a>. We&#39;ve set the parameter of <code class="verbatim">content_length_threshold</code> to 100 to screen out the articles with less than 100 for the description or full text.
 </p>
@@ -770,25 +770,25 @@ test_transformed <span style="color:#f92672">=</span> mlb<span style="color:#f92
     <span style="color:#66d9ef">print</span>(f<span style="color:#e6db74">&#39;tags: {t} predicted as: {p}&#39;</span>)</code></pre></div>
 </div>
 <pre class="example">
-tags: ('javascript',) predicted as: ('javascript',)
-tags: ('erasure-code', 'storage') predicted as: ()
-tags: ('mysql', 'network') predicted as: ()
-tags: ('token',) predicted as: ()
-tags: ('flask', 'python', 'web') predicted as: ()
-tags: ('refactoring',) predicted as: ()
-tags: ('emacs',) predicted as: ()
-tags: ('async', 'javascript', 'promises') predicted as: ('async', 'javascript')
-tags: ('neural-networks',) predicted as: ()
-tags: ('kubernetes',) predicted as: ('kubernetes',)
+tags: (&#39;javascript&#39;,) predicted as: (&#39;javascript&#39;,)
+tags: (&#39;erasure-code&#39;, &#39;storage&#39;) predicted as: ()
+tags: (&#39;mysql&#39;, &#39;network&#39;) predicted as: ()
+tags: (&#39;token&#39;,) predicted as: ()
+tags: (&#39;flask&#39;, &#39;python&#39;, &#39;web&#39;) predicted as: ()
+tags: (&#39;refactoring&#39;,) predicted as: ()
+tags: (&#39;emacs&#39;,) predicted as: ()
+tags: (&#39;async&#39;, &#39;javascript&#39;, &#39;promises&#39;) predicted as: (&#39;async&#39;, &#39;javascript&#39;)
+tags: (&#39;neural-networks&#39;,) predicted as: ()
+tags: (&#39;kubernetes&#39;,) predicted as: (&#39;kubernetes&#39;,)
 </pre>
 <p>
 Though not very satisfied, this classifier predicted right a few tags.
 Next we&#39;ll try to search for the best parameters for the classifier and
 train with fulltext of articles.
 </p>
-<h2 id="search-for-best-model-parameters-for-svm-with-linear-kernel">
+<h3 id="search-for-best-model-parameters-for-svm-with-linear-kernel">
 Search for best model parameters for SVM with linear kernel
-</h2>
+</h3>
 <p>
 For the estimators <code class="verbatim">TfidfVectorizer</code> and <code class="verbatim">LinearSVC</code>, they both have
 many parameters could be tuned for better performance. We&#39;ll the
@@ -927,9 +927,9 @@ Here we attach the top-5 performed classifiers with selected parameters.
     </tr>
   </tbody>
 </table>
-<h2 id="headline-3">
+<h3 id="headline-3">
 Training and testing with the best parameters
-</h2>
+</h3>
 <p>
 Based on the grid search results, we found the following parameters
 combined with the default parameters have the best performance. Now
@@ -1027,17 +1027,15 @@ Article title: How to use Docker for Node.js development
 Manual tags:  (&#39;docker&#39;, &#39;node.js&#39;)
 predicted as: (&#39;docker&#39;,)</code></pre></div>
 </div>
-<h2 id="headline-4">
+<h3 id="headline-4">
 A glance at the different evaluation metrics
-</h2>
+</h3>
 <p>
 Now let&#39;s have a look at the evaluation metrics on the prediction performance. Evaluating multi-label classification is very different from evaluating binary classification. There&#39;re quite many different evaluation methods for different situations in <a href="https://scikit-learn.org/stable/modules/model_evaluation.html">the model evaluation part of scikit-learn&#39;s documentation</a>. We will take a look at the ones that suit this problem.
 </p>
 <p>
 We can start with the <code class="verbatim">accuracy_score</code> function in <code class="verbatim">metrics</code> module. As mentioned in scikit-learn documentation, in multi-label classification, a subset accuracy is 1.0 when the entire set of predicted labels for a sample matches strictly with the true label set. The equation is simple like this:
 </p>
-<div class="export-block">
-$$\operatorname{accuracy}(y, \hat{y})=\frac{1}{n_{\text {samples }}} \sum_{i=0}^{n_{\text {minples }}-1} 1\left(\hat{y}_{i}=y_{i}\right)$$</div>
 <div class="src src-python">
 <div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-python" data-lang="python"><span style="color:#f92672">from</span> sklearn <span style="color:#f92672">import</span> metrics
 <span style="color:#f92672">import</span> matplotlib.pyplot <span style="color:#f92672">as</span> plt

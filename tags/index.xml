@@ -5,12 +5,44 @@
     <link>https://pcx.linkedinfo.co/tags/</link>
       <atom:link href="https://pcx.linkedinfo.co/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Thu, 13 Feb 2020 11:20:19 +0200</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Sun, 24 May 2020 20:35:01 +0200</lastBuildDate>
     <image>
       <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
       <title>Tags</title>
       <link>https://pcx.linkedinfo.co/tags/</link>
     </image>
+    
+    <item>
+      <title>Gradient Boosting</title>
+      <link>https://pcx.linkedinfo.co/tags/gradient-boosting/</link>
+      <pubDate>Sun, 24 May 2020 20:35:01 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/gradient-boosting/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Machine Learning</title>
+      <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
+      <pubDate>Sun, 24 May 2020 20:35:01 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/machine-learning/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Swift</title>
+      <link>https://pcx.linkedinfo.co/tags/swift/</link>
+      <pubDate>Sun, 24 May 2020 20:35:01 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/swift/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>XGBoost</title>
+      <link>https://pcx.linkedinfo.co/tags/xgboost/</link>
+      <pubDate>Sun, 24 May 2020 20:35:01 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/xgboost/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>BERT</title>
@@ -25,14 +57,6 @@
       <link>https://pcx.linkedinfo.co/tags/linkedinfo.co/</link>
       <pubDate>Thu, 13 Feb 2020 11:20:19 +0200</pubDate>
       <guid>https://pcx.linkedinfo.co/tags/linkedinfo.co/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Machine Learning</title>
-      <link>https://pcx.linkedinfo.co/tags/machine-learning/</link>
-      <pubDate>Thu, 13 Feb 2020 11:20:19 +0200</pubDate>
-      <guid>https://pcx.linkedinfo.co/tags/machine-learning/</guid>
       <description></description>
     </item>
     
@@ -141,6 +165,14 @@
     </item>
     
     <item>
+      <title>Web</title>
+      <link>https://pcx.linkedinfo.co/tags/web/</link>
+      <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/tags/web/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Web service</title>
       <link>https://pcx.linkedinfo.co/tags/web-service/</link>
       <pubDate>Mon, 01 Apr 2019 00:00:00 +0200</pubDate>
@@ -193,14 +225,6 @@
       <link>https://pcx.linkedinfo.co/tags/teamwork/</link>
       <pubDate>Tue, 01 Jan 2019 00:00:00 +0100</pubDate>
       <guid>https://pcx.linkedinfo.co/tags/teamwork/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Web</title>
-      <link>https://pcx.linkedinfo.co/tags/web/</link>
-      <pubDate>Wed, 10 Jan 2018 05:19:29 +0200</pubDate>
-      <guid>https://pcx.linkedinfo.co/tags/web/</guid>
       <description></description>
     </item>
     

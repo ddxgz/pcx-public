@@ -35,944 +35,402 @@
       <link>https://pcx.linkedinfo.co/post/skin-lesion-cls/</link>
       <pubDate>Mon, 02 Dec 2019 21:26:33 +0100</pubDate>
       <guid>https://pcx.linkedinfo.co/post/skin-lesion-cls/</guid>
-      <description>
-
-&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
-
+      <description>&lt;h1 id=&#34;introduction&#34;&gt;Introduction&lt;/h1&gt;
 &lt;p&gt;In this post we will show how to do skin lesion image classification with deep neural networks. It is an image classifier trained on the HAM10000 dataset, the same problem in the International Skin Imaging Collaboration (ISIC) 2018 challenge task3.&lt;/p&gt;
-
-&lt;p&gt;The solution in this post is mainly based on some web posts and methods from the &lt;a href=&#34;https://challenge2018.isic-archive.com/leaderboards/&#34; target=&#34;_blank&#34;&gt;ISIC2018 leadboard&lt;/a&gt;.&lt;/p&gt;
-
+&lt;p&gt;The solution in this post is mainly based on some web posts and methods from the &lt;a href=&#34;https://challenge2018.isic-archive.com/leaderboards/&#34;&gt;ISIC2018 leadboard&lt;/a&gt;.&lt;/p&gt;
 &lt;p&gt;The classification neural network model is tested with pretrained ResNet and DenseNet and implemented with PyTOrch. The model with the highest mean of recalls (0.9369 on 20% test set) is a ensemble of ImageNet pretrained and fine-tuned DenseNet161 + ResNet152.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Confusion matrix of the mdoel with the best recall&lt;/span&gt;
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; IPython.display &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; Image
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Confusion matrix of the mdoel with the best recall
-from IPython.display import Image
-
-Image(&#39;test_results/ensemble_dense161_6_res152_4_lesion/confusion_matrix.png&#39;, width=900)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_1_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
+Image(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;test_results/ensemble_dense161_6_res152_4_lesion/confusion_matrix.png&amp;#39;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;900&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_1_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Here below we go through the process how I worked on this problem.&lt;/p&gt;
-
 &lt;h1 id=&#34;a-look-at-the-data&#34;&gt;A look at the data&lt;/h1&gt;
-
 &lt;p&gt;Before diving into the models and metrics, we need to firstly have a look at the dataset.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; pandas &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; pd
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import pandas as pd
+df &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;read_csv(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;data/HAM10000_metadata.csv&amp;#39;&lt;/span&gt;, index_col&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;image_id&amp;#39;&lt;/span&gt;)
+df&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;head()
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-df = pd.read_csv(&#39;data/HAM10000_metadata.csv&#39;, index_col=&#39;image_id&#39;)
-df.head()
+.dataframe thead th {
+    text-align: right;
+}
 &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; seaborn &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; sns
 
-&lt;div&gt;
-&lt;style scoped&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
-  &lt;thead&gt;
-    &lt;tr style=&#34;text-align: right;&#34;&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;lesion_id&lt;/th&gt;
-      &lt;th&gt;dx&lt;/th&gt;
-      &lt;th&gt;dx_type&lt;/th&gt;
-      &lt;th&gt;age&lt;/th&gt;
-      &lt;th&gt;sex&lt;/th&gt;
-      &lt;th&gt;localization&lt;/th&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;image_id&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0027419&lt;/th&gt;
-      &lt;td&gt;HAM_0000118&lt;/td&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;80.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;scalp&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0025030&lt;/th&gt;
-      &lt;td&gt;HAM_0000118&lt;/td&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;80.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;scalp&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0026769&lt;/th&gt;
-      &lt;td&gt;HAM_0002730&lt;/td&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;80.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;scalp&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0025661&lt;/th&gt;
-      &lt;td&gt;HAM_0002730&lt;/td&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;80.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;scalp&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0031633&lt;/th&gt;
-      &lt;td&gt;HAM_0001466&lt;/td&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;75.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;ear&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import seaborn as sns
-
-sns.countplot(df[&#39;dx&#39;])
+sns&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;countplot(df[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;])
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;&amp;lt;matplotlib.axes._subplots.AxesSubplot at 0x126f39eb8&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;output_4_1.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;pd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;DataFrame({&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;counts&amp;#39;&lt;/span&gt;:df[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value_counts(), &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;percent&amp;#39;&lt;/span&gt;: df[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value_counts() &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; len(df)})
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-&lt;pre&gt;&lt;code&gt;&amp;lt;matplotlib.axes._subplots.AxesSubplot at 0x126f39eb8&amp;gt;
+.dataframe thead th {
+    text-align: right;
+}
 &lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_4_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;pd.DataFrame({&#39;counts&#39;:df[&#39;dx&#39;].value_counts(), &#39;percent&#39;: df[&#39;dx&#39;].value_counts() / len(df)})
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div&gt;
-&lt;style scoped&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
-  &lt;thead&gt;
-    &lt;tr style=&#34;text-align: right;&#34;&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;counts&lt;/th&gt;
-      &lt;th&gt;percent&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;th&gt;nv&lt;/th&gt;
-      &lt;td&gt;6705&lt;/td&gt;
-      &lt;td&gt;0.669496&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;mel&lt;/th&gt;
-      &lt;td&gt;1113&lt;/td&gt;
-      &lt;td&gt;0.111133&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;bkl&lt;/th&gt;
-      &lt;td&gt;1099&lt;/td&gt;
-      &lt;td&gt;0.109735&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;bcc&lt;/th&gt;
-      &lt;td&gt;514&lt;/td&gt;
-      &lt;td&gt;0.051323&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;akiec&lt;/th&gt;
-      &lt;td&gt;327&lt;/td&gt;
-      &lt;td&gt;0.032651&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;vasc&lt;/th&gt;
-      &lt;td&gt;142&lt;/td&gt;
-      &lt;td&gt;0.014179&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;df&lt;/th&gt;
-      &lt;td&gt;115&lt;/td&gt;
-      &lt;td&gt;0.011483&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
 &lt;p&gt;We can see that the samples for each class are very imbalanced.
 The class &lt;em&gt;melanocytic nevi (nv)&lt;/em&gt; has about 67% of the dataset. The most minority class has only about 1% of the dataset.&lt;/p&gt;
-
 &lt;p&gt;When we organize the rows by lesion_id, we can see that many lesions have more than 1 images. The description of ham10000 says the dataset includes lesions with multiple images, which can be tracked by the lesion_id column.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;dfr&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;df&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;reset_index(col_level&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion_id&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;set_index([&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion_id&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;image_id&amp;#39;&lt;/span&gt;])
+dfr&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;head(&lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;dfr=df.reset_index(col_level=&#39;lesion_id&#39;).set_index([&#39;lesion_id&#39;,&#39;image_id&#39;])
-dfr.head(10)
+.dataframe thead th {
+    text-align: right;
+}
 &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; matplotlib.pyplot &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; plt
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; matplotlib.image &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; mpimg
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; matplotlib &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; rcParams
 
-&lt;div&gt;
-&lt;style scoped&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
+&lt;span style=&#34;color:#f92672&#34;&gt;%&lt;/span&gt;matplotlib inline
 
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
+&lt;span style=&#34;color:#75715e&#34;&gt;# figure size in inches optional&lt;/span&gt;
+rcParams[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;figure.figsize&amp;#39;&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;10&lt;/span&gt; ,&lt;span style=&#34;color:#ae81ff&#34;&gt;5&lt;/span&gt;
 
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
-  &lt;thead&gt;
-    &lt;tr style=&#34;text-align: right;&#34;&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;dx&lt;/th&gt;
-      &lt;th&gt;dx_type&lt;/th&gt;
-      &lt;th&gt;age&lt;/th&gt;
-      &lt;th&gt;sex&lt;/th&gt;
-      &lt;th&gt;localization&lt;/th&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;lesion_id&lt;/th&gt;
-      &lt;th&gt;image_id&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;th rowspan=&#34;2&#34; valign=&#34;top&#34;&gt;HAM_0000118&lt;/th&gt;
-      &lt;th&gt;ISIC_0027419&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;80.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;scalp&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0025030&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;80.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;scalp&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th rowspan=&#34;2&#34; valign=&#34;top&#34;&gt;HAM_0002730&lt;/th&gt;
-      &lt;th&gt;ISIC_0026769&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;80.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;scalp&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0025661&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;80.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;scalp&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th rowspan=&#34;2&#34; valign=&#34;top&#34;&gt;HAM_0001466&lt;/th&gt;
-      &lt;th&gt;ISIC_0031633&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;75.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;ear&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0027850&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;75.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;ear&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th rowspan=&#34;2&#34; valign=&#34;top&#34;&gt;HAM_0002761&lt;/th&gt;
-      &lt;th&gt;ISIC_0029176&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;60.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;face&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0029068&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;60.0&lt;/td&gt;
-      &lt;td&gt;male&lt;/td&gt;
-      &lt;td&gt;face&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th rowspan=&#34;2&#34; valign=&#34;top&#34;&gt;HAM_0005132&lt;/th&gt;
-      &lt;th&gt;ISIC_0025837&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;70.0&lt;/td&gt;
-      &lt;td&gt;female&lt;/td&gt;
-      &lt;td&gt;back&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ISIC_0025209&lt;/th&gt;
-      &lt;td&gt;bkl&lt;/td&gt;
-      &lt;td&gt;histo&lt;/td&gt;
-      &lt;td&gt;70.0&lt;/td&gt;
-      &lt;td&gt;female&lt;/td&gt;
-      &lt;td&gt;back&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from matplotlib import rcParams
-
-%matplotlib inline
-
-# figure size in inches optional
-rcParams[&#39;figure.figsize&#39;] = 10 ,5
-
-def plot_by_lesion():
-    grouped = df.groupby([&#39;lesion_id&#39;])
-    lesions = []
-    for i, lesion in enumerate(grouped):
-        cnt = len(lesion[1].index)
-        if cnt &amp;gt; 1:
-            fig, axes = plt.subplots(1, cnt)
-            for ax, name in zip(axes, lesion[1].index):
-                img = mpimg.imread(f&#39;data/{name}.jpg&#39;)
-                ax.imshow(img)
-        if i &amp;gt; 4:
-            break
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;plot_by_lesion&lt;/span&gt;():
+    grouped &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;groupby([&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion_id&amp;#39;&lt;/span&gt;])
+    lesions &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i, lesion &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; enumerate(grouped):
+        cnt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; len(lesion[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;index)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; cnt &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;:
+            fig, axes &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;subplots(&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;, cnt)
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; ax, name &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; zip(axes, lesion[&lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;index):
+                img &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; mpimg&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;imread(f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;data/{name}.jpg&amp;#39;&lt;/span&gt;)
+                ax&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;imshow(img)
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;:
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;break&lt;/span&gt;
 
 plot_by_lesion()
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_8_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_8_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_8_2.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_8_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;output_8_1.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;output_8_2.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;We can seee that the multiple images capture the same lesion with differences in color, scaling, orientation.&lt;/p&gt;
-
 &lt;p&gt;Now let&amp;rsquo;s count the images by lesion_id.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df[&#39;lesion_id&#39;].nunique()
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;df[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion_id&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;nunique()
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;7470
 &lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;cnt &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;groupby(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;)[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion_id&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;nunique()
+per &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;groupby(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;)[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion_id&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;nunique()&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;div(df[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion_id&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;nunique())
+pd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;DataFrame({&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;counts&amp;#39;&lt;/span&gt;:cnt, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;percent&amp;#39;&lt;/span&gt;: per})
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-&lt;pre&gt;&lt;code&gt;7470
+.dataframe thead th {
+    text-align: right;
+}
 &lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;cnt = df.groupby(&#39;dx&#39;)[&#39;lesion_id&#39;].nunique()
-per = df.groupby(&#39;dx&#39;)[&#39;lesion_id&#39;].nunique().div(df[&#39;lesion_id&#39;].nunique())
-pd.DataFrame({&#39;counts&#39;:cnt, &#39;percent&#39;: per})
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div&gt;
-&lt;style scoped&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
-  &lt;thead&gt;
-    &lt;tr style=&#34;text-align: right;&#34;&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;counts&lt;/th&gt;
-      &lt;th&gt;percent&lt;/th&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;dx&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;th&gt;akiec&lt;/th&gt;
-      &lt;td&gt;228&lt;/td&gt;
-      &lt;td&gt;0.030522&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;bcc&lt;/th&gt;
-      &lt;td&gt;327&lt;/td&gt;
-      &lt;td&gt;0.043775&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;bkl&lt;/th&gt;
-      &lt;td&gt;727&lt;/td&gt;
-      &lt;td&gt;0.097323&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;df&lt;/th&gt;
-      &lt;td&gt;73&lt;/td&gt;
-      &lt;td&gt;0.009772&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;mel&lt;/th&gt;
-      &lt;td&gt;614&lt;/td&gt;
-      &lt;td&gt;0.082195&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;nv&lt;/th&gt;
-      &lt;td&gt;5403&lt;/td&gt;
-      &lt;td&gt;0.723293&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;vasc&lt;/th&gt;
-      &lt;td&gt;98&lt;/td&gt;
-      &lt;td&gt;0.013119&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
 &lt;p&gt;Now we see there&amp;rsquo;re 7470 unique lesions there, and the class imbalance got evern worse when we group them by lesion_id. We need to keep this in mind for the later actions like sampling and choosing evaluation metrics.&lt;/p&gt;
-
 &lt;h1 id=&#34;metrics&#34;&gt;Metrics&lt;/h1&gt;
-
 &lt;p&gt;For classfication problem, the commonly used metrics are &lt;em&gt;Precision/Recall/F-measures&lt;/em&gt;, &lt;em&gt;ROC_AUC&lt;/em&gt;, &lt;em&gt;Accuracy Score (ACC)&lt;/em&gt; and so on. But for this imbalanced dataset, we need to think more on the choice of metrics.&lt;/p&gt;
-
-&lt;p&gt;In the &lt;a href=&#34;https://arxiv.org/abs/1902.03368&#34; target=&#34;_blank&#34;&gt;ISIC 2018 challenge report&lt;/a&gt;, it mentioned that
-&amp;gt; Use of &lt;em&gt;balanced accuracy&lt;/em&gt; is critical to select the best unbiased classifier, rather than one that overfits to arbitrary dataset prevalence, as is the case with accuracy.&lt;/p&gt;
-
+&lt;p&gt;In the &lt;a href=&#34;https://arxiv.org/abs/1902.03368&#34;&gt;ISIC 2018 challenge report&lt;/a&gt;, it mentioned that&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Use of &lt;em&gt;balanced accuracy&lt;/em&gt; is critical to select the best unbiased classifier, rather than one that overfits to arbitrary dataset prevalence, as is the case with accuracy.&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;p&gt;Based on the description, it&amp;rsquo;s the class-wise mean of recall. The &lt;code&gt;recall_score(average=&#39;macro&#39;)&lt;/code&gt; in scikit-learn just calculates this score:&lt;/p&gt;
-
 &lt;p&gt;$$ \frac{1}{|L|} \sum_{l \in L} R \left( y_{l}, \hat{y}_{l} \right) $$&lt;/p&gt;
-
 &lt;p&gt;The more details of the Balanced Multiclass Accuracy can refer to&lt;/p&gt;
-
 &lt;ul&gt;
-&lt;li&gt;description from the tooltip on the &lt;a href=&#34;https://challenge2018.isic-archive.com/leaderboards/&#34; target=&#34;_blank&#34;&gt;ISIC 2018 leaderboard webpage&lt;/a&gt;.&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://forum.isic-archive.com/t/metric-for-the-task-3-lesion-diagnosis/356/9&#34; target=&#34;_blank&#34;&gt;an explanation on the ISIC discussion forum&lt;/a&gt;.&lt;/li&gt;
-&lt;li&gt;description on &lt;a href=&#34;https://challenge2019.isic-archive.com/evaluation.html&#34; target=&#34;_blank&#34;&gt;ISIC 2019 introduction&lt;/a&gt;.
-&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;description from the tooltip on the &lt;a href=&#34;https://challenge2018.isic-archive.com/leaderboards/&#34;&gt;ISIC 2018 leaderboard webpage&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://forum.isic-archive.com/t/metric-for-the-task-3-lesion-diagnosis/356/9&#34;&gt;an explanation on the ISIC discussion forum&lt;/a&gt;.&lt;/li&gt;
+&lt;li&gt;description on &lt;a href=&#34;https://challenge2019.isic-archive.com/evaluation.html&#34;&gt;ISIC 2019 introduction&lt;/a&gt;.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;So we&amp;rsquo;ll use the &lt;em&gt;balanced accuracy (BACC)&lt;/em&gt; or &lt;em&gt;mean of recalls of the 7 classes&lt;/em&gt; as the main metric for this assignment.&lt;/p&gt;
-
 &lt;p&gt;The mean reason is that this is a very imbalanced dataset, it is a big problem we need to handel carefully. For this multiclass classification with very imbalanced dataset:&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;It&amp;rsquo;s important for the model to have good performance on all the classes, other than a few majority classes. The different classes have equal importance.&lt;/li&gt;
 &lt;li&gt;Mean recall is good because it counts the model&amp;rsquo;s classification performance on all the classes equally, no matter how many samples belong to a class.&lt;/li&gt;
 &lt;li&gt;So global accuracy score, micro average of recalls or so are not good metrics to measure the performance in this case.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;And this is a medical diagnosis, it&amp;rsquo;s important to have a high true positive rate (to minimize the false negatives), so it&amp;rsquo;s better to focus more on recall over precision.&lt;/p&gt;
-
 &lt;p&gt;But we&amp;rsquo;ll also use other metrics togher to have more insights. A confusion matrix plot is also a good way to present how does the model performed for each class. One of the metrics that is also good for a imbalanced classification is Matthews correlation coefficient (MCC), it ranges between &lt;em&gt;−1 to 1&lt;/em&gt;&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;1 score shows a perfect prediction&lt;/li&gt;
 &lt;li&gt;0 equals to the random prediction&lt;/li&gt;
-&lt;li&gt;−1 indicates total disagreement between predicted scores and true labels’ values
-&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;−1 indicates total disagreement between predicted scores and true labels’ values&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;$$m c c=\frac{t p \cdot t n-f p \cdot f n}{\sqrt{(t p+f p) \cdot(t p+f n) \cdot(t n+f p) \cdot(t n+f n)}}
 $$&lt;/p&gt;
-
 &lt;h1 id=&#34;preprocess-dataset&#34;&gt;Preprocess dataset&lt;/h1&gt;
-
 &lt;h2 id=&#34;sampling&#34;&gt;Sampling&lt;/h2&gt;
-
 &lt;p&gt;Since the dataset is very imbalanced, so even though we could use the mean recall and loss function with class weights, it would be still troublesome to train the model for the under-represented minority classes. And the under-represented classes are likely to be missing or very few samples in a subsample or split, especially when the fraction is small. So we need to do something for the train-validation-test set sampling and split.&lt;/p&gt;
-
 &lt;p&gt;2 methods were applied to deal with the problem, with the assumption that new data follow a close imbalanced distribution as the labelled dataset.&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Subsampling based on the classes distribution of all the samples. So a small fraction train, validation or set will still have the same distribution of different classes.&lt;/li&gt;
 &lt;li&gt;Oversampling training set for the under-represented classess (with random transformations) to equalize the distribution. Since the dataset is considered small so we will use oversampling on the minority classes other than undersampling on the majority classes.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;p&gt;For simplicity, I&amp;rsquo;ll just use the first image of each lesion_id. The code snippet below processes the dataset with oversampling. The parameter &lt;code&gt;over_rate&lt;/code&gt; controls how much to over sample the minority classes.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; functools
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import functools
+exclude_set &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [] 
+weighted &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; True
+imbalance_eq &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; True
+remove_dup_img &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; True
+over_rate &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;
+train_fraction &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.8&lt;/span&gt;
+val_fraction &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0.2&lt;/span&gt;
 
-exclude_set = [] 
-weighted = True
-imbalance_eq = True
-remove_dup_img = True
-over_rate = 4
-train_fraction = 0.8
-val_fraction = 0.2
+meta_data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;read_csv(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;data/HAM10000_metadata.csv&amp;#39;&lt;/span&gt;, index_col&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;image_id&amp;#39;&lt;/span&gt;)
 
-meta_data = pd.read_csv(&#39;data/HAM10000_metadata.csv&#39;, index_col=&#39;image_id&#39;)
+&lt;span style=&#34;color:#75715e&#34;&gt;# for reproducibility, just keep 1st image of each lesion_id&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; remove_dup_img:
+    lesion_ids &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; []
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; index, row &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; meta_data&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;iterrows():
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; row[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion_id&amp;#39;&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; lesion_ids:
+            lesion_ids&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(row[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion_id&amp;#39;&lt;/span&gt;])
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;else&lt;/span&gt;:
+            meta_data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; meta_data&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;drop(index&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;index)
 
-# for reproducibility, just keep 1st image of each lesion_id
-if remove_dup_img:
-    lesion_ids = []
-    for index, row in meta_data.iterrows():
-        if row[&#39;lesion_id&#39;] not in lesion_ids:
-            lesion_ids.append(row[&#39;lesion_id&#39;])
-        else:
-            meta_data = meta_data.drop(index=index)
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; len(exclude_set) &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;:
+    meta_data &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; meta_data&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;drop(index&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;exclude_set)
 
-if len(exclude_set) &amp;gt; 0:
-    meta_data = meta_data.drop(index=exclude_set)
+image_ids &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; meta_data&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;index&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;tolist()
+num_images &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; len(image_ids)
+num_train_ids &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; int(num_images &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; train_fraction)
+num_val_ids &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; int(num_images &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; val_fraction)
 
-image_ids = meta_data.index.tolist()
-num_images = len(image_ids)
-num_train_ids = int(num_images * train_fraction)
-num_val_ids = int(num_images * val_fraction)
+&lt;span style=&#34;color:#75715e&#34;&gt;# sampling based on the distribution of classees&lt;/span&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; weighted:
+    size_total &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; num_train_ids &lt;span style=&#34;color:#f92672&#34;&gt;+&lt;/span&gt; num_val_ids
+    df_c &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; meta_data[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;astype(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;category&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;value_counts()
+    weights &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df_c &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; len(meta_data)
 
-# sampling based on the distribution of classees
-if weighted:
-    size_total = num_train_ids + num_val_ids
-    df_c = meta_data[&#39;dx&#39;].astype(&#39;category&#39;).value_counts()
-    weights = df_c / len(meta_data)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;sampling&lt;/span&gt;(df, replace&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;False, total&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;size_total):
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;return&lt;/span&gt; df&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sample(n&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;int(weights[df&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;name] &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; total), replace&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;replace)
 
-    def sampling(df, replace=False, total=size_total):
-        return df.sample(n=int(weights[df.name] * total), replace=replace)
+    train_val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; meta_data&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;groupby(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;, as_index&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;False)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;apply(
+        sampling)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;reset_index(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, drop&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;True)
 
-    train_val = meta_data.groupby(&#39;dx&#39;, as_index=False).apply(
-        sampling).reset_index(0, drop=True)
+    train_sampling &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; functools&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;partial(sampling, total&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;num_train_ids)
 
-    train_sampling = functools.partial(sampling, total=num_train_ids)
+    train &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; train_val&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;groupby(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;, as_index&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;False)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;apply(
+        train_sampling)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;reset_index(&lt;span style=&#34;color:#ae81ff&#34;&gt;0&lt;/span&gt;, drop&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;True)
+    val &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; train_val&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;drop(index&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;train&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;index)
 
-    train = train_val.groupby(&#39;dx&#39;, as_index=False).apply(
-        train_sampling).reset_index(0, drop=True)
-    val = train_val.drop(index=train.index)
-
-    if imbalance_eq:
-        bal_rate = 1 / weights / over_rate 
-        for k, v in bal_rate.to_dict().items():
-            if v &amp;gt; 2:
-                train = train.append(
-                    [train.loc[train[&#39;dx&#39;] == k, :]] * int(v),
-                    ignore_index=False)
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; imbalance_eq:
+        bal_rate &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; weights &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; over_rate 
+        &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; k, v &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; bal_rate&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;to_dict()&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;items():
+            &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; v &lt;span style=&#34;color:#f92672&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;2&lt;/span&gt;:
+                train &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; train&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;append(
+                    [train&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;loc[train[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;==&lt;/span&gt; k, :]] &lt;span style=&#34;color:#f92672&#34;&gt;*&lt;/span&gt; int(v),
+                    ignore_index&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;False)
 
 
-sns.countplot(train[&#39;dx&#39;])
+sns&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;countplot(train[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dx&amp;#39;&lt;/span&gt;])
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;&amp;lt;matplotlib.axes._subplots.AxesSubplot at 0x12738aa58&amp;gt;
 &lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;&amp;lt;matplotlib.axes._subplots.AxesSubplot at 0x12738aa58&amp;gt;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_15_1.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;img src=&#34;output_15_1.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;Fractions of the entire set is splitted as below:&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;training 0.64 (0.8*0.8)&lt;/li&gt;
 &lt;li&gt;validation 0.16 (0.8*0.2)&lt;/li&gt;
 &lt;li&gt;testing 0.2 (the same set for all the experiments)&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;loss-function&#34;&gt;Loss function&lt;/h2&gt;
-
 &lt;p&gt;Cross Entropy Loss function will be used. As for this multiclass classification problem, I don&amp;rsquo;t have a good reason to use other loss functions over cross entropy.&lt;/p&gt;
-
 &lt;p&gt;On whether or not the loss criterion should also be weighted according to the imbalanced classes, I think it needs to be based on how we sample the training and validation set.&lt;/p&gt;
-
 &lt;ul&gt;
 &lt;li&gt;If we sample the subsets as the sample distribution as the entire dataset, then we could use the weighted loss criterion so that it gives penalty to the majority classes.&lt;/li&gt;
-&lt;li&gt;If we are to perform some sampling method like oversampling, it already gives some penalty to the majority classes, then I think we should use a loss criterion without weighted.
-&lt;br /&gt;
-&lt;br /&gt;&lt;/li&gt;
+&lt;li&gt;If we are to perform some sampling method like oversampling, it already gives some penalty to the majority classes, then I think we should use a loss criterion without weighted.&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h2 id=&#34;data-transformation&#34;&gt;Data transformation&lt;/h2&gt;
-
-&lt;p&gt;Some data transformations were performed to all the input images. It is performed according to the description in &lt;a href=&#34;https://pytorch.org/docs/stable/torchvision/models.html&#34; target=&#34;_blank&#34;&gt;torchvision documentation for pre-trained models&lt;/a&gt; (as we will use these pre-trained models). It says Height and Width are expected to be at least 224, so we will resize all the input images into 224x224 to save some computation. We also normalize the iamges by the same mean and std as mentioned in the documentation.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Transformation for validation and testing sets
-transforms.Compose([
-     transforms.Resize(224),
-     transforms.CenterCrop(224),
-     transforms.ToTensor(),
-     transforms.Normalize(mean=[0.485, 0.456, 0.406], 
-                          std=[0.229, 0.224, 0.225])
+&lt;p&gt;Some data transformations were performed to all the input images. It is performed according to the description in &lt;a href=&#34;https://pytorch.org/docs/stable/torchvision/models.html&#34;&gt;torchvision documentation for pre-trained models&lt;/a&gt; (as we will use these pre-trained models). It says Height and Width are expected to be at least 224, so we will resize all the input images into 224x224 to save some computation. We also normalize the iamges by the same mean and std as mentioned in the documentation.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Transformation for validation and testing sets&lt;/span&gt;
+transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Compose([
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Resize(&lt;span style=&#34;color:#ae81ff&#34;&gt;224&lt;/span&gt;),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;CenterCrop(&lt;span style=&#34;color:#ae81ff&#34;&gt;224&lt;/span&gt;),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ToTensor(),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Normalize(mean&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;0.485&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.456&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.406&lt;/span&gt;], 
+                          std&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;0.229&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.224&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.225&lt;/span&gt;])
 ])
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;As we oversampled minority classes in the training set, we should perform some random transformations, such as random horizontal-vertical flip, rotation and color jitter (saturation not used since I thought it might affect the preciseness of lesion area).&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# Transformation for training set
-transforms_train = transforms.Compose([
-     transforms.Resize(300),
-     transforms.RandomHorizontalFlip(0.5),
-     transforms.RandomVerticalFlip(0.5),
-     transforms.RandomRotation(20),
-     transforms.RandomResizedCrop(224),
-     transforms.ColorJitter(brightness=0.1, contrast=0.1, hue=0.1),
-     transforms.ToTensor(),
-     transforms.Normalize(mean=[0.485, 0.456, 0.406], 
-                          std=[0.229, 0.224, 0.225])
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;As we oversampled minority classes in the training set, we should perform some random transformations, such as random horizontal-vertical flip, rotation and color jitter (saturation not used since I thought it might affect the preciseness of lesion area).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# Transformation for training set&lt;/span&gt;
+transforms_train &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Compose([
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Resize(&lt;span style=&#34;color:#ae81ff&#34;&gt;300&lt;/span&gt;),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;RandomHorizontalFlip(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.5&lt;/span&gt;),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;RandomVerticalFlip(&lt;span style=&#34;color:#ae81ff&#34;&gt;0.5&lt;/span&gt;),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;RandomRotation(&lt;span style=&#34;color:#ae81ff&#34;&gt;20&lt;/span&gt;),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;RandomResizedCrop(&lt;span style=&#34;color:#ae81ff&#34;&gt;224&lt;/span&gt;),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ColorJitter(brightness&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;, contrast&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;, hue&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;0.1&lt;/span&gt;),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ToTensor(),
+     transforms&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;Normalize(mean&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;0.485&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.456&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.406&lt;/span&gt;], 
+                          std&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;[&lt;span style=&#34;color:#ae81ff&#34;&gt;0.229&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.224&lt;/span&gt;, &lt;span style=&#34;color:#ae81ff&#34;&gt;0.225&lt;/span&gt;])
 ])
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h1 id=&#34;models&#34;&gt;Models&lt;/h1&gt;
-
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h1 id=&#34;models&#34;&gt;Models&lt;/h1&gt;
 &lt;p&gt;When choosing a neural netowrk model for a certain task, we need to consider about several factors, e.g., the performance (accuracy) of a model, the appropriation of a model architecture for the task (in terms of pretrained model, the pretrained dataset should be more similar to the new task&amp;rsquo;s dataset), and computation efficiency.&lt;/p&gt;
-
 &lt;p&gt;For this assignment, we need to make a tradeoff between the performance and computation efficiency since I don&amp;rsquo;t have much of the computation resources.&lt;/p&gt;
-
 &lt;h2 id=&#34;pre-trained-models&#34;&gt;Pre-trained models&lt;/h2&gt;
-
-&lt;p&gt;By glancing through the methods in the &lt;a href=&#34;https://challenge2018.isic-archive.com/leaderboards/&#34; target=&#34;_blank&#34;&gt;ISIC2018 leadboard&lt;/a&gt;, most of the top methods used ensemble models of pre-trained models such as ResNet, Densenet, Inception and so on. There&amp;rsquo;re also methods used a single pre-trained model achieved a high rank.&lt;/p&gt;
-
-&lt;p&gt;And also as quoted from &lt;a href=&#34;https://cs231n.github.io/transfer-learning/&#34; target=&#34;_blank&#34;&gt;cs231n notes&lt;/a&gt; states that it&amp;rsquo;s now rarely people will train a network from scratch due to insufficient data size and expensiveness of training. It&amp;rsquo;s common to start from a model pre-trained on a very large dataset and use it as an initialization or a fixed feature extractor for a new task.&lt;/p&gt;
-
-&lt;p&gt;Therefore, we&amp;rsquo;ll start from a pre-trained model. As suggested in &lt;a href=&#34;https://towardsdatascience.com/deep-learning-for-diagnosis-of-skin-images-with-fastai-792160ab5495&#34; target=&#34;_blank&#34;&gt;this post&lt;/a&gt;, ResNet-34 would be a good choice to start. So the initial plan was use the pre-trained ResNet model as a fixed feature extractor to see how it performs, and then try to &amp;ldquo;fine-tune&amp;rdquo; the weights of some layers.&lt;/p&gt;
-
+&lt;p&gt;By glancing through the methods in the &lt;a href=&#34;https://challenge2018.isic-archive.com/leaderboards/&#34;&gt;ISIC2018 leadboard&lt;/a&gt;, most of the top methods used ensemble models of pre-trained models such as ResNet, Densenet, Inception and so on. There&amp;rsquo;re also methods used a single pre-trained model achieved a high rank.&lt;/p&gt;
+&lt;p&gt;And also as quoted from &lt;a href=&#34;https://cs231n.github.io/transfer-learning/&#34;&gt;cs231n notes&lt;/a&gt; states that it&amp;rsquo;s now rarely people will train a network from scratch due to insufficient data size and expensiveness of training. It&amp;rsquo;s common to start from a model pre-trained on a very large dataset and use it as an initialization or a fixed feature extractor for a new task.&lt;/p&gt;
+&lt;p&gt;Therefore, we&amp;rsquo;ll start from a pre-trained model. As suggested in &lt;a href=&#34;https://towardsdatascience.com/deep-learning-for-diagnosis-of-skin-images-with-fastai-792160ab5495&#34;&gt;this post&lt;/a&gt;, ResNet-34 would be a good choice to start. So the initial plan was use the pre-trained ResNet model as a fixed feature extractor to see how it performs, and then try to &amp;ldquo;fine-tune&amp;rdquo; the weights of some layers.&lt;/p&gt;
 &lt;p&gt;However, after a few preliminary short-run experiments, I found it&amp;rsquo;s slow to train and the metrics didn&amp;rsquo;t show a potential improvement.&lt;/p&gt;
-
-&lt;p&gt;In &lt;a href=&#34;https://keras.io/applications/&#34; target=&#34;_blank&#34;&gt;Keres documentation&lt;/a&gt; there&amp;rsquo;s a table lists some stats like accuracy and number of parameters for some widely used models. As a tradeoff between accuracy and trainability (number of parameters), I started to focus more on the &lt;em&gt;DenseNet161&lt;/em&gt; and &lt;em&gt;ResNet152&lt;/em&gt;.&lt;/p&gt;
-
+&lt;p&gt;In &lt;a href=&#34;https://keras.io/applications/&#34;&gt;Keres documentation&lt;/a&gt; there&amp;rsquo;s a table lists some stats like accuracy and number of parameters for some widely used models. As a tradeoff between accuracy and trainability (number of parameters), I started to focus more on the &lt;em&gt;DenseNet161&lt;/em&gt; and &lt;em&gt;ResNet152&lt;/em&gt;.&lt;/p&gt;
 &lt;p&gt;After some preliminary experiments on using the networks as a feature extractor, which didn&amp;rsquo;t give a encouraging result, I decided to fine-tune the whole network.&lt;/p&gt;
-
 &lt;h1 id=&#34;experiments&#34;&gt;Experiments&lt;/h1&gt;
-
 &lt;p&gt;The experiments were early stopped when I think it might stop improving. Though it will possibly improve as the training continues, the time is precious.&lt;/p&gt;
-
 &lt;h2 id=&#34;training-and-validation&#34;&gt;Training and validation&lt;/h2&gt;
-
 &lt;h3 id=&#34;densenet161&#34;&gt;DenseNet161&lt;/h3&gt;
-
 &lt;p&gt;For the DenseNet161, the best validation mean of recalls is about 0.6845.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; torch
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import torch
-
-best_dense161_lesion = torch.load(
-    &#39;experiments/dense161_eq3_exclutest_lesion_v1/model_best.pth.tar&#39;, 
-    map_location=torch.device(&#39;cpu&#39;))
-recall_val_dense161_lesion = best_dense161_lesion[&#39;metrics&#39;][&#39;recall&#39;]
+best_dense161_lesion &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;experiments/dense161_eq3_exclutest_lesion_v1/model_best.pth.tar&amp;#39;&lt;/span&gt;, 
+    map_location&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;device(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;cpu&amp;#39;&lt;/span&gt;))
+recall_val_dense161_lesion &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; best_dense161_lesion[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metrics&amp;#39;&lt;/span&gt;][&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;recall&amp;#39;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;recall_val_dense161_lesion 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;0.684509306993473
 &lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;recall_val_dense161_lesion 
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code&gt;0.684509306993473
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Image(&#39;experiments/dense161_eq3_exclutest_lesion_v1/confusion_matrix.png&#39;, width=900)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_24_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;Image(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;experiments/dense161_eq3_exclutest_lesion_v1/confusion_matrix.png&amp;#39;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;900&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_24_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;resnet152&#34;&gt;ResNet152&lt;/h3&gt;
-
 &lt;p&gt;For the ResNet152, the best validation mean of recalls is about 0.7202.&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;best_res152_lesion = torch.load(
-    &#39;experiments/res152_eq3_exclutest_lesion_v1/model_best.pth.tar&#39;, 
-    map_location=torch.device(&#39;cpu&#39;))
-recall_val_res152_lesion = best_res152_lesion[&#39;metrics&#39;][&#39;recall&#39;]
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;best_res152_lesion &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;experiments/res152_eq3_exclutest_lesion_v1/model_best.pth.tar&amp;#39;&lt;/span&gt;, 
+    map_location&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;torch&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;device(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;cpu&amp;#39;&lt;/span&gt;))
+recall_val_res152_lesion &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; best_res152_lesion[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metrics&amp;#39;&lt;/span&gt;][&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;recall&amp;#39;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;recall_val_res152_lesion 
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;pre&gt;&lt;code&gt;0.7202260074093291
 &lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;Image(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;experiments/res152_eq3_exclutest_lesion_v1/recall.png&amp;#39;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;700&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_28_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; numpy &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; np 
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; matplotlib.pyplot &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; plt
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;recall_val_res152_lesion 
-&lt;/code&gt;&lt;/pre&gt;
+&lt;span style=&#34;color:#66d9ef&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color:#a6e22e&#34;&gt;plot_metric&lt;/span&gt;(train_loss, test_loss, name, plot_type&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;loss&amp;#39;&lt;/span&gt;):
+    epochs &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; range(len(train_losses))
 
-&lt;pre&gt;&lt;code&gt;0.7202260074093291
-&lt;/code&gt;&lt;/pre&gt;
+    f &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;figure()
+    plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;title(f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{name} {plot_type} plot&amp;#34;&lt;/span&gt;)
+    plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;xlabel(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;epoch&amp;#34;&lt;/span&gt;)
+    plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;ylabel(f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#34;{plot_type}&amp;#34;&lt;/span&gt;)
+    plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;grid(True)
+    plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;plot(epochs, train_loss, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;b&amp;#39;&lt;/span&gt;, marker&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;o&amp;#39;&lt;/span&gt;, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;train {plot_type}&amp;#39;&lt;/span&gt;)
+    plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;plot(epochs, test_loss, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;r&amp;#39;&lt;/span&gt;, marker&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;o&amp;#39;&lt;/span&gt;, label&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;f&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;val {plot_type}&amp;#39;&lt;/span&gt;)
+    plt&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;legend()
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Image(&#39;experiments/res152_eq3_exclutest_lesion_v1/recall.png&#39;, width=700)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_28_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import numpy as np 
-import matplotlib.pyplot as plt
-
-def plot_metric(train_loss, test_loss, name, plot_type=&#39;loss&#39;):
-    epochs = range(len(train_losses))
-
-    f = plt.figure()
-    plt.title(f&amp;quot;{name} {plot_type} plot&amp;quot;)
-    plt.xlabel(&amp;quot;epoch&amp;quot;)
-    plt.ylabel(f&amp;quot;{plot_type}&amp;quot;)
-    plt.grid(True)
-    plt.plot(epochs, train_loss, &#39;b&#39;, marker=&#39;o&#39;, label=f&#39;train {plot_type}&#39;)
-    plt.plot(epochs, test_loss, &#39;r&#39;, marker=&#39;o&#39;, label=f&#39;val {plot_type}&#39;)
-    plt.legend()
-
-train_losses, test_losses = np.load(
-    &#39;experiments/res152_eq3_exclutest_lesion_v1/final_results.npy&#39;)
-plot_metric(train_losses, test_losses, &#39;ResNet152_lesion&#39;, &#39;loss&#39;)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_29_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;# ResNet152 val
-Image(&#39;experiments/res152_eq3_exclutest_lesion_v1/confusion_matrix.png&#39;, width=900)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_30_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
+train_losses, test_losses &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(
+    &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;experiments/res152_eq3_exclutest_lesion_v1/final_results.npy&amp;#39;&lt;/span&gt;)
+plot_metric(train_losses, test_losses, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;ResNet152_lesion&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;loss&amp;#39;&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_29_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#75715e&#34;&gt;# ResNet152 val&lt;/span&gt;
+Image(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;experiments/res152_eq3_exclutest_lesion_v1/confusion_matrix.png&amp;#39;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;900&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_30_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;As we can see from the results, it&amp;rsquo;s not a satisfactory performance for both the DenseNet161 and ResNet152 as they have only around 0.7 mean of recalls. No matter what, let&amp;rsquo;s have a look at how they perform on the test set.&lt;/p&gt;
-
 &lt;h2 id=&#34;metrics-on-the-test-set&#34;&gt;Metrics on the test set&lt;/h2&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; os
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; json
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;import os
-import json
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; numpy &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; np
+&lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; pandas &lt;span style=&#34;color:#f92672&#34;&gt;as&lt;/span&gt; pd
+&lt;span style=&#34;color:#f92672&#34;&gt;from&lt;/span&gt; sklearn &lt;span style=&#34;color:#f92672&#34;&gt;import&lt;/span&gt; metrics
 
-import numpy as np
-import pandas as pd
-from sklearn import metrics
+test_results_path &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;test_results&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color:#75715e&#34;&gt;# model_ids =[&amp;#39;dense161&amp;#39;,&amp;#39;res101&amp;#39;,&amp;#39;res152&amp;#39;]&lt;/span&gt;
+result_paths &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [d &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; d &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;listdir(
+    test_results_path) &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;not&lt;/span&gt; d&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;startswith(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;.&amp;#39;&lt;/span&gt;)]
+result_paths &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [d &lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; d &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; result_paths &lt;span style=&#34;color:#66d9ef&#34;&gt;if&lt;/span&gt; &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;lesion&amp;#39;&lt;/span&gt; &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; d]
+&lt;span style=&#34;color:#75715e&#34;&gt;# print(result_paths)&lt;/span&gt;
 
-test_results_path = &#39;test_results&#39;
-# model_ids =[&#39;dense161&#39;,&#39;res101&#39;,&#39;res152&#39;]
-result_paths = [d for d in os.listdir(
-    test_results_path) if not d.startswith(&#39;.&#39;)]
-result_paths = [d for d in result_paths if &#39;lesion&#39; in d]
-# print(result_paths)
+model_metrics &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; {}
+&lt;span style=&#34;color:#66d9ef&#34;&gt;for&lt;/span&gt; i &lt;span style=&#34;color:#f92672&#34;&gt;in&lt;/span&gt; result_paths:
+    fp &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(test_results_path, i, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;metrics_results.json&amp;#39;&lt;/span&gt;)
+    y_true &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(test_results_path, i, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;val_true.npy&amp;#39;&lt;/span&gt;))
+    y_pred &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; np&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(os&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;path&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;join(test_results_path, i, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;val_pred.npy&amp;#39;&lt;/span&gt;))
+    &lt;span style=&#34;color:#66d9ef&#34;&gt;with&lt;/span&gt; open(fp) &lt;span style=&#34;color:#66d9ef&#34;&gt;as&lt;/span&gt; f:
+        rec &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; json&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;load(f)
+        rec[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;f1&amp;#39;&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; metrics&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;f1_score(y_true, y_pred, average&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;macro&amp;#39;&lt;/span&gt;)
+        rec[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;mcc&amp;#39;&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; metrics&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;matthews_corrcoef(y_true, y_pred)
+    model_metrics[i] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; rec
 
-model_metrics = {}
-for i in result_paths:
-    fp = os.path.join(test_results_path, i, &#39;metrics_results.json&#39;)
-    y_true = np.load(os.path.join(test_results_path, i, &#39;val_true.npy&#39;))
-    y_pred = np.load(os.path.join(test_results_path, i, &#39;val_pred.npy&#39;))
-    with open(fp) as f:
-        rec = json.load(f)
-        rec[&#39;f1&#39;] = metrics.f1_score(y_true, y_pred, average=&#39;macro&#39;)
-        rec[&#39;mcc&#39;] = metrics.matthews_corrcoef(y_true, y_pred)
-    model_metrics[i] = rec
+df_results_lesion &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; pd&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;read_json(json&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;dumps(model_metrics), orient&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;index&amp;#39;&lt;/span&gt;)&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;drop(
+    columns&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;bacc&amp;#39;&lt;/span&gt;])&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;sort_values(by&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;recall&amp;#39;&lt;/span&gt;, ascending&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;False)
+df_results_lesion[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;acc&amp;#39;&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df_results_lesion[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;acc&amp;#39;&lt;/span&gt;] &lt;span style=&#34;color:#f92672&#34;&gt;/&lt;/span&gt; &lt;span style=&#34;color:#ae81ff&#34;&gt;100&lt;/span&gt;
+df_results_lesion &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; df_results_lesion[[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;recall&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;prec&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;f1&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;mcc&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;acc&amp;#39;&lt;/span&gt;]]
+df_results_lesion&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;columns &lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Recall&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;Precision&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;F1&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;MCC&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;ACC&amp;#39;&lt;/span&gt;]
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;df_results_lesion&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;loc[[&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;dense161_lesion&amp;#39;&lt;/span&gt;,&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;res152_lesion&amp;#39;&lt;/span&gt;]]&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;round(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-df_results_lesion = pd.read_json(json.dumps(model_metrics), orient=&#39;index&#39;).drop(
-    columns=[&#39;bacc&#39;]).sort_values(by=&#39;recall&#39;, ascending=False)
-df_results_lesion[&#39;acc&#39;] = df_results_lesion[&#39;acc&#39;] / 100
-df_results_lesion = df_results_lesion[[&#39;recall&#39;, &#39;prec&#39;, &#39;f1&#39;, &#39;mcc&#39;, &#39;acc&#39;]]
-df_results_lesion.columns = [&#39;Recall&#39;, &#39;Precision&#39;, &#39;F1&#39;, &#39;MCC&#39;, &#39;ACC&#39;]
+.dataframe thead th {
+    text-align: right;
+}
 &lt;/code&gt;&lt;/pre&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_results_lesion.loc[[&#39;dense161_lesion&#39;,&#39;res152_lesion&#39;]].round(4)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;div&gt;
-&lt;style scoped&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
-  &lt;thead&gt;
-    &lt;tr style=&#34;text-align: right;&#34;&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;Recall&lt;/th&gt;
-      &lt;th&gt;Precision&lt;/th&gt;
-      &lt;th&gt;F1&lt;/th&gt;
-      &lt;th&gt;MCC&lt;/th&gt;
-      &lt;th&gt;ACC&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;th&gt;dense161_lesion&lt;/th&gt;
-      &lt;td&gt;0.9105&lt;/td&gt;
-      &lt;td&gt;0.8085&lt;/td&gt;
-      &lt;td&gt;0.8504&lt;/td&gt;
-      &lt;td&gt;0.8210&lt;/td&gt;
-      &lt;td&gt;0.9111&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;res152_lesion&lt;/th&gt;
-      &lt;td&gt;0.8594&lt;/td&gt;
-      &lt;td&gt;0.7542&lt;/td&gt;
-      &lt;td&gt;0.7971&lt;/td&gt;
-      &lt;td&gt;0.7072&lt;/td&gt;
-      &lt;td&gt;0.8465&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
 &lt;p&gt;The surperising result shows a much higher mean of recalls for both of the models on the test dataset, from around 0.7 to 0.9105 and 0.8594.&lt;/p&gt;
-
 &lt;p&gt;I also tested ensembles of the the trained models with different weights on each (though without grid search).&lt;/p&gt;
-
 &lt;p&gt;Besides pick the model when with the highest mean of recalls, I also used the DenseNet161 model with the highest MCC score during validation.&lt;/p&gt;
-
 &lt;p&gt;The results are also surprisingly good.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;df_results_lesion&lt;span style=&#34;color:#f92672&#34;&gt;.&lt;/span&gt;round(&lt;span style=&#34;color:#ae81ff&#34;&gt;4&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;!-- raw HTML omitted --&gt;
+&lt;pre&gt;&lt;code&gt;.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;df_results_lesion.round(4)
+.dataframe thead th {
+    text-align: right;
+}
 &lt;/code&gt;&lt;/pre&gt;
-
-&lt;div&gt;
-&lt;style scoped&gt;
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-&lt;/style&gt;
-&lt;table border=&#34;1&#34; class=&#34;dataframe&#34;&gt;
-  &lt;thead&gt;
-    &lt;tr style=&#34;text-align: right;&#34;&gt;
-      &lt;th&gt;&lt;/th&gt;
-      &lt;th&gt;Recall&lt;/th&gt;
-      &lt;th&gt;Precision&lt;/th&gt;
-      &lt;th&gt;F1&lt;/th&gt;
-      &lt;th&gt;MCC&lt;/th&gt;
-      &lt;th&gt;ACC&lt;/th&gt;
-    &lt;/tr&gt;
-  &lt;/thead&gt;
-  &lt;tbody&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ensemble_dense161_6_res152_4_lesion&lt;/th&gt;
-      &lt;td&gt;0.9369&lt;/td&gt;
-      &lt;td&gt;0.7939&lt;/td&gt;
-      &lt;td&gt;0.8558&lt;/td&gt;
-      &lt;td&gt;0.8067&lt;/td&gt;
-      &lt;td&gt;0.9018&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ensemble_dense161_4_res152_6_lesion&lt;/th&gt;
-      &lt;td&gt;0.9206&lt;/td&gt;
-      &lt;td&gt;0.8132&lt;/td&gt;
-      &lt;td&gt;0.8610&lt;/td&gt;
-      &lt;td&gt;0.7808&lt;/td&gt;
-      &lt;td&gt;0.8884&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;dense161_lesion&lt;/th&gt;
-      &lt;td&gt;0.9105&lt;/td&gt;
-      &lt;td&gt;0.8085&lt;/td&gt;
-      &lt;td&gt;0.8504&lt;/td&gt;
-      &lt;td&gt;0.8210&lt;/td&gt;
-      &lt;td&gt;0.9111&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;dense161_lesion_mcc&lt;/th&gt;
-      &lt;td&gt;0.9095&lt;/td&gt;
-      &lt;td&gt;0.8540&lt;/td&gt;
-      &lt;td&gt;0.8789&lt;/td&gt;
-      &lt;td&gt;0.8236&lt;/td&gt;
-      &lt;td&gt;0.9144&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;ensemble_dense161_res152_lesion&lt;/th&gt;
-      &lt;td&gt;0.9055&lt;/td&gt;
-      &lt;td&gt;0.8052&lt;/td&gt;
-      &lt;td&gt;0.8491&lt;/td&gt;
-      &lt;td&gt;0.7931&lt;/td&gt;
-      &lt;td&gt;0.8960&lt;/td&gt;
-    &lt;/tr&gt;
-    &lt;tr&gt;
-      &lt;th&gt;res152_lesion&lt;/th&gt;
-      &lt;td&gt;0.8594&lt;/td&gt;
-      &lt;td&gt;0.7542&lt;/td&gt;
-      &lt;td&gt;0.7971&lt;/td&gt;
-      &lt;td&gt;0.7072&lt;/td&gt;
-      &lt;td&gt;0.8465&lt;/td&gt;
-    &lt;/tr&gt;
-  &lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Image(&#39;test_results/dense161_lesion/confusion_matrix.png&#39;, width=900)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_37_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Image(&#39;test_results/dense161_lesion_mcc/confusion_matrix.png&#39;, width=900)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_38_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Image(&#39;test_results/ensemble_dense161_6_res152_4_lesion/confusion_matrix.png&#39;, width=900)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_39_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
-&lt;pre&gt;&lt;code class=&#34;language-python&#34;&gt;Image(&#39;test_results/res152_lesion/confusion_matrix.png&#39;, width=900)
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;&lt;img src=&#34;output_40_0.png&#34; alt=&#34;png&#34; /&gt;&lt;/p&gt;
-
+&lt;p&gt;&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;Image(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;test_results/dense161_lesion/confusion_matrix.png&amp;#39;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;900&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_37_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;Image(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;test_results/dense161_lesion_mcc/confusion_matrix.png&amp;#39;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;900&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_38_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;Image(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;test_results/ensemble_dense161_6_res152_4_lesion/confusion_matrix.png&amp;#39;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;900&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_39_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre style=&#34;color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;Image(&lt;span style=&#34;color:#e6db74&#34;&gt;&amp;#39;test_results/res152_lesion/confusion_matrix.png&amp;#39;&lt;/span&gt;, width&lt;span style=&#34;color:#f92672&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color:#ae81ff&#34;&gt;900&lt;/span&gt;)
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;output_40_0.png&#34; alt=&#34;png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;However, I still doubt why the test metrics are much higher than when in validation (even higher than those deeply hacked top ranks in the ISIC 2018 challenge).&lt;/p&gt;
-
 &lt;p&gt;I&amp;rsquo;ve thought about and also discussed with others on the possible flaws in my solution. However, I couldn&amp;rsquo;t find a likely problem caused the very high mean of recalls on the tes tset. There&amp;rsquo;s no leakage of information from training set to test set, as I groupped and splitted the datasets according to the lesion_id.&lt;/p&gt;
-
 &lt;p&gt;You&amp;rsquo;re very welcomed to contact me if you have any idea.&lt;/p&gt;
-
 &lt;h1 id=&#34;discussion-of-limitations-and-possible-improvements&#34;&gt;Discussion of limitations and possible improvements&lt;/h1&gt;
-
 &lt;ul&gt;
 &lt;li&gt;Should use all the images for each lesion_id&lt;/li&gt;
 &lt;li&gt;Could&amp;rsquo;ve train longer&lt;/li&gt;
 &lt;li&gt;Sacrifice majority classes for the performance on the minority classes, &lt;code&gt;nv&lt;/code&gt; could be better as the given data&lt;/li&gt;
 &lt;li&gt;The experiments were not well controled, no comparison on the performance when a single variable changed, such as
-
 &lt;ul&gt;
 &lt;li&gt;the use of oversampling, fine-tune to get a balance&lt;/li&gt;
 &lt;li&gt;different ways of training set transformations&lt;/li&gt;
 &lt;li&gt;&amp;hellip;&lt;/li&gt;
-&lt;/ul&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
 &lt;li&gt;Fine-tune hyper parameters&lt;/li&gt;
 &lt;li&gt;Look into other variables in meta_data, if could be combined to improve the classification performance&lt;/li&gt;
 &lt;li&gt;Input images of only lesion region, as semantic segmentation (the task 1 of ISIC 2018)&lt;/li&gt;
-&lt;li&gt;Color constancy (mentioned in &lt;a href=&#34;https://www.mdpi.com/1424-8220/18/2/556&#34; target=&#34;_blank&#34;&gt;leadboard high-rank manuscript&lt;/a&gt;)&lt;/li&gt;
+&lt;li&gt;Color constancy (mentioned in &lt;a href=&#34;https://www.mdpi.com/1424-8220/18/2/556&#34;&gt;leadboard high-rank manuscript&lt;/a&gt;)&lt;/li&gt;
 &lt;li&gt;Focal loss function (1 report mentioned smaller variance on accuracy)&lt;/li&gt;
 &lt;li&gt;Get extra data&lt;/li&gt;
 &lt;li&gt;Exploration of other models&lt;/li&gt;
 &lt;/ul&gt;
-
 &lt;h1 id=&#34;references-not-mentioned-yet&#34;&gt;References not mentioned yet&lt;/h1&gt;
-
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://towardsdatascience.com/deep-learning-for-diagnosis-of-skin-images-with-fastai-792160ab5495&#34; target=&#34;_blank&#34;&gt;Deep Learning for Diagnosis of Skin Images with fastai&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://medium.com/@rzuazua/skin-cancer-detection-with-deep-learning-4a7e3fce7ef9&#34; target=&#34;_blank&#34;&gt;Improving Skin Cancer Detection with Deep Learning&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://towardsdatascience.com/deep-learning-for-diagnosis-of-skin-images-with-fastai-792160ab5495&#34;&gt;Deep Learning for Diagnosis of Skin Images with fastai&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://medium.com/@rzuazua/skin-cancer-detection-with-deep-learning-4a7e3fce7ef9&#34;&gt;Improving Skin Cancer Detection with Deep Learning&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 </description>
     </item>

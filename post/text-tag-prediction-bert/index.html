@@ -84,7 +84,7 @@ Firstly we&rsquo;ll just use the embeddings from BERT, and then feed them to the
   
   
   
-  <link rel="stylesheet" href="/css/academic.min.5ac49d52d669340d29cb50b00bb7867f.css">
+  <link rel="stylesheet" href="/css/academic.min.3f344b41a854a4e86bdc347bbce3b34a.css">
 
   
 
@@ -461,7 +461,7 @@ Firstly we&rsquo;ll just use the embeddings from BERT, and then feed them to the
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    32 min read
+    31 min read
   </span>
   
 
@@ -502,22 +502,13 @@ Firstly we&rsquo;ll just use the embeddings from BERT, and then feed them to the
   <div class="article-container">
 
     <div class="article-style">
-      
-
-<h1 id="introduction">Introduction</h1>
-
-<p>This is a follow up post of <a href="https://pcx.linkedinfo.co/post/text-tag-prediction/" target="_blank">Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</a>. We will continute the same task by using BERT.</p>
-
+      <h1 id="introduction">Introduction</h1>
+<p>This is a follow up post of <a href="https://pcx.linkedinfo.co/post/text-tag-prediction/">Multi-label classification to predict topic tags of technical articles from LinkedInfo.co</a>. We will continute the same task by using BERT.</p>
 <p>Firstly we&rsquo;ll just use the embeddings from BERT, and then feed them to the same classification model used in the last post, SVM with linear kenel. The reason of keep using SVM is that the size of the dataset is quite small.</p>
-
 <h1 id="experiments">Experiments</h1>
-
 <h2 id="classify-by-using-bert-mini-and-svm-with-linear-kernel">Classify by using BERT-Mini and SVM with Linear Kernel</h2>
-
 <p>Due to the limited computation capacity, we&rsquo;ll use a smaller BERT model - BERT-Mini. The first experiment we&rsquo;ll try to train on only the titles of the articles.</p>
-
 <p>Now we firstly load the dataset. And then load the pretrained BERT tokenizer and model. Note that we only load the article samples that are in English since the BERT-Mini model here were pretrained in English.</p>
-
 <pre><code>import os
 from collections import Counter
 
@@ -549,14 +540,10 @@ from mltb.metrics import classification_report_avg
 nltk.download('punkt')
 
 RAND_STATE = 20200122
-</code></pre>
-
-<pre><code>ds = dataset.ds_info_tags(from_batch_cache='info', lan='en',
+</code></pre><pre><code>ds = dataset.ds_info_tags(from_batch_cache='info', lan='en',
                           concate_title=True,
                           filter_tags_threshold=0, partial_len=3000)
-</code></pre>
-
-<pre><code>c = Counter([tag for tags in ds.target_decoded for tag in tags])
+</code></pre><pre><code>c = Counter([tag for tags in ds.target_decoded for tag in tags])
 
 dfc = pd.DataFrame.from_dict(c, orient='index', columns=['count']).sort_values(by='count', ascending=False)[:100]
 
@@ -566,8 +553,6 @@ fig_Y = px.bar(dfc, x=dfc.index, y='count',
                        'x': 'Tags'})
 fig_Y.update_traces(texttemplate='%{text}')
 </code></pre>
-
-
 
 <html>
 <head><meta charset="utf-8" /></head>
@@ -619,7 +604,6 @@ if (outputEl) {{
 </body>
 </html>
 
-
 <pre><code>dfc_tail = pd.DataFrame.from_dict(c, orient='index', columns=['count']).sort_values(by='count', ascending=False)[-200:]
 
 fig_Y = px.bar(dfc_tail, x=dfc_tail.index, y='count',
@@ -628,8 +612,6 @@ fig_Y = px.bar(dfc_tail, x=dfc_tail.index, y='count',
                        'x': 'Tags'})
 fig_Y.update_traces(texttemplate='%{text}')
 </code></pre>
-
-
 
 <html>
 <head><meta charset="utf-8" /></head>
@@ -681,19 +663,13 @@ if (outputEl) {{
 </body>
 </html>
 
-
 <p>After we loaded the data, we checked how frequently are the tags being tagged to the articles. Here we only visualized the top-100 tags (you can select area of the figure to zoomin), we can see that there&rsquo;s a big imbalancement of popularity among tags. We can try to mitigate this imbalancement by using different methods like sampling methods and augmentation. But now we&rsquo;ll just pretend we don&rsquo;t know that and leave this aside.</p>
-
 <p>Now let&rsquo;s load the BERT tokenizer and model.</p>
-
 <pre><code>PRETRAINED_BERT_WEIGHTS = download_once_pretrained_transformers(
     &quot;google/bert_uncased_L-4_H-256_A-4&quot;)
 tokenizer = AutoTokenizer.from_pretrained(PRETRAINED_BERT_WEIGHTS)
 model = AutoModel.from_pretrained(PRETRAINED_BERT_WEIGHTS)
-</code></pre>
-
-<p>Now we encode all the titles by the BERT-Mini model. We&rsquo;ll use only the 1st output vector from the model as it&rsquo;s used for classification task.</p>
-
+</code></pre><p>Now we encode all the titles by the BERT-Mini model. We&rsquo;ll use only the 1st output vector from the model as it&rsquo;s used for classification task.</p>
 <pre><code>col_text = 'title'
 max_length = ds.data[col_text].apply(lambda x: len(nltk.word_tokenize(x))).max()
 
@@ -711,12 +687,8 @@ features = []
 with torch.no_grad():
     last_hidden_states = model(input_ids, attention_mask=attention_mask)
     features = last_hidden_states[0][:, 0, :].numpy()
-</code></pre>
-
-<p>As the features are changed from Tf-idf transformed to BERT transformed, so we&rsquo;ll re-search for the hyper-parameters for the LinearSVC to use.</p>
-
+</code></pre><p>As the features are changed from Tf-idf transformed to BERT transformed, so we&rsquo;ll re-search for the hyper-parameters for the LinearSVC to use.</p>
 <p>The scorer we used in grid search is f-0.5 score since we want to weight higher precision over recall.</p>
-
 <pre><code>train_features, test_features, train_labels, test_labels = train_test_split(
     features, ds.target, test_size=0.3, random_state=RAND_STATE)
     
@@ -748,12 +720,9 @@ report = metrics.classification_report(
 df_report = pd.DataFrame(report).transpose()
 cols_avg = ['micro avg', 'macro avg', 'weighted avg', 'samples avg']
 df_report.loc[cols_avg,]
-</code></pre>
-
-<pre><code>{'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
+</code></pre><pre><code>{'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
 0.5793483937857783
 </code></pre>
-
 
 
 
@@ -815,11 +784,8 @@ df_report.loc[cols_avg,]
 </div>
 
 
-
 <p>Though it&rsquo;s not comparable, the result metrics are no better than the Tf-idf one when we use only the English samples with their titles here. The micro average precision is higher, the other averages of precision are about the same. The recalls got much lower.</p>
-
 <p>Now let&rsquo;s combine the titles and short descriptions to see if there&rsquo;s any improvment.</p>
-
 <pre><code>col_text = 'description'
 max_length = ds.data[col_text].apply(lambda x: len(nltk.word_tokenize(x))).max()
 encoded = ds.data[col_text].apply(
@@ -836,13 +802,9 @@ features = []
 with torch.no_grad():
     last_hidden_states = model(input_ids, attention_mask=attention_mask)
     features = last_hidden_states[0][:, 0, :].numpy()
-</code></pre>
-
-<pre><code>train_features, test_features, train_labels, test_labels = train_test_split(
+</code></pre><pre><code>train_features, test_features, train_labels, test_labels = train_test_split(
     features, ds.target, test_size=0.3, random_state=RAND_STATE)
-</code></pre>
-
-<pre><code>clf = OneVsRestClassifier(LinearSVC())
+</code></pre><pre><code>clf = OneVsRestClassifier(LinearSVC())
 
 C_OPTIONS = [0.1, 1]
 
@@ -867,9 +829,7 @@ print(gs_clf.best_score_)
 Y_predicted = gs_clf.predict(test_features)
 
 classification_report_avg(test_labels, Y_predicted)
-</code></pre>
-
-<pre><code>{'estimator__C': 1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
+</code></pre><pre><code>{'estimator__C': 1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
 0.4954311860243222
               precision    recall  f1-score  support
 micro avg      0.684015  0.297254  0.414414   1238.0
@@ -877,15 +837,10 @@ macro avg      0.178030  0.109793  0.127622   1238.0
 weighted avg   0.522266  0.297254  0.362237   1238.0
 samples avg    0.401599  0.314649  0.337884   1238.0
 </code></pre>
-
 <p>There is no improvement, the precision averages even got a little bit worse. Let&rsquo;s try to explore further.</p>
-
 <h2 id="iterative-stratified-multilabel-data-sampling">Iterative stratified multilabel data sampling</h2>
-
-<p>It would be a good idea to perform stratified sampling for spliting training and test sets since there&rsquo;s a big imbalancement in the dataset for the labels. The problem is that the size of dataset is very small, which causes it that using normal stratified sampling method would fail since it&rsquo;s likely that some labels may not appear in both training and testing sets. That&rsquo;s why we have to use iterative stratified multilabel sampling. The explanation of this method can refer to <a href="http://scikit.ml/stratification.html" target="_blank">document of scikit-multilearn</a>.</p>
-
+<p>It would be a good idea to perform stratified sampling for spliting training and test sets since there&rsquo;s a big imbalancement in the dataset for the labels. The problem is that the size of dataset is very small, which causes it that using normal stratified sampling method would fail since it&rsquo;s likely that some labels may not appear in both training and testing sets. That&rsquo;s why we have to use iterative stratified multilabel sampling. The explanation of this method can refer to <a href="http://scikit.ml/stratification.html">document of scikit-multilearn</a>.</p>
 <p>In the code below we have wrapped the split method for brevity.</p>
-
 <pre><code>COL_TEXT = 'description'
 
 train_features, test_features, train_labels, test_labels = multilearn_iterative_train_test_split(
@@ -923,9 +878,7 @@ print(gs_clf.best_score_)
 Y_predicted = gs_clf.predict(test_features)
 
 print(classification_report_avg(test_labels, Y_predicted))
-</code></pre>
-
-<pre><code>{'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
+</code></pre><pre><code>{'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
 0.3292528001922235
               precision    recall  f1-score  support
 micro avg      0.674086  0.356003  0.465934   1191.0
@@ -933,15 +886,10 @@ macro avg      0.230836  0.162106  0.181784   1191.0
 weighted avg   0.551619  0.356003  0.420731   1191.0
 samples avg    0.460420  0.377735  0.392599   1191.0
 </code></pre>
-
 <p>There seems no improvement. But the cross validation F-0.5 score is lower than the testing score. It might be a sign that it&rsquo;s under-fitting.</p>
-
 <h2 id="training-set-augmentation">Training set augmentation</h2>
-
 <p>As the dataset is quite small, now we&rsquo;ll try to augment the trainig set to see if there&rsquo;s any improvement.</p>
-
-<p>Here we set the augmentation level to 2, which means the dataset are concatenated by 2 times of the samples. And the added samples&rsquo; content will be randomly chopped out as <sup>9</sup>&frasl;<sub>10</sub> of its original content. Of course, both the actions only apply to the training set. The 30% test set is kept aside.</p>
-
+<p>Here we set the augmentation level to 2, which means the dataset are concatenated by 2 times of the samples. And the added samples&rsquo; content will be randomly chopped out as 9/10 of its original content. Of course, both the actions only apply to the training set. The 30% test set is kept aside.</p>
 <pre><code>COL_TEXT = 'description'
 
 train_features, test_features, train_labels, test_labels = multilearn_iterative_train_test_split(
@@ -981,9 +929,7 @@ print(gs_clf.best_score_)
 Y_predicted = gs_clf.predict(test_features)
 
 classification_report_avg(test_labels, Y_predicted)
-</code></pre>
-
-<pre><code>{'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
+</code></pre><pre><code>{'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
 0.9249583214520737
               precision    recall  f1-score  support
 micro avg      0.616296  0.348409  0.445158   1194.0
@@ -991,15 +937,10 @@ macro avg      0.224752  0.162945  0.180873   1194.0
 weighted avg   0.520024  0.348409  0.406509   1194.0
 samples avg    0.442572  0.373784  0.384738   1194.0
 </code></pre>
-
 <p>We can see that there&rsquo;s still no improvement. It seems that we should change direction.</p>
-
 <h2 id="filter-rare-tags">Filter rare tags</h2>
-
 <p>If you remember that the first time we loaded the data we visualized the appearence frequency of the tags. It showed that most of the tags appeared only very few times, over 200 tags appeared only once or twice. This is quite a big problem for the model to classify for these tags.</p>
-
 <p>Now let&rsquo;s try to filter out the least appeared tags. Let&rsquo;s start from a big number of 20, i.e., tags appeared in less than 20 articles will be removed.</p>
-
 <pre><code>col_text = 'description'
 ds_param = dict(from_batch_cache='info', lan='en',
                 concate_title=True,
@@ -1016,8 +957,6 @@ fig_Y = px.bar(dfc, x=dfc.index, y='count',
                        'x': 'Tags'})
 fig_Y.update_traces(texttemplate='%{text}')
 </code></pre>
-
-
 
 <html>
 <head><meta charset="utf-8" /></head>
@@ -1069,7 +1008,6 @@ if (outputEl) {{
 </body>
 </html>
 
-
 <pre><code>test_size = 0.3
 train_features, test_features, train_labels, test_labels = multilearn_iterative_train_test_split(
     ds.data, ds.target, test_size=test_size, cols=ds.data.columns)
@@ -1107,9 +1045,7 @@ print(f'Best score in CV: {gs_clf.best_score_}')
 Y_predicted = gs_clf.predict(test_features)
 
 classification_report_avg(test_labels, Y_predicted)
-</code></pre>
-
-<pre><code>Best params in CV: {'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
+</code></pre><pre><code>Best params in CV: {'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
 Best score in CV: 0.8943719982878996
               precision    recall  f1-score  support
 micro avg      0.593583  0.435294  0.502262    765.0
@@ -1117,15 +1053,10 @@ macro avg      0.523965  0.361293  0.416650    765.0
 weighted avg   0.586632  0.435294  0.490803    765.0
 samples avg    0.458254  0.472063  0.444127    765.0
 </code></pre>
-
 <p>The filtering of tags made the averages of recall higher, but made the precision lower. The macro average goes up as there&rsquo;re much fewer tags.</p>
-
 <h2 id="fine-tuning-bert-model">Fine-tuning BERT model</h2>
-
 <p>The next step is to see if we can make some progress by fine-tuning the BERT-Mini model. As for a comparable result, the fine-tuning training will be using the same dataset that filtered of tags appear at least in 20 infos. The final classifier model will also be the same of SVM with Linear kernel feeded by the embeddings from the fine-tuned BERT-Mini.</p>
-
-<p>The processing of fine-tuning refers much to <a href="https://mccormickml.com/2019/07/22/BERT-fine-tuning/" target="_blank">Chris McCormick&rsquo;s post</a>.</p>
-
+<p>The processing of fine-tuning refers much to <a href="https://mccormickml.com/2019/07/22/BERT-fine-tuning/">Chris McCormick&rsquo;s post</a>.</p>
 <pre><code>col_text = 'description'
 ds_param = dict(from_batch_cache='info', lan='en',
                 concate_title=True,
@@ -1138,10 +1069,7 @@ train_features, test_features, train_labels, test_labels = multilearn_iterative_
 
 train_features, train_labels = dataset.augmented_samples(
     train_features, train_labels, level=2, crop_ratio=0.1)
-</code></pre>
-
-<p>The <code>BertForSequenceMultiLabelClassification</code> class defined below is basically a copy of the <code>BertForSequenceClassification</code> class in huggingface&rsquo;s <code>Transformers</code>, only with a small change of adding <code>sigmoid</code> the logits from classification and adding <code>labels = torch.max(labels, 1)[1]</code> in <code>forward</code> for supporting multilabel.</p>
-
+</code></pre><p>The <code>BertForSequenceMultiLabelClassification</code> class defined below is basically a copy of the <code>BertForSequenceClassification</code> class in huggingface&rsquo;s <code>Transformers</code>, only with a small change of adding <code>sigmoid</code> the logits from classification and adding <code> labels = torch.max(labels, 1)[1]</code> in <code>forward</code> for supporting multilabel.</p>
 <pre><code>class BertForSequenceMultiLabelClassification(BertPreTrainedModel):
     def __init__(self, config):
         super(BertForSequenceMultiLabelClassification, self).__init__(config)
@@ -1186,9 +1114,7 @@ train_features, train_labels = dataset.augmented_samples(
             outputs = (loss,) + outputs
 
         return outputs  # (loss), logits, (hidden_states), (attentions)
-</code></pre>
-
-<pre><code>DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+</code></pre><pre><code>DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 n_classes = train_labels.shape[1]
 batch_size: int = 16
 epochs: int = 4
@@ -1240,9 +1166,7 @@ total_steps = len(train_loader) * epochs
 scheduler = get_linear_schedule_with_warmup(optimizer,
                                             num_warmup_steps=0,  # Default value in run_glue.py
                                             num_training_steps=total_steps)
-</code></pre>
-
-<pre><code>training_stats = []
+</code></pre><pre><code>training_stats = []
 
 
 def best_prec_score(true_labels, predictions):
@@ -1330,9 +1254,7 @@ for ep in range(epochs):
     val()
 
 print('-------------- Completed --------------')
-</code></pre>
-
-<pre><code>-------------- Epoch: 1/4 --------------
+</code></pre><pre><code>-------------- Epoch: 1/4 --------------
 Train loss: 2.94
 Val loss: 2.35
 best prec: 0.1540, thr: 5
@@ -1370,9 +1292,7 @@ weighted avg   0.294521  0.731675  0.369942    764.0
 samples avg    0.267708  0.795730  0.381341    764.0
 -------------- Completed --------------
 </code></pre>
-
 <p>Save the fine-tuned model for later encoding.</p>
-
 <pre><code>from transformers import WEIGHTS_NAME, CONFIG_NAME, BertTokenizer
 
 output_dir = &quot;./data/models/bert_finetuned_tagthr_20/&quot;
@@ -1392,13 +1312,9 @@ output_config_file = os.path.join(output_dir, CONFIG_NAME)
 torch.save(model_to_save.state_dict(), output_model_file)
 model_to_save.config.to_json_file(output_config_file)
 tokenizer.save_vocabulary(output_dir)
+</code></pre><pre><code>('./data/models/bert_finetuned_tagthr_20/vocab.txt',)
 </code></pre>
-
-<pre><code>('./data/models/bert_finetuned_tagthr_20/vocab.txt',)
-</code></pre>
-
 <p>Now let&rsquo;s use the fine-tuned model to get the embeddings for the same SVM classification.</p>
-
 <pre><code>batch_size = 128
 model_name = output_dir
 
@@ -1435,77 +1351,24 @@ report = metrics.classification_report(
 df_report = pd.DataFrame(report).transpose()
 cols_avg = ['micro avg', 'macro avg', 'weighted avg', 'samples avg']
 df_report.loc[cols_avg]
-</code></pre>
-
-<pre><code>{'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
+</code></pre><pre><code>{'estimator__C': 0.1, 'estimator__dual': True, 'estimator__penalty': 'l2'}
 0.945576388765271
 </code></pre>
+<!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>precision</th>
-      <th>recall</th>
-      <th>f1-score</th>
-      <th>support</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>micro avg</th>
-      <td>0.793605</td>
-      <td>0.714660</td>
-      <td>0.752066</td>
-      <td>764.0</td>
-    </tr>
-    <tr>
-      <th>macro avg</th>
-      <td>0.757259</td>
-      <td>0.642333</td>
-      <td>0.671768</td>
-      <td>764.0</td>
-    </tr>
-    <tr>
-      <th>weighted avg</th>
-      <td>0.782557</td>
-      <td>0.714660</td>
-      <td>0.732094</td>
-      <td>764.0</td>
-    </tr>
-    <tr>
-      <th>samples avg</th>
-      <td>0.798664</td>
-      <td>0.762087</td>
-      <td>0.754289</td>
-      <td>764.0</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <p>There&rsquo;s quite a big improvement to both precision and recall after fine-tuning. This result makes the model quite usable.</p>
-
 <h1 id="comeback-test-with-tf-idf">Comeback test with tf-idf</h1>
-
 <p>Comparing to the early post that the model uses tf-idf to transform the text, we&rsquo;ve made some changes to the dataset loading, spliting and augmentation. I&rsquo;m curious to see if these changes would improve the performance when using tf-idf other than BERT-Mini.</p>
-
 <p>Let&rsquo;s start with samples only in English still.</p>
-
 <pre><code>col_text = 'description'
 
 ds_param = dict(from_batch_cache='info', lan='en',
@@ -1539,71 +1402,21 @@ print(gs_clf.best_score_)
 Y_predicted = gs_clf.predict(test_features[col_text])
 
 classification_report_avg(test_labels, Y_predicted)
-</code></pre>
-
-<pre><code>{'clf__estimator__C': 10, 'vect__ngram_range': (1, 4)}
+</code></pre><pre><code>{'clf__estimator__C': 10, 'vect__ngram_range': (1, 4)}
 0.9986905637969986
 </code></pre>
+<!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>precision</th>
-      <th>recall</th>
-      <th>f1-score</th>
-      <th>support</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>micro avg</th>
-      <td>0.955782</td>
-      <td>0.367801</td>
-      <td>0.531191</td>
-      <td>764.0</td>
-    </tr>
-    <tr>
-      <th>macro avg</th>
-      <td>0.740347</td>
-      <td>0.250587</td>
-      <td>0.353632</td>
-      <td>764.0</td>
-    </tr>
-    <tr>
-      <th>weighted avg</th>
-      <td>0.847419</td>
-      <td>0.367801</td>
-      <td>0.487887</td>
-      <td>764.0</td>
-    </tr>
-    <tr>
-      <th>samples avg</th>
-      <td>0.452608</td>
-      <td>0.396469</td>
-      <td>0.412913</td>
-      <td>764.0</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <p>Now let&rsquo;s try samples in both English and Chinese.</p>
-
 <pre><code>col_text = 'description'
 
 ds_param = dict(from_batch_cache='info', lan=None,
@@ -1637,75 +1450,23 @@ print(gs_clf.best_score_)
 Y_predicted = gs_clf.predict(test_features[col_text])
 
 classification_report_avg(test_labels, Y_predicted)
-</code></pre>
-
-<pre><code>{'clf__estimator__C': 10, 'vect__ngram_range': (1, 4)}
+</code></pre><pre><code>{'clf__estimator__C': 10, 'vect__ngram_range': (1, 4)}
 0.9962557077625571
 </code></pre>
+<!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>precision</th>
-      <th>recall</th>
-      <th>f1-score</th>
-      <th>support</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>micro avg</th>
-      <td>0.884273</td>
-      <td>0.417952</td>
-      <td>0.567619</td>
-      <td>1426.0</td>
-    </tr>
-    <tr>
-      <th>macro avg</th>
-      <td>0.804614</td>
-      <td>0.311396</td>
-      <td>0.423867</td>
-      <td>1426.0</td>
-    </tr>
-    <tr>
-      <th>weighted avg</th>
-      <td>0.849494</td>
-      <td>0.417952</td>
-      <td>0.532041</td>
-      <td>1426.0</td>
-    </tr>
-    <tr>
-      <th>samples avg</th>
-      <td>0.487522</td>
-      <td>0.433421</td>
-      <td>0.446447</td>
-      <td>1426.0</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <p>We can see that, for both the models, the micro average precision is quite high and the recalls are still low. However, the macro averages are much better since we filtered out minority tags.</p>
-
 <p>The model trained on samples with both languages has a lower precisions but higher recalls. The model trained on samples with both languages has a lower precisions but higher recalls. This is reasonable since that in those added Chinese articles, those key terms are more stand out that they can be better captured by tf-idf. That&rsquo;s why the recall goes up a little.</p>
-
 <p>Now lets see how would it perform training on the fulltext.</p>
-
 <pre><code>col_text = 'fulltext'
 
 ds_param = dict(from_batch_cache='fulltext', lan=None,
@@ -1739,77 +1500,24 @@ print(gs_clf.best_score_)
 Y_predicted = gs_clf.predict(test_features[col_text])
 
 classification_report_avg(test_labels, Y_predicted)
-</code></pre>
-
-<pre><code>{'clf__estimator__C': 10, 'vect__ngram_range': (1, 4)}
+</code></pre><pre><code>{'clf__estimator__C': 10, 'vect__ngram_range': (1, 4)}
 0.9719756244169426
 </code></pre>
+<!-- raw HTML omitted -->
+<pre><code>.dataframe tbody tr th {
+    vertical-align: top;
+}
 
-<div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>precision</th>
-      <th>recall</th>
-      <th>f1-score</th>
-      <th>support</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>micro avg</th>
-      <td>0.891927</td>
-      <td>0.479692</td>
-      <td>0.623862</td>
-      <td>1428.0</td>
-    </tr>
-    <tr>
-      <th>macro avg</th>
-      <td>0.858733</td>
-      <td>0.385982</td>
-      <td>0.502745</td>
-      <td>1428.0</td>
-    </tr>
-    <tr>
-      <th>weighted avg</th>
-      <td>0.864123</td>
-      <td>0.479692</td>
-      <td>0.584996</td>
-      <td>1428.0</td>
-    </tr>
-    <tr>
-      <th>samples avg</th>
-      <td>0.559050</td>
-      <td>0.494357</td>
-      <td>0.510951</td>
-      <td>1428.0</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-
+.dataframe thead th {
+    text-align: right;
+}
+</code></pre>
+<p><!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
 <p>The model trained on the fulltext is slightly better, but the training time is way much longer. A tuning on the length of the partial text could be explored with both tf-idf and BERT.</p>
-
 <h1 id="final-thoughts">Final thoughts</h1>
-
 <p>Comparing to the early naive model described in the previous post, we had much improment by stratified sampling, simple training set augmentation, and especially filter out rare tags.</p>
-
 <p>When comparing the using of embedding/encoding between BERT-Mini and tf-idf, one had better recall and the other had better precision, which is reasonable. tf-idf is mainly capturing those key terms, but not able to understand the semantic meaning of the text. That&rsquo;s why it had high precision if certain keywords are mentioned in the text, but low recall if when some tags are hiding behind the semantic mearning of the text. While BERT is powerful to capture some semantic meaning of the text, that leads to higher recall.</p>
-
 <p>Given that we have only a very small dataset used for the training, we certainly can have further improvement by using external dataset (the questions and answers from Stack Overflow is an ideal source) and adding additional tokens to BERT&rsquo;s vocabulary (technica articles is somehow a slightly different domain area that has dfferent terms and language usage comparing).</p>
 
     </div>

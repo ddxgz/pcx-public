@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>XGBoost | Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/tags/xgboost/</link>
+      <atom:link href="https://pcx.linkedinfo.co/tags/xgboost/index.xml" rel="self" type="application/rss+xml" />
+    <description>XGBoost</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Sun, 24 May 2020 20:35:01 +0200</lastBuildDate>
+    <image>
+      <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
+      <title>XGBoost</title>
+      <link>https://pcx.linkedinfo.co/tags/xgboost/</link>
+    </image>
+    
+    <item>
+      <title>XGBoost Swift</title>
+      <link>https://pcx.linkedinfo.co/project/xgboost-swift/</link>
+      <pubDate>Sun, 24 May 2020 20:35:01 +0200</pubDate>
+      <guid>https://pcx.linkedinfo.co/project/xgboost-swift/</guid>
+      <description>&lt;p&gt;The first Swift interface for &lt;a href=&#34;https://github.com/dmlc/xgboost&#34;&gt;XGBoost&lt;/a&gt;, which is an optimized distributed gradient boosting library implements Machine Learning algorithms under Gradient Boosting framework.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -13,15 +13,6 @@
     </image>
     
     <item>
-      <title>Topic Tag Predictor</title>
-      <link>https://pcx.linkedinfo.co/project/topic-tag-predictor/</link>
-      <pubDate>Sat, 04 Jan 2020 19:22:26 +0100</pubDate>
-      <guid>https://pcx.linkedinfo.co/project/topic-tag-predictor/</guid>
-      <description>&lt;p&gt;A topic tag prediction service for technical articles. The model uses a pre-trained BERT and fine-tuned on the dataset of LinkedInfo.co.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
       <title>Using BERT to perform Topic Tag Prediction for Technical Articles</title>
       <link>https://pcx.linkedinfo.co/post/text-tag-prediction-bert/</link>
       <pubDate>Thu, 13 Feb 2020 11:20:19 +0200</pubDate>

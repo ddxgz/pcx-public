@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>NLP | Cong Peng</title>
+    <link>https://pcx.linkedinfo.co/tags/nlp/</link>
+      <atom:link href="https://pcx.linkedinfo.co/tags/nlp/index.xml" rel="self" type="application/rss+xml" />
+    <description>NLP</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>©2014–2019 Cong Peng</copyright><lastBuildDate>Sat, 04 Jan 2020 19:22:26 +0100</lastBuildDate>
+    <image>
+      <url>https://pcx.linkedinfo.co/img/icon-192.png</url>
+      <title>NLP</title>
+      <link>https://pcx.linkedinfo.co/tags/nlp/</link>
+    </image>
+    
+    <item>
+      <title>Text Analysis Service</title>
+      <link>https://pcx.linkedinfo.co/project/topic-tag-predictor/</link>
+      <pubDate>Sat, 04 Jan 2020 19:22:26 +0100</pubDate>
+      <guid>https://pcx.linkedinfo.co/project/topic-tag-predictor/</guid>
+      <description>&lt;p&gt;A text analysis service for technical articles includes topic identification and keywords extraction. The model of topic identification uses a pre-trained BERT and fine-tuned on the dataset of LinkedInfo.co and questions on Stack Overflow.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
